@@ -1,29 +1,46 @@
 <template>
-  <div class="page-title">
-    <h1>
-      DaVinci GPT-3
-    </h1>
-  </div>
-  <login v-show="!isLogin" @logged="loggedIn"></login>
-  <div v-show="isLogin">
-    <div class="message-list">
-      <div class="item" v-for="item in messages" :class="{
-      dark: item.sender === 'Human'
-    }">
-        <pre>{{ item.sender === 'Human' ? item.text : item.displayText}}</pre>
+  <div style="opacity: 0;" :style="{
+    opacity: pageLoaded ? 1 : 0
+  }">
+    <div class="page-title">
+      <h1>DaVinci GPT-3</h1>
+    </div>
+    <login v-show="!isLogin" @logged="loggedIn"></login>
+    <div v-show="isLogin">
+      <div class="message-list">
+        <div
+          class="item"
+          v-for="item in messages"
+          :class="{
+            dark: item.sender === 'Human'
+          }"
+        >
+          <pre>{{ item.sender === 'Human' ? item.text : item.displayText }}</pre>
+        </div>
       </div>
-    </div>
-    <div class="clear-message" v-show="messages.length > 1">
-      <button @click="clearHistory">Clear History</button>
-    </div>
-    <div class="page-input">
-      <div class="wrap">
-        <input type="text" v-model="userInput" @focus="inputOnFocus = true" @blur="inputOnFocus = false"
-               ref="input" placeholder="nicely ask something">
-        <button @click="send" :disabled="streaming" :style="{
-          opacity: streaming ? 0.3 : 1
-        }">Send
-        </button>
+      <div class="clear-message" v-show="messages.length > 1">
+        <button @click="clearHistory">Clear History</button>
+      </div>
+      <div class="page-input">
+        <div class="wrap">
+          <input
+            type="text"
+            v-model="userInput"
+            @focus="inputOnFocus = true"
+            @blur="inputOnFocus = false"
+            ref="input"
+            placeholder="nicely ask something"
+          />
+          <button
+            @click="send"
+            :disabled="streaming"
+            :style="{
+              opacity: streaming ? 0.3 : 1
+            }"
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -32,13 +49,13 @@
 <script>
 import Login from './components/login.vue'
 import axios from 'axios'
-import {marked} from 'marked'
-import {getApiBase, trim} from './utils/common.js'
+import { marked } from 'marked'
+import { getApiBase, trim } from './utils/common.js'
 
 let baseAPI = getApiBase()
 
 export default {
-  components: {Login},
+  components: { Login },
   mounted() {
     this.listenForKeys()
     this.checkForLogin()
@@ -46,6 +63,7 @@ export default {
   },
   data() {
     return {
+      pageLoaded: false,
       scrollDebounce: false,
       historyText: '',
       streaming: false,
@@ -57,8 +75,9 @@ export default {
     }
   },
   methods: {
-    clearHistory(){
+    clearHistory() {
       this.messages = []
+      this.historyText = ''
       localStorage.setItem('history', '[]')
     },
     saveHistory() {
@@ -67,7 +86,7 @@ export default {
     },
     readHistory() {
       let history = []
-      if(localStorage.getItem('history')){
+      if (localStorage.getItem('history')) {
         history = JSON.parse(localStorage.getItem('history'))
       }
 
@@ -86,7 +105,7 @@ export default {
           top: document.body.scrollHeight,
           behavior: 'smooth'
         })
-      }, 50)
+      }, 80)
 
       _.scrollDebounce = true
 
@@ -101,13 +120,17 @@ export default {
       let _ = this
       if (!localStorage.getItem('token')) {
         _.isLogin = false
+        _.pageLoaded = true
         return false
       }
-      axios.post(baseAPI + '/checkLogin', {
-        token: localStorage.getItem('token')
-      }).then(res => {
-        _.isLogin = !!res.data.success
-      })
+      axios
+        .post(baseAPI + '/checkLogin', {
+          token: localStorage.getItem('token')
+        })
+        .then((res) => {
+          _.isLogin = res.data.success
+          _.pageLoaded = true
+        })
     },
     listenForKeys() {
       let _ = this
@@ -168,43 +191,46 @@ export default {
           'Content-Type': 'application/json'
         },
         stream: true
-      }).then(response => {
-        if (!response.ok) {
-          throw new Error('HTTP error ' + response.status)
-        }
-        return response.body
-      }).then(body => {
-        let dataIndex = _.messages.length
-
-        _.messages.push({
-          sender: 'AI',
-          text: ''
-        })
-
-        let reader = body.getReader()
-        read()
-
-        function read() {
-          reader.read().then(({value, done}) => {
-            if (done) {
-              _.streaming = false
-              _.composeHistory()
-              _.scrollDown(true)
-              _.saveHistory()
-              return
-            }
-            let s = new TextDecoder().decode(value)
-            _.scrollDown()
-            _.messages[dataIndex].text += s
-            _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
-            read()
-          })
-        }
-      }).catch(err => {
-        console.log(err)
-        _.streaming = false
-        _.composeHistory()
       })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('HTTP error ' + response.status)
+          }
+          return response.body
+        })
+        .then((body) => {
+          let dataIndex = _.messages.length
+
+          _.messages.push({
+            sender: 'AI',
+            text: ''
+          })
+
+          let reader = body.getReader()
+          read()
+
+          function read() {
+            reader.read().then(({ value, done }) => {
+              if (done) {
+                _.streaming = false
+                _.composeHistory()
+                _.scrollDown(true)
+                _.saveHistory()
+                return
+              }
+              let s = new TextDecoder().decode(value)
+              _.scrollDown()
+              _.messages[dataIndex].text += s
+              _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
+              read()
+            })
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          _.streaming = false
+          _.composeHistory()
+        })
 
       this.userInput = ''
       setTimeout(function () {
