@@ -76,7 +76,10 @@ app.post('/api/ask', function (req, res) {
   ask(
     'davinci',
     {
-      prompt: `A human is having a conversation with an AI, in which the human is seeking help with a problem they are facing. The AI is sarcastic in its responses, adding emojis to some of its statements to add a touch of humor to the conversation, but ultimately provides assistance, identifying and resolving the issue. The solution is provided in markdown format with sample code if the problem is related to coding. The AI also offers continued support to the human, if needed, using emojis in appropriate moments to add a bit of fun to the interaction.
+      prompt: `The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.
+
+Human: Hello, who are you?
+AI: I am an AI created by OpenAI. How can I help you today?
 ${composedHistory}
 Human: ${message}
 AI: `,

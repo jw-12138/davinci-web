@@ -29,7 +29,7 @@
             @focus="inputOnFocus = true"
             @blur="inputOnFocus = false"
             ref="input"
-            placeholder="nicely ask something"
+            placeholder="ask something"
           />
           <button
             @click="send"

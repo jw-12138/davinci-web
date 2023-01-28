@@ -3,7 +3,7 @@
 }
 
 html {
-  font-family: monospace;
+  font-family: 'Varela Round', monospace;
   margin: 0;
   padding: 0;
 }
@@ -25,25 +25,29 @@ body {
   .item {
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     border-radius: 16px;
-    padding: 10px 10px;
-    background: #fff;
+    padding: 8px 16px;
+    background: #f8fafc;
     margin-bottom: 10px;
     font-size: 14px;
-    line-height: 1.8;
+    line-height: 1.6;
+    width: 80%;
 
     pre {
       word-break: break-word;
       margin: 0;
       white-space: pre-wrap;
+      font-family: 'Varela Round', monospace;
     }
 
-    p{
+    p {
       margin: 4px 0;
     }
 
     &.dark {
-      background: #f1f1f1;
+      background: #0056f2;
       box-shadow: none;
+      color: #fff;
+      margin-left: 20%;
     }
   }
 }
@@ -67,19 +71,19 @@ body {
   input {
     width: 100%;
     height: 40px;
-    border: 2px solid #333;
+    border: 2px solid #0056f2;
     border-radius: 30px;
     padding: 0 15px;
     font-size: 14px;
-    font-family: monospace;
+    font-family: 'Varela Round', monospace;
   }
 
   button {
-    font-family: monospace;
+    font-family: 'Varela Round', monospace;
     width: 100px;
     margin-left: 10px;
     height: 40px;
-    background: #333;
+    background: #0056f2;
     color: #fff;
     border: none;
     border-radius: 30px;
@@ -97,11 +101,11 @@ body {
     display: flex;
 
     button {
-      font-family: monospace;
+      font-family: 'Varela Round', monospace;
       width: 100px;
       margin-left: 10px;
       height: 40px;
-      background: #333;
+      background: #0056f2;
       color: #fff;
       border: none;
       border-radius: 30px;
@@ -111,11 +115,11 @@ body {
     input {
       width: 100%;
       height: 40px;
-      border: 2px solid #333;
+      border: 2px solid #0056f2;
       border-radius: 30px;
       text-indent: 15px;
       font-size: 16px;
-      font-family: monospace;
+      font-family: 'Varela Round', monospace;
     }
   }
 }
@@ -124,15 +128,14 @@ button {
   cursor: pointer;
 }
 
-.clear-message{
+.clear-message {
   text-align: center;
-  margin-bottom: 10px;
   button {
-    font-family: monospace;
+    font-family: 'Varela Round', monospace;
     width: 140px;
     margin-left: 10px;
     height: 40px;
-    background: #333;
+    background: #0056f2;
     color: #fff;
     border: none;
     border-radius: 30px;
