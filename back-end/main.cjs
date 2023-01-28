@@ -11,6 +11,7 @@ const buffer = require('buffer')
 const port = 7009
 
 app.use(cors())
+app.use(express.static('/home/ubuntu/work/davinci-web/dist'))
 app.use(express.json())
 
 app.post('/api/login', function (req, res) {

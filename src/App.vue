@@ -19,7 +19,7 @@
     <div class="page-input">
       <div class="wrap">
         <input type="text" v-model="userInput" @focus="inputOnFocus = true" @blur="inputOnFocus = false"
-               ref="input" placeholder="🥳">
+               ref="input" placeholder="nicely ask something">
         <button @click="send" :disabled="streaming" :style="{
           opacity: streaming ? 0.3 : 1
         }">Send

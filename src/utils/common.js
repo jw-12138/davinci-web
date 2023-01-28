@@ -2,7 +2,7 @@ let getApiBase = function () {
   if (location.hostname === 'localhost') {
     return 'http://localhost:7009/api'
   } else {
-    return 'https://ibot.jw1.dev/api'
+    return 'https://chat.jw1.dev/api'
   }
 }
 
