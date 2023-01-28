@@ -16,11 +16,11 @@
           }"
         >
           <pre v-if="item.sender === 'Human'">{{ item.text }}</pre>
-          <div v-else v-html="item.displayText"></div>
+          <pre v-else>{{ item.displayText}}</pre>
         </div>
       </div>
       <div class="clear-message" v-show="messages.length > 1">
-        <button @click="clearHistory">Clear History</button>
+        <button @click="clearHistory">Reset</button>
       </div>
       <div class="page-input">
         <div class="wrap">
@@ -229,7 +229,7 @@ export default {
               let s = new TextDecoder().decode(value)
               _.scrollDown()
               _.messages[dataIndex].text += s
-              _.messages[dataIndex].displayText = marked(_.messages[dataIndex].text)
+              _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
               read()
             })
           }
