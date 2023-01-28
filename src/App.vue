@@ -15,7 +15,8 @@
             dark: item.sender === 'Human'
           }"
         >
-          <pre>{{ item.sender === 'Human' ? item.text : item.displayText }}</pre>
+          <pre v-if="item.sender === 'Human'">{{ item.text }}</pre>
+          <div v-else v-html="item.displayText"></div>
         </div>
       </div>
       <div class="clear-message" v-show="messages.length > 1">
@@ -23,14 +24,15 @@
       </div>
       <div class="page-input">
         <div class="wrap">
-          <input
-            type="text"
+          <textarea
             v-model="userInput"
             @focus="inputOnFocus = true"
             @blur="inputOnFocus = false"
             ref="input"
             placeholder="ask something"
-          />
+            @compositionstart="userIsComposting = true"
+            @compositionend="userIsComposting = false"
+          ></textarea>
           <button
             @click="send"
             :disabled="streaming"
@@ -49,13 +51,13 @@
 <script>
 import Login from './components/login.vue'
 import axios from 'axios'
-import { marked } from 'marked'
-import { getApiBase, trim } from './utils/common.js'
+import {marked} from 'marked'
+import {getApiBase, trim} from './utils/common.js'
 
 let baseAPI = getApiBase()
 
 export default {
-  components: { Login },
+  components: {Login},
   mounted() {
     this.listenForKeys()
     this.checkForLogin()
@@ -63,6 +65,8 @@ export default {
   },
   data() {
     return {
+      userIsComposting: false,
+      isRenderingMarkdown: false,
       pageLoaded: false,
       scrollDebounce: false,
       historyText: '',
@@ -78,6 +82,7 @@ export default {
     clearHistory() {
       this.messages = []
       this.historyText = ''
+      this.streaming = false
       localStorage.setItem('history', '[]')
     },
     saveHistory() {
@@ -134,8 +139,11 @@ export default {
     },
     listenForKeys() {
       let _ = this
-      window.addEventListener('keyup', function (e) {
-        if (e.key === 'Enter' && _.inputOnFocus) {
+      window.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+        }
+        if (e.key === 'Enter' && !_.userIsComposting && _.inputOnFocus) {
           _.send()
         }
       })
@@ -159,7 +167,7 @@ export default {
     },
     send() {
       let _ = this
-      if (this.userInput === '') {
+      if (trim(this.userInput) === '') {
         return false
       }
 
@@ -169,7 +177,7 @@ export default {
 
       this.messages.push({
         sender: 'Human',
-        text: this.userInput
+        text: trim(this.userInput)
       })
 
       _.saveHistory()
@@ -210,7 +218,7 @@ export default {
           read()
 
           function read() {
-            reader.read().then(({ value, done }) => {
+            reader.read().then(({value, done}) => {
               if (done) {
                 _.streaming = false
                 _.composeHistory()
@@ -221,7 +229,7 @@ export default {
               let s = new TextDecoder().decode(value)
               _.scrollDown()
               _.messages[dataIndex].text += s
-              _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
+              _.messages[dataIndex].displayText = marked(_.messages[dataIndex].text)
               read()
             })
           }

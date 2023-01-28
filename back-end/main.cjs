@@ -76,7 +76,7 @@ app.post('/api/ask', function (req, res) {
   ask(
     'davinci',
     {
-      prompt: `The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.
+      prompt: `The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. The AI was designed for solving coding problems, so every code block is rendered as markdown.
 
 Human: Hello, who are you?
 AI: I am an AI created by OpenAI. How can I help you today?
