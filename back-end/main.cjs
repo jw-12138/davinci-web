@@ -51,6 +51,7 @@ app.post('/api/checkLogin', function (req, res) {
   }
 })
 
+
 app.post('/api/ask', function (req, res) {
   res.set('Content-Type', 'application/octet-stream')
   res.set('Transfer-Encoding', 'chunked')
@@ -76,8 +77,7 @@ app.post('/api/ask', function (req, res) {
   ask(
     'davinci',
     {
-      prompt: `The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. The AI was designed for solving coding problems, so every code block is rendered as markdown.
-
+      prompt: `The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.
 Human: Hello, who are you?
 AI: I am an AI created by OpenAI. How can I help you today?
 ${composedHistory}
@@ -101,7 +101,7 @@ AI: `,
         res.write(Buffer.from(text))
       }
       if (cost) {
-        res.write(Buffer.from('[COST]:' + cost))
+        res.write(Buffer.from('####[COST]:' + cost))
         res.end()
       }
     }

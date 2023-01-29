@@ -23,7 +23,7 @@ body {
 
 .message-list {
   .item {
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     border-radius: 8px;
     padding: 6px 8px;
     background: #f8fafc;
@@ -38,17 +38,24 @@ body {
       margin: 0;
     }
 
+    .ai-cost {
+      text-align: center;
+      padding: 5px;
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
     p {
       margin: 4px 0;
     }
 
     &.dark {
-      background: #333;
+      background: #1f2937;
       box-shadow: none;
       color: #fff;
     }
 
-    &.sys{
+    &.sys {
       background: transparent;
       box-shadow: none;
       border-radius: 0;
@@ -78,7 +85,7 @@ body {
   input {
     width: 100%;
     height: 40px;
-    border: 2px solid #333;
+    border: 2px solid #1f2937;
     border-radius: 30px;
     padding: 0 15px;
     font-size: 14px;
@@ -88,7 +95,7 @@ body {
   textarea {
     width: 100%;
     height: 40px;
-    border: 2px solid #333;
+    border: 2px solid #1f2937;
     border-radius: 30px;
     padding: 10px 15px 0;
     font-size: 14px;
@@ -101,7 +108,7 @@ body {
     width: 100px;
     margin-left: 10px;
     height: 40px;
-    background: #333;
+    background: #1f2937;
     color: #fff;
     border: none;
     border-radius: 30px;
@@ -123,7 +130,7 @@ body {
       width: 100px;
       margin-left: 10px;
       height: 40px;
-      background: #333;
+      background: #1f2937;
       color: #fff;
       border: none;
       border-radius: 30px;
@@ -133,7 +140,7 @@ body {
     input {
       width: 100%;
       height: 40px;
-      border: 2px solid #333;
+      border: 2px solid #1f2937;
       border-radius: 30px;
       text-indent: 15px;
       font-size: 16px;
@@ -154,10 +161,79 @@ button {
     width: 100px;
     margin-left: 10px;
     height: 40px;
-    background: #333;
+    background: #1f2937;
     color: #fff;
     border: none;
     border-radius: 30px;
     flex-shrink: 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body{
+    background: #121212;
+    color: #fff;
+  }
+
+  .message-list {
+    .item {
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      background: #6b7280;
+      color: #fff;
+
+      .ai-cost {
+        color: #d1d5db;
+      }
+
+      &.dark {
+        background: #404040;
+        color: #fff;
+      }
+
+      &.sys{
+        color: #fff;
+      }
+    }
+  }
+
+  .page-input {
+    background: #121212;
+
+    input {
+      border: 2px solid #404040;
+    }
+
+    textarea {
+      border: 2px solid #404040;
+      background: #404040;
+      color: #fff;
+    }
+
+    button {
+      background: #404040;
+      color: #fff;
+    }
+  }
+
+  .login-page {
+    .password {
+      button {
+        background: #404040;
+        color: #fff;
+      }
+
+      input{
+        border: 2px solid #404040;
+        background: #404040;
+        color: #fff;
+      }
+    }
+  }
+
+  .clear-message {
+    button {
+      background: #404040;
+      color: #fff;
+    }
   }
 }

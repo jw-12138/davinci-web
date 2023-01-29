@@ -48,6 +48,10 @@
         >
           <pre v-if="item.sender === 'Human'">{{ item.text }}</pre>
           <pre v-if="item.sender === 'AI'">{{ item.displayText }}</pre>
+          <div class="ai-cost" v-if="item.sender === 'AI'">
+            <span v-if="item.cost">{{item.bytes}} bytes, ${{item.cost}}</span>
+            <span v-else>{{item.bytes}} bytes</span>
+          </div>
           <span class="sys" v-if="item.sender === 'System'">
             {{item.text}}
           </span>
@@ -280,14 +284,14 @@ export default {
                 return
               }
               let s = new TextDecoder().decode(value)
-              if(s.startsWith('[COST]')){
-                let cost = s.replace('[COST]:', '')
-                console.log('$' + cost)
+              if(s.includes('####[COST]:')){
+                _.messages[dataIndex].cost = s.replace('####[COST]:', '')
                 read()
                 return false
               }
               _.scrollDown()
               _.messages[dataIndex].text += s
+              _.messages[dataIndex].bytes = (new TextEncoder().encode(_.messages[dataIndex].text)).length
               _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
               _.saveHistory()
               if (_.streamTimeoutCount) {
@@ -320,6 +324,7 @@ export default {
           sender: 'System', text: 'seems like the text stream did not end as expected, you can either ignore it or reset the conversation'
         })
         this.scrollDown(true)
+        this.composeHistory()
         this.saveHistory()
       }
     }

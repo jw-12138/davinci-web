@@ -58,6 +58,12 @@ function ask(m, options, cb) {
 
       cb && cb(str, cost)
     } else {
+      res.data.on('end', function () {
+        let bytes = (new TextEncoder().encode(promptOption.prompt)).length
+        let promptTokens = parseInt((bytes / 4).toFixed(0))
+        let cost = (tokenCount + promptTokens) / model.oneDollorToken
+        cb && cb(null, cost)
+      })
       res.data.on('data', chunk => {
         let s = chunk.toString()
         let s_arr = s.split('data: ')
@@ -66,11 +72,6 @@ function ask(m, options, cb) {
           tokenCount++
           let d_obj = JSON.parse(d)
           cb && cb(d_obj.choices[0].text, null)
-        } else {
-          let bytes = (new TextEncoder().encode(promptOption.prompt)).length
-          let promptTokens = parseInt((bytes / 4).toFixed(0))
-          let cost = (tokenCount + promptTokens) / model.oneDollorToken
-          cb && cb(null, cost)
         }
       })
     }
