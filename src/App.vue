@@ -3,20 +3,54 @@
     opacity: pageLoaded ? 1 : 0
   }">
     <div class="page-title">
-      <h1>DaVinci GPT-3</h1>
+      <h1>🤖 DaVinci GPT-3</h1>
     </div>
     <login v-show="!isLogin" @logged="loggedIn"></login>
     <div v-show="isLogin">
+      <div v-show="messages.length === 0" style="line-height: 1.9">
+        <p>
+          👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks, questions and conversation.
+        </p>
+        <p>
+          😎 Capabilities:
+        </p>
+        <ul>
+          <li>
+            Remembers what user said earlier in the conversation
+          </li>
+          <li>
+            Allows user to provide follow-up corrections
+          </li>
+        </ul>
+        <p>
+          😟 Limitations:
+        </p>
+        <ul>
+          <li>
+            May occasionally generate incorrect information
+          </li>
+          <li>
+            May occasionally produce harmful instructions or biased content
+          </li>
+          <li>
+            Limited knowledge of world and events after 2021
+          </li>
+        </ul>
+      </div>
       <div class="message-list">
         <div
           class="item"
           v-for="item in messages"
           :class="{
-            dark: item.sender === 'Human'
+            dark: item.sender === 'Human',
+            sys: item.sender === 'System'
           }"
         >
           <pre v-if="item.sender === 'Human'">{{ item.text }}</pre>
-          <pre v-else>{{ item.displayText}}</pre>
+          <pre v-if="item.sender === 'AI'">{{ item.displayText }}</pre>
+          <span class="sys" v-if="item.sender === 'System'">
+            {{item.text}}
+          </span>
         </div>
       </div>
       <div class="clear-message" v-show="messages.length > 1">
@@ -51,10 +85,10 @@
 <script>
 import Login from './components/login.vue'
 import axios from 'axios'
-import {marked} from 'marked'
 import {getApiBase, trim} from './utils/common.js'
 
 let baseAPI = getApiBase()
+let introText = "Introducing AI DaVinci by OpenAI, a virtual assistant for tasks, questions and conversation. Utilize its capabilities and experience our cutting-edge technology. Reach out for assistance, we're here to help you improve productivity and efficiency."
 
 export default {
   components: {Login},
@@ -65,6 +99,8 @@ export default {
   },
   data() {
     return {
+      streamTimeoutCount: 0,
+      streamTimeout: false,
       userIsComposting: false,
       isRenderingMarkdown: false,
       pageLoaded: false,
@@ -75,13 +111,16 @@ export default {
       isLogin: false,
       userInput: '',
       inputOnFocus: false,
-      messages: []
+      messages: [
+
+      ]
     }
   },
   methods: {
     clearHistory() {
       this.messages = []
       this.historyText = ''
+      this.userInput = ''
       this.streaming = false
       localStorage.setItem('history', '[]')
     },
@@ -158,7 +197,8 @@ export default {
       _.messages.forEach((el, index) => {
         if (el.sender === 'Human') {
           h += `Human: ${el.text}\n`
-        } else {
+        }
+        if (el.sender === 'AI') {
           h += `AI: ${el.text}\n`
         }
       })
@@ -171,6 +211,11 @@ export default {
         return false
       }
 
+      if(trim(this.userInput) === '/reset'){
+        _.clearHistory()
+        return false
+      }
+
       if (this.streaming) {
         return false
       }
@@ -179,6 +224,13 @@ export default {
         sender: 'Human',
         text: trim(this.userInput)
       })
+
+      let dataIndex = _.messages.length
+
+      _.messages[dataIndex] = {
+        sender: 'System',
+        text: 'Thinking...'
+      }
 
       _.saveHistory()
 
@@ -204,16 +256,13 @@ export default {
           if (!response.ok) {
             throw new Error('HTTP error ' + response.status)
           }
+          _.messages[dataIndex] = {
+            sender: "AI",
+            text: ""
+          }
           return response.body
         })
         .then((body) => {
-          let dataIndex = _.messages.length
-
-          _.messages.push({
-            sender: 'AI',
-            text: ''
-          })
-
           let reader = body.getReader()
           read()
 
@@ -224,12 +273,22 @@ export default {
                 _.composeHistory()
                 _.scrollDown(true)
                 _.saveHistory()
+                _.streamTimeout = false
+                if (_.streamTimeoutCount) {
+                  clearTimeout(_.streamTimeoutCount)
+                }
                 return
               }
               let s = new TextDecoder().decode(value)
               _.scrollDown()
               _.messages[dataIndex].text += s
               _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
+              if (_.streamTimeoutCount) {
+                clearTimeout(_.streamTimeoutCount)
+              }
+              _.streamTimeoutCount = setTimeout(function () {
+                _.streamTimeout = true
+              }, 5000)
               read()
             })
           }
@@ -244,6 +303,16 @@ export default {
       setTimeout(function () {
         _.$refs.input.focus()
       }, 20)
+    }
+  },
+  watch: {
+    streamTimeout(val) {
+      if (val) {
+        this.streaming = false
+        this.messages.push({
+          sender: 'System', text: 'Stream did not end as expected, you can either ignore it or reset the conversation'
+        })
+      }
     }
   }
 }
