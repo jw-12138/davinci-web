@@ -227,12 +227,12 @@ export default {
 
       let dataIndex = _.messages.length
 
+      _.saveHistory()
+
       _.messages[dataIndex] = {
         sender: 'System',
         text: 'Thinking...'
       }
-
-      _.saveHistory()
 
       _.streaming = true
 
@@ -280,15 +280,22 @@ export default {
                 return
               }
               let s = new TextDecoder().decode(value)
+              if(s.startsWith('[COST]')){
+                let cost = s.replace('[COST]:', '')
+                console.log('$' + cost)
+                read()
+                return false
+              }
               _.scrollDown()
               _.messages[dataIndex].text += s
               _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
+              _.saveHistory()
               if (_.streamTimeoutCount) {
                 clearTimeout(_.streamTimeoutCount)
               }
               _.streamTimeoutCount = setTimeout(function () {
                 _.streamTimeout = true
-              }, 5000)
+              }, 3000)
               read()
             })
           }
@@ -310,8 +317,10 @@ export default {
       if (val) {
         this.streaming = false
         this.messages.push({
-          sender: 'System', text: 'Stream did not end as expected, you can either ignore it or reset the conversation'
+          sender: 'System', text: 'seems like the text stream did not end as expected, you can either ignore it or reset the conversation'
         })
+        this.scrollDown(true)
+        this.saveHistory()
       }
     }
   }

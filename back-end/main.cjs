@@ -101,6 +101,7 @@ AI: `,
         res.write(Buffer.from(text))
       }
       if (cost) {
+        res.write(Buffer.from('[COST]:' + cost))
         res.end()
       }
     }
