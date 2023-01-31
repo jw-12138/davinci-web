@@ -1,7 +1,10 @@
 <template>
-  <div style="opacity: 0;" :style="{
-    opacity: pageLoaded ? 1 : 0
-  }">
+  <div
+    style="opacity: 0"
+    :style="{
+      opacity: pageLoaded ? 1 : 0
+    }"
+  >
     <div class="page-title">
       <h1>🤖 DaVinci GPT-3</h1>
     </div>
@@ -9,32 +12,21 @@
     <div v-show="isLogin">
       <div v-show="messages.length === 0" style="line-height: 1.9">
         <p>
-          👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks, questions and conversation.
+          👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks,
+          questions and conversation.
         </p>
-        <p>
-          😎 Capabilities:
-        </p>
+        <p> 😎 Capabilities: </p>
         <ul>
-          <li>
-            Remembers what user said earlier in the conversation
-          </li>
-          <li>
-            Allows user to provide follow-up corrections
-          </li>
+          <li> Remembers what user said earlier in the conversation </li>
+          <li> Allows user to provide follow-up corrections </li>
         </ul>
-        <p>
-          😟 Limitations:
-        </p>
+        <p> 😟 Limitations: </p>
         <ul>
-          <li>
-            May occasionally generate incorrect information
-          </li>
+          <li> May occasionally generate incorrect information </li>
           <li>
             May occasionally produce harmful instructions or biased content
           </li>
-          <li>
-            Limited knowledge of world and events after 2021
-          </li>
+          <li> Limited knowledge of world and events after 2021 </li>
         </ul>
       </div>
       <div class="message-list">
@@ -47,14 +39,15 @@
           }"
         >
           <div v-if="item.sender === 'Human'">{{ item.text }}</div>
-          <div v-if="item.sender === 'AI'" v-html="item.displayText">
-          </div>
+          <div v-if="item.sender === 'AI'" v-html="item.displayText"> </div>
           <div class="ai-cost" v-if="item.sender === 'AI'">
-            <span v-if="item.cost">{{item.bytes}} bytes, ${{item.cost}}</span>
-            <span v-else>{{item.bytes}} bytes</span>
+            <span v-if="item.cost"
+              >{{ item.bytes }} bytes, ${{ item.cost }}</span
+            >
+            <span v-else>{{ item.bytes }} bytes</span>
           </div>
           <span class="sys" v-if="item.sender === 'System'">
-            {{item.text}}
+            {{ item.text }}
           </span>
         </div>
       </div>
@@ -90,13 +83,15 @@
 <script>
 import Login from './components/login.vue'
 import axios from 'axios'
-import {getApiBase, trim} from './utils/common.js'
+import { getApiBase, trim } from './utils/common.js'
+import hljs from 'highlight.js/lib/common'
 
 let baseAPI = getApiBase()
-let introText = "Introducing AI DaVinci by OpenAI, a virtual assistant for tasks, questions and conversation. Utilize its capabilities and experience our cutting-edge technology. Reach out for assistance, we're here to help you improve productivity and efficiency."
+let introText =
+  "Introducing AI DaVinci by OpenAI, a virtual assistant for tasks, questions and conversation. Utilize its capabilities and experience our cutting-edge technology. Reach out for assistance, we're here to help you improve productivity and efficiency."
 
 export default {
-  components: {Login},
+  components: { Login },
   mounted() {
     this.listenForKeys()
     this.checkForLogin()
@@ -116,9 +111,7 @@ export default {
       isLogin: false,
       userInput: '',
       inputOnFocus: false,
-      messages: [
-
-      ]
+      messages: []
     }
   },
   methods: {
@@ -135,11 +128,15 @@ export default {
     },
     readHistory() {
       let history = []
+      let _ = this
       if (localStorage.getItem('history')) {
         history = JSON.parse(localStorage.getItem('history'))
       }
 
       this.messages = history
+      this.$nextTick(function () {
+        _.highlight()
+      })
       this.composeHistory()
       this.scrollDown()
     },
@@ -216,7 +213,7 @@ export default {
         return false
       }
 
-      if(trim(this.userInput) === '/reset'){
+      if (trim(this.userInput) === '/reset') {
         _.clearHistory()
         return false
       }
@@ -262,8 +259,8 @@ export default {
             throw new Error('HTTP error ' + response.status)
           }
           _.messages[dataIndex] = {
-            sender: "AI",
-            text: ""
+            sender: 'AI',
+            text: ''
           }
           return response.body
         })
@@ -272,7 +269,7 @@ export default {
           read()
 
           function read() {
-            reader.read().then(({value, done}) => {
+            reader.read().then(({ value, done }) => {
               if (done) {
                 _.streaming = false
                 _.composeHistory()
@@ -285,15 +282,19 @@ export default {
                 return
               }
               let s = new TextDecoder().decode(value)
-              if(s.includes('####[COST]:')){
+              if (s.includes('####[COST]:')) {
                 _.messages[dataIndex].cost = s.replace('####[COST]:', '')
                 read()
                 return false
               }
               _.scrollDown()
               _.messages[dataIndex].text += s
-              _.messages[dataIndex].bytes = (new TextEncoder().encode(_.messages[dataIndex].text)).length
-              _.messages[dataIndex].displayText = trim(_.messages[dataIndex].text)
+              _.messages[dataIndex].bytes = new TextEncoder().encode(
+                _.messages[dataIndex].text
+              ).length
+              _.messages[dataIndex].displayText = trim(
+                _.messages[dataIndex].text
+              )
               _.saveHistory()
               if (_.streamTimeoutCount) {
                 clearTimeout(_.streamTimeoutCount)
@@ -315,14 +316,29 @@ export default {
       setTimeout(function () {
         _.$refs.input.focus()
       }, 20)
+    },
+    highlight() {
+      document.querySelectorAll('pre code').forEach((el) => {
+        hljs.highlightElement(el)
+      })
     }
   },
   watch: {
+    streaming(val){
+      let _ = this
+      if(!val){
+        _.$nextTick(() => {
+          _.highlight()
+        })
+      }
+    },
     streamTimeout(val) {
+      let _ = this
       if (val) {
         this.streaming = false
         this.messages.push({
-          sender: 'System', text: 'seems like the text stream did not end as expected, you can either ignore it or reset the conversation'
+          sender: 'System',
+          text: 'seems like the text stream did not end as expected, you can either ignore it or reset the conversation'
         })
         this.scrollDown(true)
         this.composeHistory()
