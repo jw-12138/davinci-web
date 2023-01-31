@@ -84,6 +84,7 @@
 import Login from './components/login.vue'
 import axios from 'axios'
 import { getApiBase, trim } from './utils/common.js'
+import {marked} from "marked"
 import hljs from 'highlight.js/lib/common'
 
 let baseAPI = getApiBase()
@@ -292,9 +293,9 @@ export default {
               _.messages[dataIndex].bytes = new TextEncoder().encode(
                 _.messages[dataIndex].text
               ).length
-              _.messages[dataIndex].displayText = trim(
+              _.messages[dataIndex].displayText = marked(trim(
                 _.messages[dataIndex].text
-              )
+              ))
               _.saveHistory()
               if (_.streamTimeoutCount) {
                 clearTimeout(_.streamTimeoutCount)

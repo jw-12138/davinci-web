@@ -1,4 +1,4 @@
-@import "hljs.scss";
+@import 'hljs.scss';
 
 * {
   box-sizing: border-box;
@@ -13,6 +13,19 @@ html {
 body {
   margin: 0;
   padding: 0;
+}
+
+code {
+  border-radius: 3px;
+  padding: 2px 4px;
+  border: 1px solid #999;
+  font-size: 13px;
+}
+
+pre code {
+  border: none;
+  font-size: inherit;
+  padding: auto;
 }
 
 #app {
@@ -191,7 +204,7 @@ button {
         color: #d1d5db;
       }
 
-      pre{
+      pre {
         background-color: rgba(#000, 0.6);
       }
 
@@ -252,6 +265,6 @@ pre code.hljs {
   padding: 0;
 }
 
-.hljs{
+.hljs {
   background-color: transparent;
 }
