@@ -46,8 +46,9 @@
             sys: item.sender === 'System'
           }"
         >
-          <pre v-if="item.sender === 'Human'">{{ item.text }}</pre>
-          <pre v-if="item.sender === 'AI'">{{ item.displayText }}</pre>
+          <div v-if="item.sender === 'Human'">{{ item.text }}</div>
+          <div v-if="item.sender === 'AI'" v-html="item.displayText">
+          </div>
           <div class="ai-cost" v-if="item.sender === 'AI'">
             <span v-if="item.cost">{{item.bytes}} bytes, ${{item.cost}}</span>
             <span v-else>{{item.bytes}} bytes</span>
