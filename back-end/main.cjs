@@ -1,17 +1,18 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
-const {nanoid} = require('nanoid')
+const { nanoid } = require('nanoid')
 
-const {ask} = require('./api.cjs')
+const { ask } = require('./api.cjs')
 const check_password = require('./check-passwords.cjs')
 const write_permissions = require('./write-permissions.cjs')
 const verify_login = require('./verify-login.cjs')
 const buffer = require('buffer')
 const port = 7009
+const path = require('path')
 
 app.use(cors())
-app.use(express.static('/home/ubuntu/work/davinci-web/dist'))
+app.use(express.static(path.join(__dirname, '../dist')))
 app.use(express.json())
 
 app.post('/api/login', function (req, res) {
@@ -26,7 +27,7 @@ app.post('/api/login', function (req, res) {
 
     write_permissions({
       token: token,
-      expire: Date.now() + (1000 * 60 * 60 * 24 * 30)
+      expire: Date.now() + 1000 * 60 * 60 * 24 * 30
     })
   } else {
     res.json({
@@ -50,7 +51,6 @@ app.post('/api/checkLogin', function (req, res) {
     })
   }
 })
-
 
 app.post('/api/ask', function (req, res) {
   res.set('Content-Type', 'application/octet-stream')
