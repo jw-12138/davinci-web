@@ -1,4 +1,5 @@
 @import "hljs.scss";
+@import "./iconfont/iconfont.css";
 
 * {
   box-sizing: border-box;
@@ -32,6 +33,37 @@ body {
     margin-bottom: 10px;
     font-size: 14px;
     line-height: 1.85;
+    position: relative;
+
+    .tools {
+      position: absolute;
+      right: 5px;
+      top: 0;
+
+      button {
+        padding: 0;
+        background: transparent;
+        height: auto;
+      }
+    }
+
+    .edit-tools {
+      textarea {
+        width: 100%;
+        height: 40px;
+        border: 2px solid #1f2937;
+        border-radius: 30px;
+        padding: 10px 15px 0;
+        font-size: 14px;
+        font-family: 'Varela Round', monospace;
+        resize: none;
+      }
+    }
+
+    .human {
+      padding-right: 60px;
+      position: relative;
+    }
 
     pre {
       overflow-x: auto;
@@ -122,6 +154,26 @@ body {
   }
 }
 
+.share {
+  text-align: center;
+  padding: 10px 0;
+  margin-bottom: 5px;
+
+  a {
+    border-radius: 20px;
+    display: inline-block;
+    font-size: 13px;
+    color: #6b7280;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      text-decoration-style: wavy;
+      opacity: .8;
+    }
+  }
+}
+
 .login-page {
   .tips {
     font-size: 14px;
@@ -133,13 +185,7 @@ body {
 
     button {
       font-family: 'Varela Round', monospace;
-      width: 100px;
       margin-left: 10px;
-      height: 40px;
-      background: #1f2937;
-      color: #fff;
-      border: none;
-      border-radius: 30px;
       flex-shrink: 0;
     }
 
@@ -155,30 +201,90 @@ body {
   }
 }
 
+textarea {
+  outline-offset: 2px;
+
+  &:focus {
+    outline: 2px #3b82f6 solid;
+  }
+}
+
 button {
   cursor: pointer;
+  line-height: 20px;
+  height: 40px;
+  background: #1f2937;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 0 15px;
+  outline-offset: 2px;
+
+  &:focus {
+    outline: 2px #3b82f6 solid;
+  }
+
+  .iconfont {
+    font-size: 20px;
+    margin-right: 3px;
+    position: relative;
+  }
+
+  &.plain {
+    background: #fff;
+    color: #1f2937;
+    border: 2px solid #1f2937;
+  }
+
+  &[disabled] {
+    opacity: .3;
+  }
+}
+
+a {
+  outline-offset: 2px;
+  padding: 3px 10px;
+
+  &:focus {
+    outline: 2px #3b82f6 solid;
+  }
 }
 
 .clear-message {
   text-align: center;
+  display: flex;
+  justify-content: center;
 
   button {
-    font-family: 'Varela Round', monospace;
-    width: 100px;
     margin-left: 10px;
-    height: 40px;
-    background: #1f2937;
-    color: #fff;
-    border: none;
-    border-radius: 30px;
     flex-shrink: 0;
   }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+  display: inline-block;
 }
 
 @media (prefers-color-scheme: dark) {
   body {
     background: #121212;
     color: #fff;
+  }
+
+  .share {
+    a {
+      color: #fff;
+    }
   }
 
   .message-list {
@@ -191,7 +297,7 @@ button {
         color: #d1d5db;
       }
 
-      pre{
+      pre {
         background-color: rgba(#000, 0.6);
       }
 
@@ -246,12 +352,20 @@ button {
       color: #fff;
     }
   }
+
+  button {
+    &.plain {
+      background: #fff;
+      color: #404040;
+      border-color: #fff;
+    }
+  }
 }
 
 pre code.hljs {
   padding: 0;
 }
 
-.hljs{
+.hljs {
   background-color: transparent;
 }

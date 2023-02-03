@@ -1,18 +1,10 @@
-const fs = require('fs')
-
-let permission_file = __dirname + '/permission.json'
-
-if (!fs.existsSync(permission_file)) {
-  fs.writeFileSync(permission_file, '[]')
-}
-
-let permissions = fs.readFileSync(permission_file).toString()
-permissions = JSON.parse(permissions)
+const DB_client = require('./db.cjs')
+const db_permissions = new DB_client({
+  table: 'davinci_web_permissions'
+})
 
 let write_permissions = function (data) {
-  permissions.push(data)
-
-  fs.writeFileSync(permission_file, JSON.stringify(permissions))
+  return db_permissions.putItem(data)
 }
 
 module.exports = write_permissions

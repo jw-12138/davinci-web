@@ -17,42 +17,78 @@
         </p>
         <p> 😎 Capabilities: </p>
         <ul>
-          <li> Remembers what user said earlier in the conversation </li>
-          <li> Allows user to provide follow-up corrections </li>
+          <li> Remembers what user said earlier in the conversation</li>
+          <li> Allows user to provide follow-up corrections</li>
         </ul>
         <p> 😟 Limitations: </p>
         <ul>
-          <li> May occasionally generate incorrect information </li>
+          <li> May occasionally generate incorrect information</li>
           <li>
             May occasionally produce harmful instructions or biased content
           </li>
-          <li> Limited knowledge of world and events after 2021 </li>
+          <li> Limited knowledge of world and events after 2021</li>
         </ul>
       </div>
       <div class="message-list">
         <div
           class="item"
-          v-for="item in messages"
+          v-for="(item, index) in messages"
           :class="{
             dark: item.sender === 'Human',
             sys: item.sender === 'System'
           }"
         >
-          <div v-if="item.sender === 'Human'">{{ item.text }}</div>
-          <div v-if="item.sender === 'AI'" v-html="item.displayText"> </div>
+          <div v-if="item.sender === 'Human'" class="human">
+            <span :style="{
+              display: editIndex === index ? 'none' : 'inline'
+            }">
+            {{ item.text }}</span>
+            <div class="tools">
+              <button title="Cancel" @click="editIndex = undefined; editMessage = undefined" :style="{
+                display: editIndex === index ? 'inline' : 'none'
+              }">
+                <i class="iconfont">&#xe685;</i>
+              </button>
+              <button title="Edit" @click="handleEdit(index)" :style="{
+                display: editIndex === index ? 'none' : 'inline'
+              }" :disabled="streaming">
+                <i class="iconfont">&#xe66e;</i>
+              </button>
+              <button title="Regenerate" @click="reGen(index)" :disabled="streaming">
+                <i class="iconfont">&#xe67b;</i>
+              </button>
+            </div>
+            <div class="edit-tools" v-if="editIndex === index">
+              <textarea v-model="editMessage" :id="'editingArea_' + index"
+                        @focus="inputOnFocus = true"
+                        @blur="inputOnFocus = false"></textarea>
+            </div>
+          </div>
+          <div v-if="item.sender === 'AI'" v-html="item.displayText"></div>
           <div class="ai-cost" v-if="item.sender === 'AI'">
             <span v-if="item.cost"
-              >{{ item.bytes }} bytes, ${{ item.cost }}</span
+            >{{ item.bytes }} bytes, ${{ item.cost }}</span
             >
             <span v-else>{{ item.bytes }} bytes</span>
           </div>
-          <span class="sys" v-if="item.sender === 'System'">
-            {{ item.text }}
+          <span class="sys" v-if="item.sender === 'System'" v-html="item.text">
           </span>
         </div>
       </div>
       <div class="clear-message" v-show="messages.length > 1">
-        <button @click="clearHistory">Reset</button>
+        <button class="plain" @click="reGen(null)" :disabled="streaming">
+          <i class="iconfont" style="top: 2px">&#xe67b;</i> Regenerate
+        </button>
+        <button @click="clearHistory"><i class="iconfont" style="top: 2px">&#xe66a;</i> Reset</button>
+      </div>
+      <div class="share" @click="share" v-show="messages.length > 1 && !streaming">
+        <a href="javascript:;" :style="{
+          opacity: sharing ? 0.6 : 1
+        }">
+          <i class="iconfont" v-show="!sharing">&#xe67d;</i>
+          <i class="iconfont spin" v-show="sharing">&#xe676;</i>
+          Publish this conversation
+        </a>
       </div>
       <div class="page-input">
         <div class="wrap">
@@ -66,13 +102,13 @@
             @compositionend="userIsComposting = false"
           ></textarea>
           <button
-            @click="send"
+            @click="composeMessage"
             :disabled="streaming"
             :style="{
               opacity: streaming ? 0.3 : 1
             }"
           >
-            Send
+            <i class="iconfont" style="position: relative; top: 1px;">&#xe67a;</i> Send
           </button>
         </div>
       </div>
@@ -83,15 +119,13 @@
 <script>
 import Login from './components/login.vue'
 import axios from 'axios'
-import { getApiBase, trim } from './utils/common.js'
+import {getApiBase, trim} from './utils/common.js'
 import hljs from 'highlight.js/lib/common'
 
 let baseAPI = getApiBase()
-let introText =
-  "Introducing AI DaVinci by OpenAI, a virtual assistant for tasks, questions and conversation. Utilize its capabilities and experience our cutting-edge technology. Reach out for assistance, we're here to help you improve productivity and efficiency."
 
 export default {
-  components: { Login },
+  components: {Login},
   mounted() {
     this.listenForKeys()
     this.checkForLogin()
@@ -99,6 +133,8 @@ export default {
   },
   data() {
     return {
+      editIndex: undefined,
+      editMessage: undefined,
       streamTimeoutCount: 0,
       streamTimeout: false,
       userIsComposting: false,
@@ -111,10 +147,27 @@ export default {
       isLogin: false,
       userInput: '',
       inputOnFocus: false,
-      messages: []
+      messages: [],
+      sharing: false
     }
   },
   methods: {
+    share() {
+      if (this.sharing) {
+        return
+      }
+      let c = confirm('Please make sure that this conversation does not contain any sensitive information. Are you sure you want to publish this conversation?')
+      if (!c) return
+
+      let token = localStorage.getItem('token')
+
+      axios.post(baseAPI + '/share', {
+        history: JSON.stringify(this.messages),
+        token: token
+      }).then(res => {
+        window.open('s.html?id=' + res.data.id, '_blank')
+      })
+    },
     clearHistory() {
       this.messages = []
       this.historyText = ''
@@ -126,11 +179,26 @@ export default {
       let history = JSON.stringify(this.messages)
       localStorage.setItem('history', history)
     },
+    handleEdit(index) {
+      this.editIndex = index
+      this.editMessage = this.messages[index].text
+      this.$nextTick(function () {
+        document.getElementById('editingArea_' + index).focus()
+      })
+    },
     readHistory() {
       let history = []
       let _ = this
       if (localStorage.getItem('history')) {
         history = JSON.parse(localStorage.getItem('history'))
+      }
+
+      for (let i = 0; i < history.length; i++) {
+        let el = history[i]
+        if (el === null) {
+          _.clearHistory()
+          break
+        }
       }
 
       this.messages = history
@@ -185,7 +253,11 @@ export default {
           e.preventDefault()
         }
         if (e.key === 'Enter' && !_.userIsComposting && _.inputOnFocus) {
-          _.send()
+          if (_.editIndex !== undefined) {
+            _.reGen(_.editIndex)
+          } else {
+            _.composeMessage()
+          }
         }
       })
     },
@@ -207,7 +279,24 @@ export default {
 
       _.historyText = h
     },
-    send() {
+    reGen(position) {
+      let _ = this
+      if (position === null) {
+        position = _.messages.length - 2
+      }
+
+      let length = _.messages.length
+
+      _.userInput = _.editMessage || _.messages[position].text
+      _.messages.splice(position, length - position)
+
+      _.editIndex = undefined
+      _.editMessage = undefined
+
+      _.composeHistory()
+      _.composeMessage(true)
+    },
+    composeMessage(repost) {
       let _ = this
       if (trim(this.userInput) === '') {
         return false
@@ -233,7 +322,7 @@ export default {
 
       _.messages[dataIndex] = {
         sender: 'System',
-        text: 'Thinking...'
+        text: '<i class="iconfont spin">&#xe676;</i> Thinking...'
       }
 
       _.streaming = true
@@ -269,7 +358,7 @@ export default {
           read()
 
           function read() {
-            reader.read().then(({ value, done }) => {
+            reader.read().then(({value, done}) => {
               if (done) {
                 _.streaming = false
                 _.composeHistory()
@@ -324,9 +413,9 @@ export default {
     }
   },
   watch: {
-    streaming(val){
+    streaming(val) {
       let _ = this
-      if(!val){
+      if (!val) {
         _.$nextTick(() => {
           _.highlight()
         })
