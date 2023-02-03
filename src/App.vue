@@ -85,7 +85,9 @@
         <a @click="share" href="javascript:;"><i class="iconfont spin" v-show="sharing">&#xe676;</i><i class="iconfont" v-show="!sharing">&#xe67d;</i> Publish this conversation</a>
       </div>
 
-      <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px">
+      <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px" :style="{
+        marginTop: streaming ? '10px' : '-10px'
+      }">
         <a :href="shareLink" target="_blank">{{shareLink}}</a>
       </div>
       <div class="page-input">
@@ -165,6 +167,7 @@ export default {
       if (!c) return
 
       let token = localStorage.getItem('token')
+      this.shareLink = ''
 
       axios.post(baseAPI + '/share', {
         history: JSON.stringify(this.messages),
