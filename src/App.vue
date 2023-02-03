@@ -173,6 +173,7 @@ export default {
         this.sharing = false
         this.shareLink = window.location.origin + '/s.html?id=' + res.data.id
         localStorage.setItem('shareLink', this.shareLink)
+        this.scrollDown()
       })
     },
     clearHistory() {
