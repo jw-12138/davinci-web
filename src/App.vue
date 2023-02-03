@@ -81,8 +81,8 @@
         </button>
         <button @click="clearHistory"><i class="iconfont" style="top: 2px">&#xe66a;</i> Reset</button>
       </div>
-      <div class="share" @click="share" v-show="messages.length > 1 && !streaming">
-        <a href="javascript:;"><i class="iconfont spin" v-show="sharing">&#xe676;</i><i class="iconfont" v-show="!sharing">&#xe67d;</i> Publish this conversation</a>
+      <div class="share" v-show="messages.length > 1 && !streaming">
+        <a @click="share" href="javascript:;"><i class="iconfont spin" v-show="sharing">&#xe676;</i><i class="iconfont" v-show="!sharing">&#xe67d;</i> Publish this conversation</a>
       </div>
 
       <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px">
