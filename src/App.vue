@@ -82,13 +82,11 @@
         <button @click="clearHistory"><i class="iconfont" style="top: 2px">&#xe66a;</i> Reset</button>
       </div>
       <div class="share" @click="share" v-show="messages.length > 1 && !streaming">
-        <a href="javascript:;" :style="{
-          opacity: sharing ? 0.6 : 1
-        }">
-          <i class="iconfont" v-show="!sharing">&#xe67d;</i>
-          <i class="iconfont spin" v-show="sharing">&#xe676;</i>
-          Publish this conversation
-        </a>
+        <a href="javascript:;"><i class="iconfont spin" v-show="sharing">&#xe676;</i><i class="iconfont" v-show="!sharing">&#xe67d;</i> Publish this conversation</a>
+      </div>
+
+      <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px">
+        <a :href="shareLink" target="_blank">{{shareLink}}</a>
       </div>
       <div class="page-input">
         <div class="wrap">
@@ -130,6 +128,7 @@ export default {
     this.listenForKeys()
     this.checkForLogin()
     this.readHistory()
+    this.getShareLink()
   },
   data() {
     return {
@@ -148,10 +147,16 @@ export default {
       userInput: '',
       inputOnFocus: false,
       messages: [],
-      sharing: false
+      sharing: false,
+      shareLink: null
     }
   },
   methods: {
+    getShareLink(){
+      if (localStorage.getItem('shareLink')) {
+        this.shareLink = localStorage.getItem('shareLink')
+      }
+    },
     share() {
       if (this.sharing) {
         return
@@ -165,7 +170,9 @@ export default {
         history: JSON.stringify(this.messages),
         token: token
       }).then(res => {
-        window.open('s.html?id=' + res.data.id, '_blank')
+        this.sharing = false
+        this.shareLink = window.location.origin + '/s.html?id=' + res.data.id
+        localStorage.setItem('shareLink', this.shareLink)
       })
     },
     clearHistory() {
@@ -173,7 +180,9 @@ export default {
       this.historyText = ''
       this.userInput = ''
       this.streaming = false
-      localStorage.setItem('history', '[]')
+      localStorage.removeItem('history')
+      localStorage.removeItem('shareLink')
+      this.shareLink = ''
     },
     saveHistory() {
       let history = JSON.stringify(this.messages)
