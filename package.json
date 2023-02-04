@@ -21,7 +21,8 @@
     "nanoid": "3",
     "openai": "^3.1.0",
     "sass": "^1.57.1",
-    "vue": "^3.2.45"
+    "vue": "^3.2.45",
+    "xss": "^1.0.14"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

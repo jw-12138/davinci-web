@@ -124,6 +124,7 @@ import Login from './components/login.vue'
 import axios from 'axios'
 import {getApiBase, trim} from './utils/common.js'
 import hljs from 'highlight.js/lib/common'
+import xss from 'xss'
 
 let baseAPI = getApiBase()
 
@@ -312,7 +313,7 @@ export default {
       _.composeHistory()
       _.composeMessage(true)
     },
-    composeMessage(repost) {
+    composeMessage() {
       let _ = this
       if (trim(this.userInput) === '') {
         return false
@@ -340,6 +341,8 @@ export default {
         sender: 'System',
         text: '<i class="iconfont spin">&#xe676;</i> Thinking...'
       }
+
+      _.shareLink = ''
 
       _.streaming = true
 
@@ -388,10 +391,8 @@ export default {
               }
               let s = new TextDecoder().decode(value)
               if (s.includes('####[COST]:')) {
-                setTimeout(function () {
-                  _.messages[dataIndex].cost = s.replace('####[COST]:', '')
-                  read()
-                }, 30)
+                _.messages[dataIndex].cost = s.replace('####[COST]:', '')
+                read()
                 return false
               }
               _.scrollDown()
@@ -399,9 +400,15 @@ export default {
               _.messages[dataIndex].bytes = new TextEncoder().encode(
                 _.messages[dataIndex].text
               ).length
-              _.messages[dataIndex].displayText = trim(
+              _.messages[dataIndex].displayText = xss(trim(
                 _.messages[dataIndex].text
-              )
+              ), {
+                whiteList: {
+                  p: [],
+                  pre: [],
+                  code: []
+                }
+              })
               _.saveHistory()
               if (_.streamTimeoutCount) {
                 clearTimeout(_.streamTimeoutCount)
