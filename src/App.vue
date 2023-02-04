@@ -388,8 +388,10 @@ export default {
               }
               let s = new TextDecoder().decode(value)
               if (s.includes('####[COST]:')) {
-                _.messages[dataIndex].cost = s.replace('####[COST]:', '')
-                read()
+                setTimeout(function () {
+                  _.messages[dataIndex].cost = s.replace('####[COST]:', '')
+                  read()
+                }, 30)
                 return false
               }
               _.scrollDown()
