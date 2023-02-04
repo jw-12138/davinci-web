@@ -159,12 +159,14 @@ body {
   padding: 10px 0;
   margin-bottom: 5px;
 
-  a {
+  button {
     border-radius: 20px;
     display: inline-block;
     font-size: 13px;
     color: #6b7280;
     text-decoration: none;
+    height: auto;
+    padding: 3px;
 
     &:hover {
       text-decoration: underline;
@@ -236,6 +238,10 @@ button {
     border: 2px solid #1f2937;
   }
 
+  &.link{
+    background: transparent;
+  }
+
   &[disabled] {
     opacity: .3;
   }
@@ -283,8 +289,12 @@ a {
     color: #fff;
   }
 
+  a{
+    color: #eee;
+  }
+
   .share {
-    a {
+    button.link {
       color: #fff;
     }
   }

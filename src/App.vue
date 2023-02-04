@@ -82,7 +82,9 @@
         <button @click="clearHistory"><i class="iconfont" style="top: 2px">&#xe66a;</i> Reset</button>
       </div>
       <div class="share" v-show="messages.length > 1 && !streaming">
-        <a @click="share" href="javascript:;"><i class="iconfont spin" v-show="sharing">&#xe676;</i><i class="iconfont" v-show="!sharing">&#xe67d;</i> Publish this conversation</a>
+        <button class="link" @click="share" :disabled="sharing">
+          <i class="iconfont" style="top: 2px">&#xe67d;</i> Publish this conversation
+        </button>
       </div>
 
       <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px" :style="{
@@ -93,6 +95,7 @@
       <div class="page-input">
         <div class="wrap">
           <textarea
+            :disabled="editIndex"
             v-model="userInput"
             @focus="inputOnFocus = true"
             @blur="inputOnFocus = false"

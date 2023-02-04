@@ -18,6 +18,7 @@
       <div
         class="item"
         v-for="(item) in messages"
+        style="padding-right: 0"
         :class="{
             dark: item.sender === 'Human',
             sys: item.sender === 'System'
