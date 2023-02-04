@@ -18,13 +18,12 @@
       <div
         class="item"
         v-for="(item) in messages"
-        style="padding-right: 0"
         :class="{
             dark: item.sender === 'Human',
             sys: item.sender === 'System'
           }">
         <div v-show="item.sender === 'Human'" style="font-size: 12px; opacity: .8">Human</div>
-        <div v-if="item.sender === 'Human'" class="human">
+        <div v-if="item.sender === 'Human'" class="human" style="padding-right: 0">
           {{ item.text }}
         </div>
         <div v-if="item.sender === 'AI'" style="font-size: 12px; opacity: .8">AI</div>
