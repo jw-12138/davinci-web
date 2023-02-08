@@ -346,8 +346,6 @@ export default {
 
       let frame = document.querySelector('html')
 
-      console.log(frame.clientHeight, frame.offsetHeight, frame.offsetHeight - frame.clientHeight)
-
       setTimeout(function () {
         frame.scroll({
           top: frame.scrollHeight - frame.clientHeight + 270,
