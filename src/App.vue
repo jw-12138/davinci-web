@@ -82,10 +82,10 @@
           </li>
         </ul>
       </div>
-      <div class="message-list">
+      <div class="message-list" v-show="messages.length">
         <div
           class="item"
-          v-for="(item, index) in messages"
+          v-for="(item, index) in display_messages"
           :class="{
             dark: item.sender === 'Human',
             sys: item.sender === 'System'
@@ -93,27 +93,27 @@
         >
           <div v-if="item.sender === 'Human'" class="human">
             <span :style="{
-              display: editIndex === index ? 'none' : 'inline'
+              display: editIndex === item.index ? 'none' : 'inline'
             }">
             {{ item.text }}</span>
-            <div class="edit-tools" v-if="editIndex === index">
-              <textarea v-model="editMessage" :id="'editingArea_' + index"
+            <div class="edit-tools" v-if="editIndex === item.index">
+              <textarea v-model="editMessage" :id="'editingArea_' + item.index"
                         @keydown="preventDefault"
                         @focus="inputOnFocus = true"
                         @blur="inputOnFocus = false"></textarea>
             </div>
             <div class="tools">
               <button title="Cancel" @click="editIndex = undefined; editMessage = undefined" :style="{
-                display: editIndex === index ? 'inline' : 'none'
+                display: editIndex === item.index ? 'inline' : 'none'
               }">
                 <i class="iconfont">&#xe685;</i>
               </button>
-              <button title="Edit" @click="handleEdit(index)" :style="{
-                display: editIndex === index ? 'none' : 'inline'
+              <button title="Edit" @click="handleEdit(item.index)" :style="{
+                display: editIndex === item.index ? 'none' : 'inline'
               }" :disabled="streaming">
                 <i class="iconfont">&#xe66e;</i>
               </button>
-              <button title="Regenerate" @click="reGen(index)" :disabled="streaming">
+              <button title="Regenerate" @click="reGen(item.index)" :disabled="streaming">
                 <i class="iconfont">&#xe67b;</i>
               </button>
             </div>
@@ -213,6 +213,7 @@ export default {
     this.listenForKeys()
     this.checkForLogin()
     this.readHistory()
+    this.updateDisplayMessages()
     this.getShareLink()
     window.addEventListener('click', function () {
       _.showPageOptions = false
@@ -236,11 +237,20 @@ export default {
       userInput: '',
       inputOnFocus: false,
       messages: [],
+      display_messages: [],
       sharing: false,
       shareLink: null
     }
   },
   methods: {
+    updateDisplayMessages(){
+      let temp = []
+      temp = this.messages.map((el ,index) => {
+        el.index = index
+        return el
+      })
+      this.display_messages = temp.reverse()
+    },
     preventDefault(e) {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
@@ -334,9 +344,13 @@ export default {
         return false
       }
 
+      let frame = document.querySelector('html')
+
+      console.log(frame.clientHeight, frame.offsetHeight, frame.offsetHeight - frame.clientHeight)
+
       setTimeout(function () {
-        window.scroll({
-          top: document.body.scrollHeight,
+        frame.scroll({
+          top: frame.offsetHeight - frame.clientHeight,
           behavior: 'smooth'
         })
       }, 80)
@@ -500,6 +514,8 @@ export default {
         _.userInput = ''
       }, 30)
 
+      this.updateDisplayMessages()
+
       fetch(baseAPI + '/ask', {
         method: 'POST',
         body: JSON.stringify({
@@ -513,12 +529,12 @@ export default {
         stream: true
       })
         .then((response) => {
-          if (!response.ok) {
-            throw new Error('HTTP error ' + response.status)
-          }
           _.messages[dataIndex] = {
             sender: 'AI',
             text: ''
+          }
+          if (!response.ok) {
+            throw new Error('HTTP error ' + response.status)
           }
           return response.body
         })
@@ -533,6 +549,7 @@ export default {
                 _.composeHistory()
                 _.scrollDown(true)
                 _.saveHistory()
+                _.updateDisplayMessages()
                 _.streamTimeout = false
                 if (_.streamTimeoutCount) {
                   clearTimeout(_.streamTimeoutCount)
@@ -560,6 +577,7 @@ export default {
                 }
               })
               _.saveHistory()
+              _.updateDisplayMessages()
               if (_.streamTimeoutCount) {
                 clearTimeout(_.streamTimeoutCount)
               }
