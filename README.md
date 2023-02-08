@@ -2,4 +2,4 @@
 
 A ChatGPT alternative, using OpenAI's API, language model is `text-davinci-003`.
 
-<img width="612" alt="image" src="https://user-images.githubusercontent.com/29943110/216753584-c29b0614-ce88-468d-aef2-ae6f9e3a33b9.png">
+<img width="612" alt="image" src="https://user-images.githubusercontent.com/29943110/217537643-f17ca981-aaf7-4532-85f2-f65b670cc89c.png">
