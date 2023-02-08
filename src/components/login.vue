@@ -97,6 +97,7 @@ export default {
         cb && cb(false)
       }).finally(() => {
         this.trying = false
+        this.password = ''
       })
     },
     login() {
@@ -131,6 +132,7 @@ export default {
         console.log(err)
       }).finally(() => {
         this.trying = false
+        this.password = ''
       })
     }
   }

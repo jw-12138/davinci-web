@@ -349,6 +349,7 @@ export default {
     },
     loggedIn() {
       this.isLogin = true
+      this.$refs.input.focus()
     },
     checkForLogin() {
       let _ = this
