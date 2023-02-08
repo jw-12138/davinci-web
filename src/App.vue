@@ -29,30 +29,49 @@
           <li> Limited knowledge of world and events after 2021</li>
         </ul>
         <p>
-          🤤 Input commands:
+          🤤 Input commands: <br>
         </p>
-        <ul>
-          <li>
-            <code>
-              /reset
-            </code>: Reset the conversation
-          </li>
-          <li>
-            <code>
-              /pub
-            </code>: Publish the conversation
-          </li>
-          <li>
-            <code>
-              /regen
-            </code>: Regenerate the last message
-          </li>
-          <li>
-            <code>
-              /logout
-            </code>: Logout
-          </li>
-        </ul>
+        <p style="font-size: 14px; padding-left: 30px; opacity: .9">
+          You can type commands to control the conversation. For example, type <code>/reset</code> and then hit <code>Enter</code>
+          to reset the conversation.
+        </p>
+        <div style="padding-left: 30px">
+
+          <table>
+            <tr>
+              <td>
+                <code>/reset</code>
+              </td>
+              <td>
+                Reset the conversation
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code>/pub</code>
+              </td>
+              <td>
+                Publish the conversation
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code>/regen</code>
+              </td>
+              <td>
+                Regenerate the last message
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code>/logout</code>
+              </td>
+              <td>
+                Logout
+              </td>
+            </tr>
+          </table>
+        </div>
         <p>
           👻 About this project:
         </p>
@@ -110,16 +129,38 @@
           </span>
         </div>
       </div>
-      <div class="clear-message" v-show="messages.length > 1">
-        <button class="plain" @click="reGen(null)" :disabled="streaming">
-          <i class="iconfont" style="top: 2px">&#xe67b;</i> Regenerate
-        </button>
-        <button @click="clearHistory"><i class="iconfont" style="top: 2px">&#xe66a;</i> Reset</button>
-      </div>
-      <div class="share" v-show="messages.length > 1 && !streaming">
-        <button class="link" @click="share" :disabled="sharing">
-          <i class="iconfont" style="top: 2px">&#xe67d;</i> Publish this conversation
-        </button>
+      <div style="text-align: center" aria-label="Settings">
+        <div style="display: inline-block; position: relative">
+          <div class="page-options" v-if="showPageOptions" style="animation: fadeIn .3s ease">
+            <div class="item" v-show="messages.length > 1">
+              <button @click="clearHistory" title="Reset current conversation">
+                <i class="iconfont" style="top: 2px">&#xe66a;</i>
+                <span>Reset</span>
+              </button>
+            </div>
+            <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
+              <button @click="reGen(null)">
+                <i class="iconfont" style="top: 2px">&#xe67b;</i>
+                <span>Regenerate</span>
+              </button>
+            </div>
+            <div class="item" v-show="!streaming && messages.length > 1">
+              <button :disabled="sharing" @click="share" title="Publish this conversation">
+                <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
+              </button>
+            </div>
+            <hr v-show="messages.length > 1">
+            <div class="item">
+              <button @click="logout" title="Logout">
+                <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Logout</span>
+              </button>
+            </div>
+          </div>
+
+          <button role="menuitem" @click.stop="showPageOptions = true" aria-haspopup="true">
+            <i class="iconfont" style="top: 2px">&#xe67e;</i> Settings
+          </button>
+        </div>
       </div>
 
       <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px" :style="{
@@ -132,7 +173,7 @@
           <textarea
             :disabled="editIndex"
             v-model="userInput"
-            @focus="inputOnFocus = true"
+            @focus="inputOnFocus = true; showPageOptions = false"
             @blur="inputOnFocus = false"
             ref="input"
             placeholder="ask something"
@@ -166,13 +207,18 @@ let baseAPI = getApiBase()
 export default {
   components: {Login},
   mounted() {
+    let _ = this
     this.listenForKeys()
     this.checkForLogin()
     this.readHistory()
     this.getShareLink()
+    window.addEventListener('click', function () {
+      _.showPageOptions = false
+    })
   },
   data() {
     return {
+      showPageOptions: false,
       editIndex: undefined,
       editMessage: undefined,
       streamTimeoutCount: 0,
@@ -200,8 +246,12 @@ export default {
       }
     },
     logout() {
-      this.isLogin = false
-      localStorage.removeItem('token')
+      let c = confirm('Are you sure you want to logout?')
+      if (c) {
+        this.isLogin = false
+        localStorage.removeItem('token')
+        this.clearHistory()
+      }
     },
     getShareLink() {
       if (localStorage.getItem('shareLink')) {
@@ -233,13 +283,16 @@ export default {
       })
     },
     clearHistory() {
-      this.messages = []
-      this.historyText = ''
-      this.userInput = ''
-      this.streaming = false
-      localStorage.removeItem('history')
-      localStorage.removeItem('shareLink')
-      this.shareLink = ''
+      let c = confirm('Are you sure you want to reset this conversation? You won\'t be able to retrieve it again if you didn\'t publish.')
+      if (c) {
+        this.messages = []
+        this.historyText = ''
+        this.userInput = ''
+        this.streaming = false
+        localStorage.removeItem('history')
+        localStorage.removeItem('shareLink')
+        this.shareLink = ''
+      }
     },
     saveHistory() {
       let history = JSON.stringify(this.messages)
@@ -329,6 +382,10 @@ export default {
           } else {
             _.composeMessage()
           }
+        }
+
+        if (e.key === 'Escape') {
+          _.showPageOptions = false
         }
       })
     },
