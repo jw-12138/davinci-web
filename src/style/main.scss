@@ -396,8 +396,8 @@ table{
   }
 
   .page-options {
-    background: #1f2937;
-    border: 1px solid #1f2937;
+    background: #334155;
+    border: 1px solid #334155;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
     hr {
@@ -435,6 +435,10 @@ table{
       box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
       background: #6b7280;
       color: #fff;
+
+      button{
+        color: #fff;
+      }
 
       .ai-cost {
         color: #d1d5db;
@@ -501,10 +505,14 @@ table{
   }
 
   button {
+    background: #fff;
+    color: #404040;
+    border-color: #fff;
+
     &.plain {
-      background: #fff;
-      color: #404040;
-      border-color: #fff;
+      background: #404040;
+      color: #fff;
+      border-color: #404040;
     }
   }
 }

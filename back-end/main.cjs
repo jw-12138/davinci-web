@@ -206,10 +206,8 @@ AI: `,
             res.write(Buffer.from(text))
           }
           if (cost) {
-            setTimeout(function () {
-              res.write(Buffer.from('####[COST]:' + cost))
-              res.end()
-            }, 200)
+            res.write(Buffer.from('####[COST]:' + cost))
+            res.end()
           }
         }
       )

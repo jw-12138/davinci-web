@@ -96,6 +96,12 @@
               display: editIndex === index ? 'none' : 'inline'
             }">
             {{ item.text }}</span>
+            <div class="edit-tools" v-if="editIndex === index">
+              <textarea v-model="editMessage" :id="'editingArea_' + index"
+                        @keydown="preventDefault"
+                        @focus="inputOnFocus = true"
+                        @blur="inputOnFocus = false"></textarea>
+            </div>
             <div class="tools">
               <button title="Cancel" @click="editIndex = undefined; editMessage = undefined" :style="{
                 display: editIndex === index ? 'inline' : 'none'
@@ -111,12 +117,7 @@
                 <i class="iconfont">&#xe67b;</i>
               </button>
             </div>
-            <div class="edit-tools" v-if="editIndex === index">
-              <textarea v-model="editMessage" :id="'editingArea_' + index"
-                        @keydown="preventDefault"
-                        @focus="inputOnFocus = true"
-                        @blur="inputOnFocus = false"></textarea>
-            </div>
+
           </div>
           <div v-if="item.sender === 'AI'" v-html="item.displayText"></div>
           <div class="ai-cost" v-if="item.sender === 'AI'">
@@ -281,16 +282,13 @@ export default {
       })
     },
     clearHistory() {
-      let c = confirm('Are you sure you want to reset this conversation? You won\'t be able to retrieve it again if you didn\'t publish.')
-      if (c) {
-        this.messages = []
-        this.historyText = ''
-        this.userInput = ''
-        this.streaming = false
-        localStorage.removeItem('history')
-        localStorage.removeItem('shareLink')
-        this.shareLink = ''
-      }
+      this.messages = []
+      this.historyText = ''
+      this.userInput = ''
+      this.streaming = false
+      localStorage.removeItem('history')
+      localStorage.removeItem('shareLink')
+      this.shareLink = ''
     },
     saveHistory() {
       let history = JSON.stringify(this.messages)

@@ -1,6 +1,8 @@
 require('dotenv').config()
 
 const {Configuration, OpenAIApi} = require('openai')
+const GPT3Tokenizer = require('gpt3-tokenizer').default
+const tokenizer = new GPT3Tokenizer({ type: 'gpt3' })
 
 /**
  *
@@ -63,10 +65,12 @@ function ask(m, options, cb) {
       cb && cb(str, cost)
     } else {
       res.data.on('end', function () {
-        let bytes = (new TextEncoder().encode(promptOption.prompt)).length
-        let promptTokens = parseInt((bytes / 4).toFixed(0))
+        let encoded = tokenizer.encode(promptOption.prompt)
+        let promptTokens = encoded.bpe.length
         let cost = (tokenCount + promptTokens) / model.oneDollorToken
-        cb && cb(null, cost)
+        setTimeout(function () {
+          cb && cb(null, cost)
+        }, 50)
       })
       res.data.on('data', chunk => {
         let s = chunk.toString()

@@ -20,7 +20,7 @@
           </li>
           <li>
             Make sure this device is trusted, we will store your API key in this browser. If you're using a public
-            computer, remember to log out after you're done using it.
+            computer, remember to logout after you're done using it.
           </li>
           <li>
             Make sure you are on a secure network to prevent potential theft of your API key.
