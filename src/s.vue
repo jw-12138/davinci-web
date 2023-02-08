@@ -30,6 +30,10 @@
         <div v-if="item.sender === 'AI'" v-html="item.displayText"></div>
       </div>
     </div>
+
+    <div style="margin-top: 20px; text-align: center; font-size: 14px">
+      <a href="/">Back to Chat</a>
+    </div>
   </div>
 </template>
 

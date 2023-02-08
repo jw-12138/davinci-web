@@ -28,6 +28,14 @@
           </li>
           <li> Limited knowledge of world and events after 2021</li>
         </ul>
+        <p>
+          👻 About this project:
+        </p>
+        <ul>
+          <li>
+            <a href="https://github.com/jw-12138/davinci-web" target="_blank"><i class="iconfont">&#xe67d;</i> Open Source</a>
+          </li>
+        </ul>
       </div>
       <div class="message-list">
         <div
@@ -90,7 +98,7 @@
       <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px" :style="{
         marginTop: streaming ? '10px' : '-10px'
       }">
-        <a :href="shareLink" target="_blank">{{shareLink}}</a>
+        <a :href="shareLink" target="_blank">{{ shareLink }}</a>
       </div>
       <div class="page-input">
         <div class="wrap">
@@ -158,7 +166,11 @@ export default {
     }
   },
   methods: {
-    getShareLink(){
+    logout() {
+      this.isLogin = false
+      localStorage.removeItem('token')
+    },
+    getShareLink() {
       if (localStorage.getItem('shareLink')) {
         this.shareLink = localStorage.getItem('shareLink')
       }
@@ -254,6 +266,14 @@ export default {
         _.pageLoaded = true
         return false
       }
+
+      if(localStorage.getItem('token').split('_')[0] === 'key' ){
+        _.isLogin = true
+        _.pageLoaded = true
+
+        return false
+      }
+
       axios
         .post(baseAPI + '/checkLogin', {
           token: localStorage.getItem('token')
@@ -266,9 +286,6 @@ export default {
     listenForKeys() {
       let _ = this
       window.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-          e.preventDefault()
-        }
         if (e.key === 'Enter' && !_.userIsComposting && _.inputOnFocus) {
           if (_.editIndex !== undefined) {
             _.reGen(_.editIndex)
@@ -321,6 +338,22 @@ export default {
 
       if (trim(this.userInput) === '/reset') {
         _.clearHistory()
+        return false
+      }
+
+      if(trim(this.userInput) === '/logout'){
+        _.logout()
+        return false
+      }
+
+      if(trim(this.userInput) === '/regen'){
+        _.reGen(null)
+        return false
+      }
+
+      if(trim(this.userInput) === '/pub'){
+        _.share()
+        _.userInput = ''
         return false
       }
 

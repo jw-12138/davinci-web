@@ -1,10 +1,6 @@
 require('dotenv').config()
 
 const {Configuration, OpenAIApi} = require('openai')
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_KEY
-})
-const openai = new OpenAIApi(configuration)
 
 /**
  *
@@ -13,6 +9,14 @@ const openai = new OpenAIApi(configuration)
  * @param {function} cb - callback function
  */
 function ask(m, options, cb) {
+  if(options.key){
+    process.env.OPENAI_KEY = options.key
+    delete options.key
+  }
+  let configuration = new Configuration({
+    apiKey: process.env.OPENAI_KEY
+  })
+  let openai = new OpenAIApi(configuration)
   let models = {
     'davinci': {
       oneDollorToken: 1 / 0.02 * 1000,
