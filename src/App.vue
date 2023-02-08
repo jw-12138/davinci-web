@@ -163,9 +163,7 @@
         </div>
       </div>
 
-      <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center; margin-top: -10px" :style="{
-        marginTop: streaming ? '10px' : '-10px'
-      }">
+      <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center;">
         <a :href="shareLink" target="_blank">{{ shareLink }}</a>
       </div>
       <div class="page-input">

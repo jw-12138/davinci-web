@@ -209,7 +209,7 @@ AI: `,
             setTimeout(function () {
               res.write(Buffer.from('####[COST]:' + cost))
               res.end()
-            }, 50)
+            }, 200)
           }
         }
       )
