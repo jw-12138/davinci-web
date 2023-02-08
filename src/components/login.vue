@@ -25,7 +25,7 @@
     </div>
     <div class="password">
       <input type="password" v-model="password" autofocus @keydown="listenForEnter" @focus="passwordFocus = true"
-             @blur="passwordFocus = false">
+             @blur="passwordFocus = false" :placeholder="loginType === 'password' ? 'Password' : 'API key'">
       <button @click="login">Submit</button>
     </div>
     <div style="font-size: 14px;">
