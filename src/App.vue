@@ -350,7 +350,7 @@ export default {
 
       setTimeout(function () {
         frame.scroll({
-          top: frame.offsetHeight - frame.clientHeight,
+          top: frame.scrollHeight - frame.clientHeight + 270,
           behavior: 'smooth'
         })
       }, 80)
