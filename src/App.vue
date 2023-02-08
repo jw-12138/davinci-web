@@ -32,8 +32,8 @@
           🤤 Input commands: <br>
         </p>
         <p style="font-size: 14px; padding-left: 30px; opacity: .9">
-          You can type commands to control the conversation. For example, type <code>/reset</code> and then hit <code>Enter</code>
-          to reset the conversation.
+          You can type commands to trigger certain functions. For example, type <code>/reset</code> and then hit <code>Enter</code>
+          will reset the conversation.
         </p>
         <div style="padding-left: 30px">
 
