@@ -8,13 +8,17 @@
     <div class="page-title">
       <h1>🤖 DaVinci GPT-3</h1>
     </div>
-    <login v-show="!isLogin" @logged="loggedIn"></login>
-    <div v-show="isLogin">
+    <div v-show="!isLogin">
       <div v-show="messages.length === 0" style="line-height: 1.9">
         <p>
           👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks,
           questions and conversation.
         </p>
+      </div>
+    </div>
+    <login v-show="!isLogin" @logged="loggedIn"></login>
+    <div v-show="isLogin">
+      <div v-show="messages.length < 1" style="margin-bottom: 20px">
         <p> 😎 Capabilities: </p>
         <ul>
           <li> Remembers what user said earlier in the conversation</li>
@@ -29,14 +33,9 @@
           <li> Limited knowledge of world and events after 2021</li>
         </ul>
         <p>
-          🤤 Input commands: <br>
+          🙌 You can also type commands to trigger certain functions.
         </p>
-        <p style="font-size: 14px; padding-left: 30px; opacity: .9">
-          You can type commands to trigger certain functions. For example, type <code>/reset</code> and then hit <code>Enter</code>
-          will reset the conversation.
-        </p>
-        <div style="padding-left: 30px">
-
+        <div>
           <table>
             <tr>
               <td>
@@ -72,6 +71,7 @@
             </tr>
           </table>
         </div>
+
         <p>
           👻 About this project:
         </p>
@@ -140,13 +140,13 @@
               </button>
             </div>
             <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
-              <button @click="reGen(null)">
+              <button @click="reGen(null)" :disabled="streaming">
                 <i class="iconfont" style="top: 2px">&#xe67b;</i>
                 <span>Regenerate</span>
               </button>
             </div>
-            <div class="item" v-show="!streaming && messages.length > 1">
-              <button :disabled="sharing" @click="share" title="Publish this conversation">
+            <div class="item" v-show="messages.length > 1">
+              <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
                 <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
               </button>
             </div>
@@ -282,6 +282,7 @@ export default {
       })
     },
     clearHistory() {
+      let _ = this
       this.messages = []
       this.historyText = ''
       this.userInput = ''
@@ -289,6 +290,7 @@ export default {
       localStorage.removeItem('history')
       localStorage.removeItem('shareLink')
       this.shareLink = ''
+      clearTimeout(_.streamTimeoutCount)
     },
     saveHistory() {
       let history = JSON.stringify(this.messages)
@@ -559,7 +561,7 @@ export default {
               }
               _.streamTimeoutCount = setTimeout(function () {
                 _.streamTimeout = true
-              }, 3000)
+              }, 5000)
               read()
             })
           }

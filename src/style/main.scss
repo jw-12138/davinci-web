@@ -353,15 +353,11 @@ code{
 }
 
 table{
-  border-top: 1px solid #999;
   border-collapse: collapse;
-  border-left: 1px solid #999;
 
   tr {
     td{
-      padding: 4px 8px;
-      border-right: 1px solid #999;
-      border-bottom: 1px solid #999;
+      padding: 8px 8px;
     }
   }
 }
@@ -477,16 +473,16 @@ table{
     }
 
     button {
-      background: #404040;
-      color: #fff;
+      background: #fff;
+      color: #404040;
     }
   }
 
   .login-page {
     .password {
       button {
-        background: #404040;
-        color: #fff;
+        background: #fff;
+        color: #404040;
       }
 
       input {
