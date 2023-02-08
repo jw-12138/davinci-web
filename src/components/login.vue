@@ -4,17 +4,23 @@
       <p v-show="loginType === 'password'">Enter the password to confirm your identity.</p>
       <div v-show="loginType === 'key'">
         <p>
-          You can create your API key at <a target="_blank" href="https://platform.openai.com/account/api-keys"><i class="iconfont">&#xe67d;</i> platform.openai.com/account/api-keys</a>, You should be well known about the following terms:
+          You can create your API key at <a target="_blank" href="https://platform.openai.com/account/api-keys"><i
+          class="iconfont">&#xe67d;</i> platform.openai.com/account/api-keys</a>, You should be well known about the
+          following terms:
         </p>
         <ul style="margin-bottom: 20px">
           <li>
             Your API key is your property, please keep it safe.
           </li>
           <li>
-            To authenticate with OpenAI, we will send your API key to our server for processing but it will never be stored there. Don't believe it? Check the <a href="https://github.com/jw-12138/davinci-web/blob/main/back-end/main.cjs#L158" target="_blank"><i class="iconfont">&#xe67d;</i> source code</a>.
+            To authenticate with OpenAI, we will send your API key to our server for processing but it will never be
+            stored there. Don't believe it? Check the <a
+            href="https://github.com/jw-12138/davinci-web/blob/main/back-end/main.cjs#L158" target="_blank"><i
+            class="iconfont">&#xe67d;</i> source code</a>.
           </li>
           <li>
-            Make sure this device is trusted, we will store your API key in this browser. If you're using a public computer, remember to log out after you're done using it.
+            Make sure this device is trusted, we will store your API key in this browser. If you're using a public
+            computer, remember to log out after you're done using it.
           </li>
           <li>
             Make sure you are on a secure network to prevent potential theft of your API key.
@@ -26,12 +32,13 @@
     <div class="password">
       <input type="password" v-model="password" autofocus @keydown="listenForEnter" @focus="passwordFocus = true"
              @blur="passwordFocus = false" :placeholder="loginType === 'password' ? 'Password' : 'API key'">
-      <button @click="login">Submit</button>
+      <button @click="login" :disabled="trying"><i v-show="trying" class="iconfont spin">&#xe676;</i> Submit</button>
     </div>
     <div style="font-size: 14px;">
       <br>
       <p v-show="loginType === 'password'">
-        Or if you have OpenAI API key, you can switch to <button class="plain" @click="loginType = 'key'">API Key Login</button>
+        Or if you have OpenAI API key, you can switch to
+        <button class="plain" @click="loginType = 'key'">API Key Login</button>
       </p>
       <p v-show="loginType === 'key'">
         <button class="plain" @click="loginType = 'password'">Password Login</button>
@@ -52,6 +59,7 @@ export default {
     return {
       passwordFocus: false,
       password: '',
+      trying: false,
       loginType: 'password'
     }
   },
@@ -61,6 +69,36 @@ export default {
         this.login()
       }
     },
+    verifyKey(cb) {
+      let key = this.password
+      if (!key.startsWith('sk-')) {
+        cb && cb(false)
+        alert('The key you entered seems to be invalid 🤔')
+        return false
+      }
+
+      this.trying = true
+
+      axios({
+        url: 'https://api.openai.com/v1/moderations',
+        headers: {
+          'Authorization': 'Bearer ' + key
+        },
+        method: 'POST',
+        data: {
+          input: `Hello World!`
+        }
+      }).then(res => {
+        console.log(res)
+        cb && cb(true)
+      }).catch(err => {
+        console.log(err)
+        err.response.status === 401 && alert('The key you entered seems to be invalid 🤔')
+        cb && cb(false)
+      }).finally(() => {
+        this.trying = false
+      })
+    },
     login() {
       let _ = this
       if (_.password === '') {
@@ -68,11 +106,18 @@ export default {
         return false
       }
 
-      if(_.loginType === 'key'){
-        localStorage.setItem('token', 'key_' + _.password)
-        _.$emit('logged')
+      if (_.loginType === 'key') {
+        _.verifyKey(function (res) {
+          if (res) {
+            localStorage.setItem('token', 'key_' + _.password)
+            _.$emit('logged')
+          }
+        })
+
         return false
       }
+
+      this.trying = true
       axios.post(baseAPI + '/login', {
         password: _.password
       }).then(res => {
@@ -82,6 +127,10 @@ export default {
         } else {
           alert('The password you entered is incorrect')
         }
+      }).catch(err => {
+        console.log(err)
+      }).finally(() => {
+        this.trying = false
       })
     }
   }

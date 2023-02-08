@@ -29,11 +29,37 @@
           <li> Limited knowledge of world and events after 2021</li>
         </ul>
         <p>
+          🤤 Input commands:
+        </p>
+        <ul>
+          <li>
+            <code>
+              /reset
+            </code>: Reset the conversation
+          </li>
+          <li>
+            <code>
+              /pub
+            </code>: Publish the conversation
+          </li>
+          <li>
+            <code>
+              /regen
+            </code>: Regenerate the last message
+          </li>
+          <li>
+            <code>
+              /logout
+            </code>: Logout
+          </li>
+        </ul>
+        <p>
           👻 About this project:
         </p>
         <ul>
           <li>
-            <a href="https://github.com/jw-12138/davinci-web" target="_blank"><i class="iconfont">&#xe67d;</i> Open Source</a>
+            Open Sourced on <a href="https://github.com/jw-12138/davinci-web" target="_blank"><i class="iconfont">&#xe67d;</i>
+            GitHub</a>
           </li>
         </ul>
       </div>
@@ -68,6 +94,7 @@
             </div>
             <div class="edit-tools" v-if="editIndex === index">
               <textarea v-model="editMessage" :id="'editingArea_' + index"
+                        @keydown="preventDefault"
                         @focus="inputOnFocus = true"
                         @blur="inputOnFocus = false"></textarea>
             </div>
@@ -166,6 +193,12 @@ export default {
     }
   },
   methods: {
+    preventDefault(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        return false
+      }
+    },
     logout() {
       this.isLogin = false
       localStorage.removeItem('token')
@@ -176,6 +209,10 @@ export default {
       }
     },
     share() {
+      if (this.messages.length < 1) {
+        alert('Please ask something first.')
+        return false
+      }
       if (this.sharing) {
         return
       }
@@ -267,7 +304,7 @@ export default {
         return false
       }
 
-      if(localStorage.getItem('token').split('_')[0] === 'key' ){
+      if (localStorage.getItem('token').split('_')[0] === 'key') {
         _.isLogin = true
         _.pageLoaded = true
 
@@ -315,6 +352,11 @@ export default {
     },
     reGen(position) {
       let _ = this
+
+      if (_.messages.length < 1) {
+        return false
+      }
+
       if (position === null) {
         position = _.messages.length - 2
       }
@@ -337,23 +379,34 @@ export default {
       }
 
       if (trim(this.userInput) === '/reset') {
+        setTimeout(() => {
+          _.userInput = ''
+        }, 30)
         _.clearHistory()
         return false
       }
 
-      if(trim(this.userInput) === '/logout'){
+      if (trim(this.userInput) === '/logout') {
         _.logout()
+        setTimeout(() => {
+          _.userInput = ''
+        }, 30)
         return false
       }
 
-      if(trim(this.userInput) === '/regen'){
+      if (trim(this.userInput) === '/regen') {
         _.reGen(null)
+        setTimeout(() => {
+          _.userInput = ''
+        }, 30)
         return false
       }
 
-      if(trim(this.userInput) === '/pub'){
+      if (trim(this.userInput) === '/pub') {
         _.share()
-        _.userInput = ''
+        setTimeout(() => {
+          _.userInput = ''
+        }, 30)
         return false
       }
 
@@ -383,11 +436,16 @@ export default {
         _.scrollDown(true)
       })
 
+      let userInput = _.userInput
+      setTimeout(() => {
+        _.userInput = ''
+      }, 30)
+
       fetch(baseAPI + '/ask', {
         method: 'POST',
         body: JSON.stringify({
           token: localStorage.getItem('token'),
-          message: _.userInput,
+          message: userInput,
           history: _.historyText
         }),
         headers: {
@@ -458,8 +516,6 @@ export default {
           _.streaming = false
           _.composeHistory()
         })
-
-      this.userInput = ''
       setTimeout(function () {
         _.$refs.input.focus()
       }, 20)

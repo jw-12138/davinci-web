@@ -11,8 +11,8 @@ const {Configuration, OpenAIApi} = require('openai')
 function ask(m, options, cb) {
   if(options.key){
     process.env.OPENAI_KEY = options.key
-    delete options.key
   }
+  delete options.key
   let configuration = new Configuration({
     apiKey: process.env.OPENAI_KEY
   })
