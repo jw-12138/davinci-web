@@ -158,8 +158,9 @@
             </div>
           </div>
 
-          <button role="menuitem" @click.stop="showPageOptions = true" aria-haspopup="true">
-            <i class="iconfont" style="top: 2px">&#xe67e;</i> Settings
+          <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true">
+            <i class="iconfont" style="top: 2px" v-if="!showPageOptions">&#xe67e;</i>
+            <i class="iconfont" style="top: 2px" v-if="showPageOptions">&#xe685;</i> Settings
           </button>
         </div>
       </div>
@@ -169,7 +170,8 @@
       </div>
       <div class="page-input">
         <div class="wrap">
-          <textarea
+          <input
+            enterkeyhint="send"
             :disabled="editIndex"
             v-model="userInput"
             @focus="inputOnFocus = true; showPageOptions = false"
@@ -178,8 +180,9 @@
             placeholder="ask something"
             @compositionstart="userIsComposting = true"
             @compositionend="userIsComposting = false"
-          ></textarea>
+          >
           <button
+            enterkeyhint="send"
             @click="composeMessage"
             :disabled="streaming"
             :style="{
