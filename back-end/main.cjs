@@ -243,7 +243,7 @@ AI: `,
         },
         function (text, cost, err) {
           if (err) {
-            console.log(err)
+            console.log(err.response)
             res.write(Buffer.from('Seems like there is a problem with OpenAI, please try again. 🥲'))
             res.end()
             return false

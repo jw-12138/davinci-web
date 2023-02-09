@@ -31,7 +31,7 @@
     </div>
     <div class="password">
       <input type="password" v-model="password" autofocus @keydown="listenForEnter" @focus="passwordFocus = true"
-             @blur="passwordFocus = false" :placeholder="loginType === 'password' ? 'Password' : 'API key'">
+             @blur="passwordFocus = false" :placeholder="loginType === 'password' ? 'Password' : 'API key'" enterkeyhint="go">
       <button @click="login" :disabled="trying"><i v-show="trying" class="iconfont spin">&#xe676;</i> Submit</button>
     </div>
     <div style="font-size: 14px;">
@@ -97,6 +97,7 @@ export default {
         cb && cb(false)
       }).finally(() => {
         this.trying = false
+        this.password = ''
       })
     },
     login() {
@@ -131,6 +132,7 @@ export default {
         console.log(err)
       }).finally(() => {
         this.trying = false
+        this.password = ''
       })
     }
   }
