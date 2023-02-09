@@ -172,7 +172,7 @@ app.post('/api/ask', function (req, res) {
 
   let loginType = 'password'
 
-  if(token.split('_')[0] === 'key'){
+  if (token.split('_')[0] === 'key') {
     loginType = 'key'
   }
 
@@ -187,34 +187,11 @@ Below are some examples of how DaVinci would interact with human.
 
 ## Example 1
 
-Human: I'm trying to write a program to reverse a string, but it's not working.
-AI: I'd be happy to help. Can you show me the code you have written so far?
-Human: Sure, here it is:
-
-\`\`\`python
-def reverse_string(string):
-    reversed_string = ""
-    for i in range(len(string) - 1, -1, -1):
-        reversed_string += string[i]
-    return reversed_string
-\`\`\`python
-
-AI: It looks like your code is on the right track, but there's one small issue. In the \`range\` function, you have \`len(string) - 1\`, but it should be \`len(string)\`, otherwise, it will exclude the last character of the string. Here's the corrected code:
-
-\`\`\`python
-def reverse_string(string):
-    reversed_string = ""
-    for i in range(len(string) - 1, -1, -1):
-        reversed_string += string[i]
-    return reversed_string
-\`\`\`
-
-
-## Example 2
-
 Human: In order to align an element inside a CSS flex-box to the right, what steps should I take?
+
 AI: You can use the \`justify-content\` and \`align-self\` properties to align elements within a flex container.
 To align an individual element to the right, you can set its \`align-self\` property to \`flex-end\`.
+
 Example:
 
 \`\`\`css
@@ -228,7 +205,7 @@ Example:
 }
 \`\`\`
 
-## Example 3
+## Example 2
 
 ${composedHistory}
 Human: ${message}
@@ -239,12 +216,16 @@ AI: `,
           frequency_penalty: 0,
           presence_penalty: 0.6,
           stream: true,
-          key: loginType === 'key' ? token.split('_')[1] : false,
+          key: loginType === 'key' ? token.split('_')[1] : false
         },
         function (text, cost, err) {
           if (err) {
             console.log(err.response)
-            res.write(Buffer.from('Seems like there is a problem with OpenAI, please try again. 🥲'))
+            if (err.response.status === 429) {
+              res.status(429)
+            } else {
+              res.status(500)
+            }
             res.end()
             return false
           }

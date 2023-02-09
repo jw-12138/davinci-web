@@ -119,16 +119,18 @@
             </div>
 
           </div>
-          <div v-if="item.sender === 'AI'" v-html="item.displayText"></div>
+          <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"></div>
+          <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px" v-show="item.sender === 'AI' && !item.displayText">{{ item.text }}</pre>
           <div class="ai-cost" v-if="item.sender === 'AI'">
             <span v-if="item.cost"
             >{{ item.bytes }} bytes, ${{ item.cost }}</span
             >
             <span v-else>{{ item.bytes }} bytes</span>
           </div>
-          <span class="sys" v-if="item.sender === 'System'" v-html="item.text">
-          </span>
         </div>
+      </div>
+      <div style="padding: 20px 0 30px; text-align: center; font-size: 12px" v-show="systemInfo" v-html="systemInfo">
+
       </div>
       <div style="text-align: center" aria-label="Settings">
         <div style="display: inline-block; position: relative">
@@ -203,6 +205,7 @@ import axios from 'axios'
 import {getApiBase, trim} from './utils/common.js'
 import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
+import {marked} from 'marked'
 
 let baseAPI = getApiBase()
 
@@ -221,6 +224,7 @@ export default {
   },
   data() {
     return {
+      systemInfo: '',
       showPageOptions: false,
       editIndex: undefined,
       editMessage: undefined,
@@ -300,6 +304,7 @@ export default {
       this.historyText = ''
       this.userInput = ''
       this.streaming = false
+      this.systemInfo = ''
       localStorage.removeItem('history')
       localStorage.removeItem('shareLink')
       this.shareLink = ''
@@ -449,6 +454,8 @@ export default {
         return false
       }
 
+      _.systemInfo = ''
+
       if (trim(this.userInput) === '/reset') {
         setTimeout(() => {
           _.userInput = ''
@@ -494,10 +501,7 @@ export default {
 
       _.saveHistory()
 
-      _.messages[dataIndex] = {
-        sender: 'System',
-        text: '<i class="iconfont spin">&#xe676;</i> Thinking...'
-      }
+      _.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Thinking...</div>'
 
       _.shareLink = ''
 
@@ -527,11 +531,15 @@ export default {
         stream: true
       })
         .then((response) => {
+          _.systemInfo = ''
           _.messages[dataIndex] = {
             sender: 'AI',
             text: ''
           }
           if (!response.ok) {
+            if(response.status === 429){
+              _.systemInfo = 'Too many requests, please try again later'
+            }
             throw new Error('HTTP error ' + response.status)
           }
           return response.body
@@ -544,6 +552,15 @@ export default {
             reader.read().then(({value, done}) => {
               if (done) {
                 _.streaming = false
+                _.messages[dataIndex].displayText = marked(_.messages[dataIndex].text)
+                _.messages[dataIndex].displayText = xss(_.messages[dataIndex].displayText, {
+                  whiteList: {
+                    p: [],
+                    pre: [],
+                    code: []
+                  }
+                })
+
                 _.composeHistory()
                 _.scrollDown(true)
                 _.saveHistory()
@@ -565,15 +582,9 @@ export default {
               _.messages[dataIndex].bytes = new TextEncoder().encode(
                 _.messages[dataIndex].text
               ).length
-              _.messages[dataIndex].displayText = xss(trim(
-                _.messages[dataIndex].text
-              ), {
-                whiteList: {
-                  p: [],
-                  pre: [],
-                  code: []
-                }
-              })
+
+              _.messages[dataIndex].text = trim(_.messages[dataIndex].text)
+
               _.saveHistory()
               _.updateDisplayMessages()
               if (_.streamTimeoutCount) {
@@ -614,10 +625,7 @@ export default {
       let _ = this
       if (val) {
         this.streaming = false
-        this.messages.push({
-          sender: 'System',
-          text: 'seems like the text stream did not end as expected, you can either ignore it or reset the conversation'
-        })
+        this.systemInfo = 'Seems like the text stream did not end as expected, you can either ignore it or reset the conversation'
         this.scrollDown(true)
         this.composeHistory()
         this.saveHistory()
