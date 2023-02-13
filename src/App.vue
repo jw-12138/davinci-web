@@ -559,7 +559,13 @@ export default {
                   whiteList: {
                     p: [],
                     pre: [],
-                    code: []
+                    code: [],
+                    ol: [],
+                    li: [],
+                    ul: [],
+                    blockquote: [],
+                    strong: [],
+                    b: []
                   }
                 })
 
