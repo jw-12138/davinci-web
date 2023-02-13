@@ -119,7 +119,7 @@
             </div>
 
           </div>
-          <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"></div>
+          <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText" style="font-family: 'Jetbrains Mono', monospace"></div>
           <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px" v-show="item.sender === 'AI' && !item.displayText">{{ item.text }}</pre>
           <div class="ai-cost" v-if="item.sender === 'AI'">
             <span v-if="item.cost"
@@ -287,6 +287,7 @@ export default {
 
       let token = localStorage.getItem('token')
       this.shareLink = ''
+      localStorage.removeItem('shareLink')
 
       axios.post(baseAPI + '/share', {
         history: JSON.stringify(this.messages),
@@ -504,6 +505,7 @@ export default {
       _.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Thinking...</div>'
 
       _.shareLink = ''
+      localStorage.removeItem('shareLink')
 
       _.streaming = true
 

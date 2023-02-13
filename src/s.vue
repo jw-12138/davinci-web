@@ -23,12 +23,12 @@
             dark: item.sender === 'Human',
             sys: item.sender === 'System'
           }">
-        <div v-show="item.sender === 'Human'" style="font-size: 12px; opacity: .8; position: absolute; top: -25px;">Human</div>
+        <div v-show="item.sender === 'Human'" style="font-size: 12px;position: absolute; top: -25px; color: #999;">Human</div>
         <div v-if="item.sender === 'Human'" class="human" style="padding-right: 0">
           {{ item.text }}
         </div>
-        <div v-if="item.sender === 'AI'" style="font-size: 12px; opacity: .8; position: absolute; top: -25px;">AI</div>
-        <div v-if="item.sender === 'AI'" v-html="item.displayText"></div>
+        <div v-if="item.sender === 'AI'" style="font-size: 12px; position: absolute; top: -25px; color: #999">AI</div>
+        <div v-if="item.sender === 'AI'" v-html="item.displayText" style="font-family: 'JetBrains Mono', monospace"></div>
       </div>
     </div>
 
