@@ -136,19 +136,16 @@ app.post('/api/checkLogin', function (req, res) {
   let loginValid = false
 
   verify_login(token).then(r => {
+    console.log(r)
     if (r.Item) {
-      let item = unmarshall(r.Item)
-      let isNotExpired = Date.now() - item.expire < 1000 * 60 * 60 * 24 * 30
-
-      if (isNotExpired) {
-        loginValid = true
-      }
+      loginValid = true
     }
 
     res.json({
       success: loginValid
     })
   }).catch(err => {
+    console.log(err)
     res.json({
       success: false
     })
@@ -242,6 +239,9 @@ AI: `,
       res.write(Buffer.from('Seems like you are not authenticated, try refresh the page! 🥲'))
       res.end()
     }
+  }).catch(err => {
+    res.write(Buffer.from('Seems like you are not authenticated, try refresh the page! 🥲'))
+    res.end()
   })
 })
 

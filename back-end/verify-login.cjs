@@ -4,6 +4,11 @@ const db_permissions = new DB_client({
 })
 
 let verify_login = function (token) {
+  if(!token){
+    return new Promise((resolve, reject) => {
+      reject(new Error('No token provided'))
+    })
+  }
   if (token.split('_')[0] === 'key') {
     return new Promise((resolve, reject) => {
       resolve({

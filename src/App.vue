@@ -119,8 +119,10 @@
             </div>
 
           </div>
-          <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText" style="font-family: 'Jetbrains Mono', monospace"></div>
-          <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px" v-show="item.sender === 'AI' && !item.displayText">{{ item.text }}</pre>
+          <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"
+               style="font-family: 'Jetbrains Mono', monospace"></div>
+          <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px"
+               v-show="item.sender === 'AI' && !item.displayText">{{ item.text }}</pre>
           <div class="ai-cost" v-if="item.sender === 'AI'">
             <span v-if="item.cost"
             >{{ item.bytes }} bytes, ${{ item.cost }}</span
@@ -154,7 +156,7 @@
             </div>
             <hr v-show="messages.length > 1">
             <div class="item">
-              <button @click="logout" title="Logout">
+              <button @click="logout" title="Logout" :disabled="loggingOut">
                 <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Logout</span>
               </button>
             </div>
@@ -206,15 +208,25 @@ import {getApiBase, trim} from './utils/common.js'
 import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
 import {marked} from 'marked'
+import {Auth} from './utils/auth'
 
 let baseAPI = getApiBase()
+let busBaseApi = location.hostname === 'localhost'? 'http://localhost:3000' : 'https://api.jw1.dev'
 
 export default {
   components: {Login},
   mounted() {
     let _ = this
+    let search = new URLSearchParams(location.search)
+    if (search.get('id')){
+      this.getLoginInfo(search.get('id'))
+    } else {
+      this.checkForLogin()
+    }
+    if(location.hostname === 'localhost'){
+      this.logoutURL = 'http://localhost:9090/#/sign-out?from=chat&id=' + localStorage.getItem('fromID')
+    }
     this.listenForKeys()
-    this.checkForLogin()
     this.readHistory()
     this.updateDisplayMessages()
     this.getShareLink()
@@ -243,13 +255,35 @@ export default {
       messages: [],
       display_messages: [],
       sharing: false,
-      shareLink: null
+      shareLink: null,
+      loggingOut: false,
+      logoutURL: 'https://sso.jw1.dev/#/sign-out?from=chat&id=' + localStorage.getItem('fromID')
     }
   },
   methods: {
-    updateDisplayMessages(){
+    getLoginInfo(id){
+      axios({
+        url: busBaseApi + '/davinci/get_info',
+        method: 'post',
+        data: {
+          id
+        }
+      }).then(res => {
+        if(res.data.status === 0){
+          let d = JSON.parse(res.data.data.login_info)
+          Object.keys(d).forEach(key => {
+            localStorage.setItem(key, d[key])
+          })
+
+          location.href = location.href.split('?')[0]
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    updateDisplayMessages() {
       let temp = []
-      temp = this.messages.map((el ,index) => {
+      temp = this.messages.map((el, index) => {
         el.index = index
         return el
       })
@@ -263,11 +297,20 @@ export default {
     },
     logout() {
       let c = confirm('Are you sure you want to logout?')
-      if (c) {
-        this.isLogin = false
-        localStorage.removeItem('token')
-        this.clearHistory()
+
+      if(!c){
+        return
       }
+
+      if(localStorage.getItem('fromID').split('_')[0] === 'key'){
+        localStorage.clear()
+        this.isLogin = false
+      }
+
+      this.loggingOut = true
+      localStorage.clear()
+
+      location.href = this.logoutURL
     },
     getShareLink() {
       if (localStorage.getItem('shareLink')) {
@@ -285,7 +328,7 @@ export default {
       let c = confirm('Please make sure that this conversation does not contain any sensitive information. Are you sure you want to publish this conversation?')
       if (!c) return
 
-      let token = localStorage.getItem('token')
+      let token = localStorage.getItem('fromID')
       this.shareLink = ''
       localStorage.removeItem('shareLink')
 
@@ -371,27 +414,23 @@ export default {
     },
     checkForLogin() {
       let _ = this
-      if (!localStorage.getItem('token')) {
+
+      if (!localStorage.getItem('fromID')) {
         _.isLogin = false
         _.pageLoaded = true
+
         return false
       }
 
-      if (localStorage.getItem('token').split('_')[0] === 'key') {
+      Auth.currentSession().then(res => {
+        console.log(res)
         _.isLogin = true
         _.pageLoaded = true
-
-        return false
-      }
-
-      axios
-        .post(baseAPI + '/checkLogin', {
-          token: localStorage.getItem('token')
-        })
-        .then((res) => {
-          _.isLogin = res.data.success
-          _.pageLoaded = true
-        })
+      }).catch(err => {
+        console.log(err)
+        _.isLogin = false
+        _.pageLoaded = true
+      })
     },
     listenForKeys() {
       let _ = this
@@ -523,7 +562,7 @@ export default {
       fetch(baseAPI + '/ask', {
         method: 'POST',
         body: JSON.stringify({
-          token: localStorage.getItem('token'),
+          token: localStorage.getItem('fromID'),
           message: userInput,
           history: _.historyText
         }),
@@ -539,7 +578,7 @@ export default {
             text: ''
           }
           if (!response.ok) {
-            if(response.status === 429){
+            if (response.status === 429) {
               _.systemInfo = 'Too many requests, please try again later'
             }
             throw new Error('HTTP error ' + response.status)

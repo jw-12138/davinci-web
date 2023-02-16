@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.264.0",
     "@aws-sdk/util-dynamodb": "^3.264.0",
+    "aws-amplify": "^5.0.14",
     "axios": "^1.2.5",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
