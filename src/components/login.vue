@@ -45,7 +45,7 @@
         <button class="plain" @click="loginType = 'key'">API Key Login</button>
       </p>
       <p v-show="loginType === 'key'">
-        <button class="plain" @click="loginType = 'password'">SSO Login</button>
+        <button class="plain" @click="loginType = 'password'">Sign in with SSO</button>
       </p>
     </div>
   </div>
