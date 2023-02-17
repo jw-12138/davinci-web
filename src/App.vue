@@ -299,8 +299,8 @@ export default {
       }
 
       this.isLogin = false
-      localStorage.clear()
       Auth.signOut().then(() => {
+        localStorage.clear()
       }).catch(err => {
         console.log(err)
       })
