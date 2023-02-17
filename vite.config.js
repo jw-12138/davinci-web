@@ -4,6 +4,11 @@ import {resolve} from 'path'
 
 export default defineConfig({
   plugins: [vue()],
+  resolve: {
+    alias: {
+      './runtimeConfig': './runtimeConfig.browser'
+    }
+  },
   build: {
     rollupOptions: {
       input: {

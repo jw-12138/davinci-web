@@ -211,7 +211,7 @@ import {marked} from 'marked'
 import {Auth} from './utils/auth'
 
 let baseAPI = getApiBase()
-let busBaseApi = location.hostname === 'localhost'? 'http://localhost:3000' : 'https://api.jw1.dev'
+let busBaseApi = 'https://api.jw1.dev'
 
 export default {
   components: {Login},
@@ -222,9 +222,6 @@ export default {
       this.getLoginInfo(search.get('id'))
     } else {
       this.checkForLogin()
-    }
-    if(location.hostname === 'localhost'){
-      this.logoutURL = 'http://localhost:9090/#/sign-out?from=chat&id=' + localStorage.getItem('fromID')
     }
     this.listenForKeys()
     this.readHistory()
@@ -256,8 +253,7 @@ export default {
       display_messages: [],
       sharing: false,
       shareLink: null,
-      loggingOut: false,
-      logoutURL: 'https://sso.jw1.dev/#/sign-out?from=chat&id=' + localStorage.getItem('fromID')
+      loggingOut: false
     }
   },
   methods: {
@@ -302,15 +298,12 @@ export default {
         return
       }
 
-      if(localStorage.getItem('fromID').split('_')[0] === 'key'){
-        localStorage.clear()
-        this.isLogin = false
-      }
-
-      this.loggingOut = true
+      this.isLogin = false
       localStorage.clear()
-
-      location.href = this.logoutURL
+      Auth.signOut().then(() => {
+      }).catch(err => {
+        console.log(err)
+      })
     },
     getShareLink() {
       if (localStorage.getItem('shareLink')) {
@@ -328,13 +321,13 @@ export default {
       let c = confirm('Please make sure that this conversation does not contain any sensitive information. Are you sure you want to publish this conversation?')
       if (!c) return
 
-      let token = localStorage.getItem('fromID')
       this.shareLink = ''
       localStorage.removeItem('shareLink')
 
       axios.post(baseAPI + '/share', {
         history: JSON.stringify(this.messages),
-        token: token
+        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
+        userPool: USER_POOL_CLIENT_ID,
       }).then(res => {
         this.sharing = false
         this.shareLink = window.location.origin + '/s.html?id=' + res.data.id
@@ -422,8 +415,15 @@ export default {
         return false
       }
 
-      Auth.currentUserInfo().then(res => {
-        if(!res.username){
+      axios({
+        method: 'post',
+        url: busBaseApi + '/cognito_verify',
+        data: {
+          AccessToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
+          userPool: USER_POOL_CLIENT_ID
+        }
+      }).then(res => {
+        if(!res.data.Username){
           throw new Error('User not logged in')
         }
         _.isLogin = true
@@ -564,7 +564,8 @@ export default {
       fetch(baseAPI + '/ask', {
         method: 'POST',
         body: JSON.stringify({
-          token: localStorage.getItem('fromID'),
+          token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
+          userPool: USER_POOL_CLIENT_ID,
           message: userInput,
           history: _.historyText
         }),

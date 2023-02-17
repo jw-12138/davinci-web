@@ -53,11 +53,7 @@
 
 <script>
 import axios from 'axios'
-import {getApiBase} from '../utils/common'
 import {nanoid} from 'nanoid'
-import {Auth} from '../utils/auth.js'
-
-let baseAPI = getApiBase()
 
 export default {
   name: 'login',

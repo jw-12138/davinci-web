@@ -2,11 +2,8 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const {nanoid} = require('nanoid')
-
 const {ask} = require('./api.cjs')
 const verify_login = require('./verify-login.cjs')
-const verify_password = require('./check-passwords.cjs')
-const write_permissions = require('./write-permissions.cjs')
 const port = 7009
 const path = require('path')
 const {unmarshall} = require('@aws-sdk/util-dynamodb')
@@ -15,50 +12,6 @@ const {write_conversations, get_conversations} = require('./aws_conversations.cj
 app.use(cors())
 app.use(express.static(path.join(__dirname, '../dist')))
 app.use(express.json())
-
-app.post('/api/login', function (req, res) {
-  let password = req.body.password
-  let passwordCorrect = false
-
-  verify_password(password).then(r => {
-    if (r.Item) {
-      passwordCorrect = true
-    }
-  }).catch(err => {
-    console.log('Failed to get password from database')
-  }).finally(() => {
-    valid()
-  })
-
-
-  let valid = function () {
-    if (passwordCorrect) {
-      let token = nanoid(32)
-
-      let p = {
-        id: token,
-        expire: Date.now() + 1000 * 60 * 60 * 24 * 30
-      }
-
-      write_permissions(p).then(r => {
-        console.log('Write to database successfully')
-        res.json({
-          success: true,
-          token: token
-        })
-      }).catch(err => {
-        res.json({
-          success: false,
-          message: 'Failed to write to database'
-        })
-      })
-    } else {
-      res.json({
-        success: false
-      })
-    }
-  }
-})
 
 app.post('/api/share/get', (req, res) => {
   let id = req.body.id
@@ -89,17 +42,13 @@ app.post('/api/share', (req, res) => {
   let history_data = req.body.history
   let id = nanoid()
   let token = req.body.token
+  let userPool = req.body.userPool
 
   let loginValid = false
 
-  verify_login(token).then(r => {
-    if (r.Item) {
-      let item = unmarshall(r.Item)
-      let isNotExpired = Date.now() - item.expire < 1000 * 60 * 60 * 24 * 30
-
-      if (isNotExpired) {
-        loginValid = true
-      }
+  verify_login(token, userPool).then(r => {
+    if (r.data.Username) {
+      loginValid = true
     }
 
     if (loginValid) {
@@ -134,10 +83,10 @@ app.post('/api/share', (req, res) => {
 app.post('/api/checkLogin', function (req, res) {
   let token = req.body.token
   let loginValid = false
+  let userPool = req.body.userPool
 
-  verify_login(token).then(r => {
-    console.log(r)
-    if (r.Item) {
+  verify_login(token, userPool).then(r => {
+    if (r.data.Username) {
       loginValid = true
     }
 
@@ -159,6 +108,7 @@ app.post('/api/ask', function (req, res) {
   let composedHistory = req.body.history || ''
   let message = req.body.message
   let token = req.body.token || ''
+  let userPool = req.body.userPool || ''
 
   if (!message) {
     res.write(Buffer.from('The message should not be empty 🥲'))
@@ -173,8 +123,8 @@ app.post('/api/ask', function (req, res) {
     loginType = 'key'
   }
 
-  verify_login(token).then(r => {
-    if (r.Item) {
+  verify_login(token, userPool).then(r => {
+    if (r.data.Username) {
       ask(
         'davinci',
         {

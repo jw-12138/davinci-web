@@ -1,9 +1,6 @@
-const DB_client = require('./db.cjs')
-const db_permissions = new DB_client({
-  table: 'davinci_web_permissions'
-})
+const axios = require('axios')
 
-let verify_login = function (token) {
+let verify_login = function (token, userPool) {
   if(!token){
     return new Promise((resolve, reject) => {
       reject(new Error('No token provided'))
@@ -12,22 +9,19 @@ let verify_login = function (token) {
   if (token.split('_')[0] === 'key') {
     return new Promise((resolve, reject) => {
       resolve({
-        Item: {
-          expire: {
-            N: Date.now() + 1000
-          }
-        }
+        Username: 'key_login'
       })
     })
-  } else {
-    if (token) {
-      return db_permissions.getItem({
-        id: token
-      })
-    }
   }
 
-  return false
+  return axios({
+    url: "https://api.jw1.dev/cognito_verify",
+    method: 'post',
+    data: {
+      AccessToken: token,
+      userPool
+    }
+  })
 }
 
 module.exports = verify_login
