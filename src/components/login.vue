@@ -59,8 +59,10 @@ export default {
   name: 'login',
   mounted() {
     this.id = nanoid(32)
-    if(location.hostname === 'localhost'){
+    if (location.hostname === 'localhost') {
       this.url = 'http://localhost:9090/#/sign-in?from=chat&id=' + this.id
+    } else {
+      this.url = 'https://sso.jw1.dev/#/sign-in?from=chat&id=' + this.id
     }
   },
   data() {
@@ -70,11 +72,11 @@ export default {
       password: '',
       trying: false,
       loginType: 'password',
-      url: 'https://sso.jw1.dev/#/sign-in?from=chat&id=' + this.id
+      url: ''
     }
   },
   methods: {
-    goToSSO(){
+    goToSSO() {
       location.href = this.url
     },
     listenForEnter(e) {
