@@ -208,7 +208,6 @@ import {getApiBase, trim} from './utils/common.js'
 import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
 import {marked} from 'marked'
-import {Auth} from './utils/auth'
 
 let baseAPI = getApiBase()
 let busBaseApi = 'https://api.jw1.dev'
@@ -299,7 +298,14 @@ export default {
       }
 
       this.isLogin = false
-      Auth.signOut().then(() => {
+      axios({
+        url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/revoke',
+        method: 'post',
+        data: {
+          Token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
+          ClientId: USER_POOL_CLIENT_ID,
+        }
+      }).then(res => {
         localStorage.clear()
       }).catch(err => {
         console.log(err)
@@ -417,7 +423,7 @@ export default {
 
       axios({
         method: 'post',
-        url: busBaseApi + '/cognito_verify',
+        url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/verify',
         data: {
           AccessToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
           userPool: USER_POOL_CLIENT_ID
