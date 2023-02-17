@@ -41,8 +41,8 @@
     <div style="font-size: 14px;">
       <br>
       <p v-show="loginType === 'password'">
-        Or if you have OpenAI API key, you can switch to
-        <button class="plain" @click="loginType = 'key'">API Key Login</button>
+        Or if you have OpenAI API key, you can
+        <button class="plain" @click="loginType = 'key'">Sign In with API Key</button>
       </p>
       <p v-show="loginType === 'key'">
         <button class="plain" @click="loginType = 'password'">Sign in with SSO</button>
