@@ -422,8 +422,10 @@ export default {
         return false
       }
 
-      Auth.currentSession().then(res => {
-        console.log(res)
+      Auth.currentUserInfo().then(res => {
+        if(!res.username){
+          throw new Error('User not logged in')
+        }
         _.isLogin = true
         _.pageLoaded = true
       }).catch(err => {
