@@ -9,7 +9,7 @@
       <h1>🤖 DaVinci GPT-3</h1>
     </div>
     <div v-show="!isLogin">
-      <div v-show="messages.length === 0" style="line-height: 1.9">
+      <div style="line-height: 1.9">
         <p>
           👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks,
           questions and conversation.
