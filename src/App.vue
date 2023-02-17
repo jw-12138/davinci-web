@@ -301,6 +301,9 @@ export default {
       axios({
         url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/revoke',
         method: 'post',
+        headers: {
+          'aws-cognito-auth': localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.idToken`)
+        },
         data: {
           Token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
           ClientId: USER_POOL_CLIENT_ID,
@@ -424,14 +427,10 @@ export default {
       axios({
         method: 'post',
         url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/verify',
-        data: {
-          AccessToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
-          userPool: USER_POOL_CLIENT_ID
+        headers: {
+          'aws-cognito-auth': localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.idToken`)
         }
       }).then(res => {
-        if(!res.data.Username){
-          throw new Error('User not logged in')
-        }
         _.isLogin = true
         _.pageLoaded = true
       }).catch(err => {
