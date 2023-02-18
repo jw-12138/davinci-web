@@ -60,7 +60,7 @@ export default {
   mounted() {
     this.id = nanoid(32)
     if (location.hostname === 'localhost') {
-      this.url = 'http://localhost:9090/#/sign-in?from=chat&id=' + this.id
+      this.url = 'https://sso.jw1.dev/#/sign-in?from=chat_local&id=' + this.id
     } else {
       this.url = 'https://sso.jw1.dev/#/sign-in?from=chat&id=' + this.id
     }

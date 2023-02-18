@@ -217,6 +217,7 @@ export default {
   mounted() {
     let _ = this
     let search = new URLSearchParams(location.search)
+    let loadedTime = Date.now()
     if (search.get('id')){
       this.getLoginInfo(search.get('id'))
     } else {
@@ -229,9 +230,20 @@ export default {
     window.addEventListener('click', function () {
       _.showPageOptions = false
     })
+
+    this.systemCheck = setInterval(function () {
+      let nowTime = Date.now()
+      let offset = Math.floor((nowTime - loadedTime) / 1000)
+
+      if(offset > 7200){
+        _.checkForLogin()
+        clearInterval(_.systemCheck)
+      }
+    }, 60 * 1000)
   },
   data() {
     return {
+      systemCheck: null,
       systemInfo: '',
       showPageOptions: false,
       editIndex: undefined,
@@ -423,15 +435,17 @@ export default {
 
       axios({
         method: 'post',
-        url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/verify',
+        url: 'https://api.jw1.dev/cognito/renew',
         data: {
-          AccessToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
+          refreshToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
           userPool: USER_POOL_CLIENT_ID
         }
       }).then(res => {
-        if(!res.data.Username){
-          throw new Error('User not logged in')
+        if(!res.data.AuthenticationResult){
+          throw new Error('oops')
         }
+        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`, res.data.AuthenticationResult.AccessToken)
+        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.idToken`, res.data.AuthenticationResult.IdToken)
         _.isLogin = true
         _.pageLoaded = true
       }).catch(err => {
