@@ -622,6 +622,7 @@ export default {
                     p: [],
                     pre: [],
                     code: [],
+                    br: [],
                     ol: [],
                     li: [],
                     ul: [],
