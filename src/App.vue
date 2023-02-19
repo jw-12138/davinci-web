@@ -12,7 +12,7 @@
       <div style="line-height: 1.9">
         <p>
           👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks,
-          questions and conversation.
+          questions and conversation. Open Sourced on <a href="https://github.com/jw-12138/davinci-web" target="_blank">GitHub</a>.
         </p>
       </div>
     </div>
@@ -97,10 +97,10 @@
             }">
             {{ item.text }}</span>
             <div class="edit-tools" v-if="editIndex === item.index">
-              <textarea v-model="editMessage" :id="'editingArea_' + item.index"
+              <input enterkeyhint="done" v-model="editMessage" :id="'editingArea_' + item.index"
                         @keydown="preventDefault"
                         @focus="inputOnFocus = true"
-                        @blur="inputOnFocus = false"></textarea>
+                        @blur="inputOnFocus = false">
             </div>
             <div class="tools">
               <button title="Cancel" @click="editIndex = undefined; editMessage = undefined" :style="{

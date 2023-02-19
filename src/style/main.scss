@@ -1,12 +1,14 @@
 @import "hljs.scss";
 @import "./iconfont/iconfont.css";
 
+$font-sans: system-ui,-apple-system,"Segoe UI","Roboto","Ubuntu","Cantarell","Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+
 * {
   box-sizing: border-box;
 }
 
 html {
-  font-family: 'Varela Round', monospace;
+  font-family: $font-sans;
   margin: 0;
   padding: 0;
 }
@@ -52,15 +54,19 @@ body {
     }
 
     .edit-tools {
-      textarea {
+      textarea, input {
         width: 100%;
         height: 40px;
         border: 2px solid #1f2937;
         border-radius: 30px;
         padding: 10px 15px 0;
         font-size: 14px;
-        font-family: 'Varela Round', monospace;
+        font-family: $font-sans;
         resize: none;
+      }
+
+      input{
+        padding: 0 15px 0;
       }
     }
 
@@ -145,12 +151,12 @@ body {
     border-radius: 30px;
     padding: 0 15px 0;
     font-size: 14px;
-    font-family: 'Varela Round', monospace;
+    font-family: $font-sans;
     resize: none;
   }
 
   button {
-    font-family: 'Varela Round', monospace;
+    font-family: $font-sans;
     width: 100px;
     margin-left: 10px;
     height: 40px;
@@ -194,7 +200,7 @@ body {
     display: flex;
 
     button {
-      font-family: 'Varela Round', monospace;
+      font-family: $font-sans;
       margin-left: 10px;
       flex-shrink: 0;
     }
@@ -206,7 +212,7 @@ body {
       border-radius: 30px;
       text-indent: 15px;
       font-size: 16px;
-      font-family: 'Varela Round', monospace;
+      font-family: $font-sans;
     }
   }
 }
@@ -258,9 +264,15 @@ button {
 
 a {
   outline-offset: 2px;
-  padding: 3px 10px;
+  padding: 3px 1px;
   color: #6b7280;
-  border-radius: 20px;
+  border-radius: 8px;
+
+  &[target="_blank"] {
+    &:after{
+      content: "\2197"
+    }
+  }
 
   &:focus {
     outline: 2px #3b82f6 solid;
@@ -388,8 +400,8 @@ table{
   }
 
   .page-options {
-    background: #334155;
-    border: 1px solid #334155;
+    background: #505050;
+    border: 1px solid #505050;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
     hr {
@@ -498,9 +510,9 @@ table{
     border-color: #fff;
 
     &.plain {
-      background: #404040;
+      background: transparent;
       color: #fff;
-      border-color: #404040;
+      border-color: #c0c0c0;
     }
   }
 }

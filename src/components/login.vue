@@ -3,8 +3,7 @@
     <div class="tips">
       <div v-show="loginType === 'key'">
         <p>
-          You can create your API key at <a target="_blank" href="https://platform.openai.com/account/api-keys"><i
-          class="iconfont">&#xe67d;</i> platform.openai.com/account/api-keys</a>, You should be well known about the
+          You can create your API key at <a target="_blank" href="https://platform.openai.com/account/api-keys">platform.openai.com</a>, You should be well known about the
           following terms:
         </p>
         <ul style="margin-bottom: 20px">
@@ -14,8 +13,7 @@
           <li>
             To authenticate with OpenAI, we will send your API key to our server for processing but it will never be
             stored there. Don't believe it? Check the <a
-            href="https://github.com/jw-12138/davinci-web/blob/main/back-end/main.cjs#L158" target="_blank"><i
-            class="iconfont">&#xe67d;</i> source code</a>.
+            href="https://github.com/jw-12138/davinci-web/blob/main/back-end/main.cjs#L158" target="_blank">source code</a>.
           </li>
           <li>
             Make sure this device is trusted, we will store your API key in this browser. If you're using a public
