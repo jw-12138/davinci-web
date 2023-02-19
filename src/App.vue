@@ -77,8 +77,7 @@
         </p>
         <ul>
           <li>
-            Open Sourced on <a href="https://github.com/jw-12138/davinci-web" target="_blank"><i class="iconfont">&#xe67d;</i>
-            GitHub</a>
+            Open Sourced on <a href="https://github.com/jw-12138/davinci-web" target="_blank">GitHub</a>
           </li>
         </ul>
       </div>
