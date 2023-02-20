@@ -432,6 +432,13 @@ export default {
         return false
       }
 
+      if (localStorage.getItem('fromID').split('_')[0] === 'key') {
+        _.isLogin = true
+        _.pageLoaded = true
+
+        return false
+      }
+
       axios({
         method: 'post',
         url: 'https://api.jw1.dev/cognito/renew',
@@ -583,7 +590,7 @@ export default {
       fetch(baseAPI + '/ask', {
         method: 'POST',
         body: JSON.stringify({
-          token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
+          token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`) || localStorage.getItem('fromID'),
           userPool: USER_POOL_CLIENT_ID,
           message: userInput,
           history: _.historyText

@@ -9,7 +9,9 @@ let verify_login = function (token, userPool) {
   if (token.split('_')[0] === 'key') {
     return new Promise((resolve, reject) => {
       resolve({
-        Username: 'key_login'
+        data: {
+          Username: 'key_login'
+        }
       })
     })
   }
