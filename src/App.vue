@@ -320,6 +320,7 @@ export default {
         localStorage.clear()
       }).catch(err => {
         console.log(err)
+        localStorage.clear()
       })
     },
     getShareLink() {
