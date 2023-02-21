@@ -171,7 +171,7 @@ AI: `,
             if (err.response.status === 429) {
               res.status(429)
             } else {
-              res.status(500)
+              res.status(err.response.status)
             }
             res.end()
             return false

@@ -679,6 +679,7 @@ export default {
           console.log(err)
           _.streaming = false
           _.composeHistory()
+          _.systemInfo = 'Something went wrong, please try again later'
         })
       setTimeout(function () {
         _.$refs.input.focus()
