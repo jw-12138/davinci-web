@@ -302,12 +302,11 @@ export default {
         if(btn.innerHTML === 'Copied!'){
           return false
         }
-        console.log('success')
         btn.innerHTML = 'Copied!'
 
         setTimeout(function () {
           btn.innerHTML = 'Copy Code'
-        }, 2000)
+        }, 1500)
       })
 
       cp.on('error', function (e) {
