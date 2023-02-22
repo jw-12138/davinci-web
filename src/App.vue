@@ -63,10 +63,10 @@
             </tr>
             <tr>
               <td>
-                <code>/logout</code>
+                <code>/signout</code>
               </td>
               <td>
-                Logout
+                Sign out
               </td>
             </tr>
           </table>
@@ -158,8 +158,8 @@
             </div>
             <hr v-show="messages.length > 1">
             <div class="item">
-              <button @click="logout" title="Logout" :disabled="loggingOut">
-                <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Logout</span>
+              <button @click="logout" title="Sign out" :disabled="loggingOut">
+                <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
               </button>
             </div>
           </div>
@@ -305,7 +305,7 @@ export default {
       }
     },
     logout() {
-      let c = confirm('Are you sure you want to logout?')
+      let c = confirm('Are you sure you want to sign out?')
 
       if (!c) {
         return
