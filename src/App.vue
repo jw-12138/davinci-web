@@ -544,7 +544,7 @@ export default {
         return false
       }
 
-      if (trim(this.userInput) === '/logout') {
+      if (trim(this.userInput) === '/signout') {
         _.logout()
         setTimeout(() => {
           _.userInput = ''
