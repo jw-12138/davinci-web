@@ -8,7 +8,7 @@
     <div class="page-title">
       <h1>🤖 DaVinci GPT-3</h1>
     </div>
-    <div v-show="!isLogin">
+    <div v-show="!isLogin && !checkingLogin">
       <div style="line-height: 1.9">
         <p>
           👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks,
@@ -16,9 +16,9 @@
         </p>
       </div>
     </div>
-    <login v-show="!isLogin" @logged="loggedIn"></login>
-    <div v-show="isLogin">
-      <div v-show="messages.length < 1" style="margin-bottom: 20px">
+    <login v-show="!isLogin && !checkingLogin" @logged="loggedIn"></login>
+    <div>
+      <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px">
         <p> 😎 Capabilities: </p>
         <ul>
           <li> Remembers what user said earlier in the conversation</li>
@@ -81,7 +81,7 @@
           </li>
         </ul>
       </div>
-      <div class="message-list" v-show="messages.length">
+      <div class="message-list" v-show="messages.length && isLogin && !checkingLogin">
         <div
           class="item"
           v-for="(item, index) in display_messages"
@@ -97,9 +97,9 @@
             {{ item.text }}</span>
             <div class="edit-tools" v-if="editIndex === item.index">
               <input enterkeyhint="done" v-model="editMessage" :id="'editingArea_' + item.index"
-                        @keydown="preventDefault"
-                        @focus="inputOnFocus = true"
-                        @blur="inputOnFocus = false">
+                     @keydown="preventDefault"
+                     @focus="inputOnFocus = true"
+                     @blur="inputOnFocus = false">
             </div>
             <div class="tools">
               <button title="Cancel" @click="editIndex = undefined; editMessage = undefined" :style="{
@@ -130,10 +130,13 @@
           </div>
         </div>
       </div>
+      <div v-show="checkingLogin" style="padding: 20px 0 30px; text-align: center; font-size: 12px">
+        <div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Checking your sign in info...</div>
+      </div>
       <div style="padding: 20px 0 30px; text-align: center; font-size: 12px" v-show="systemInfo" v-html="systemInfo">
 
       </div>
-      <div style="text-align: center" aria-label="Settings">
+      <div style="text-align: center" v-show="isLogin && !checkingLogin" aria-label="Settings">
         <div style="display: inline-block; position: relative">
           <div class="page-options" v-if="showPageOptions" style="animation: fadeIn .3s ease">
             <div class="item" v-show="messages.length > 1">
@@ -168,10 +171,11 @@
         </div>
       </div>
 
-      <div v-show="shareLink" style="padding: 10px 0; font-size: 12px; text-align: center;">
+      <div v-show="shareLink && isLogin && !checkingLogin"
+           style="padding: 10px 0; font-size: 12px; text-align: center;">
         <a :href="shareLink" target="_blank">{{ shareLink }}</a>
       </div>
-      <div class="page-input">
+      <div v-show="isLogin" class="page-input">
         <div class="wrap">
           <input
             enterkeyhint="send"
@@ -216,8 +220,7 @@ export default {
   mounted() {
     let _ = this
     let search = new URLSearchParams(location.search)
-    let loadedTime = Date.now()
-    if (search.get('id')){
+    if (search.get('id')) {
       this.getLoginInfo(search.get('id'))
     } else {
       this.checkForLogin()
@@ -229,20 +232,11 @@ export default {
     window.addEventListener('click', function () {
       _.showPageOptions = false
     })
-
-    this.systemCheck = setInterval(function () {
-      let nowTime = Date.now()
-      let offset = Math.floor((nowTime - loadedTime) / 1000)
-
-      if(offset > 7200){
-        _.checkForLogin()
-        clearInterval(_.systemCheck)
-      }
-    }, 60 * 1000)
   },
   data() {
     return {
-      systemCheck: null,
+      checkingLogin: true,
+      systemStartTime: Date.now(),
       systemInfo: '',
       showPageOptions: false,
       editIndex: undefined,
@@ -267,7 +261,16 @@ export default {
     }
   },
   methods: {
-    getLoginInfo(id){
+    systemCheck() {
+      let _ = this
+      let nowTime = Date.now()
+      let offset = Math.floor((nowTime - _.systemStartTime) / 1000)
+
+      if (offset > 3600) {
+        _.checkForLogin()
+      }
+    },
+    getLoginInfo(id) {
       axios({
         url: busBaseApi + '/davinci/get_info',
         method: 'post',
@@ -275,7 +278,7 @@ export default {
           id
         }
       }).then(res => {
-        if(res.data.status === 0){
+        if (res.data.status === 0) {
           let d = JSON.parse(res.data.data.login_info)
           Object.keys(d).forEach(key => {
             localStorage.setItem(key, d[key])
@@ -304,23 +307,26 @@ export default {
     logout() {
       let c = confirm('Are you sure you want to logout?')
 
-      if(!c){
+      if (!c) {
         return
       }
 
-      this.isLogin = false
+      this.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Signing you out ...</div>'
+
       axios({
         url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/revoke',
         method: 'post',
         data: {
           Token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
-          ClientId: USER_POOL_CLIENT_ID,
+          ClientId: USER_POOL_CLIENT_ID
         }
       }).then(res => {
+        this.isLogin = false
         localStorage.clear()
+        this.systemInfo = ''
       }).catch(err => {
         console.log(err)
-        localStorage.clear()
+        this.systemInfo = '<div style="text-align: center">Error occurred while signing out, please refresh this page and try again.</div>'
       })
     },
     getShareLink() {
@@ -345,7 +351,7 @@ export default {
       axios.post(baseAPI + '/share', {
         history: JSON.stringify(this.messages),
         token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
-        userPool: USER_POOL_CLIENT_ID,
+        userPool: USER_POOL_CLIENT_ID
       }).then(res => {
         this.sharing = false
         this.shareLink = window.location.origin + '/s.html?id=' + res.data.id
@@ -429,14 +435,14 @@ export default {
       if (!localStorage.getItem('fromID')) {
         _.isLogin = false
         _.pageLoaded = true
-
+        _.checkingLogin = false
         return false
       }
 
       if (localStorage.getItem('fromID').split('_')[0] === 'key') {
         _.isLogin = true
         _.pageLoaded = true
-
+        _.checkingLogin = false
         return false
       }
 
@@ -448,16 +454,20 @@ export default {
           userPool: USER_POOL_CLIENT_ID
         }
       }).then(res => {
-        if(!res.data.AuthenticationResult){
+        if (!res.data.AuthenticationResult) {
           throw new Error('oops')
         }
         localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`, res.data.AuthenticationResult.AccessToken)
         localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.idToken`, res.data.AuthenticationResult.IdToken)
-        _.isLogin = true
+        setTimeout(() => {
+          _.isLogin = true
+          _.checkingLogin = false
+        }, 1000)
         _.pageLoaded = true
       }).catch(err => {
         console.log(err)
         _.isLogin = false
+        _.checkingLogin = false
         _.pageLoaded = true
       })
     },
@@ -519,6 +529,7 @@ export default {
     },
     composeMessage() {
       let _ = this
+      _.systemCheck()
       if (trim(this.userInput) === '') {
         return false
       }
@@ -603,15 +614,23 @@ export default {
       })
         .then((response) => {
           _.systemInfo = ''
-          _.messages[dataIndex] = {
-            sender: 'AI',
-            text: ''
-          }
           if (!response.ok) {
-            if (response.status === 429) {
-              _.systemInfo = 'Too many requests, please try again later'
+            switch (response.status){
+              case 429:
+                _.systemInfo = 'Too many requests, please try again later'
+                break
+              case 401:
+                _.systemInfo = "Seems like you're not authorized, please refresh this page and try again."
+                break
+              default:
+                _.systemInfo = response.status + ": We encountered an error, please refresh this page and try again."
+                break
             }
-            throw new Error('HTTP error ' + response.status)
+          } else {
+            _.messages[dataIndex] = {
+              sender: 'AI',
+              text: ''
+            }
           }
           return response.body
         })
@@ -679,7 +698,7 @@ export default {
           console.log(err)
           _.streaming = false
           _.composeHistory()
-          _.systemInfo = 'Something went wrong, please try again later'
+          _.systemInfo = err.response.status + ': Something went wrong, please try again later'
         })
       setTimeout(function () {
         _.$refs.input.focus()
