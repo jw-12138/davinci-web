@@ -312,6 +312,7 @@ export default {
       }
 
       this.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Signing you out ...</div>'
+      this.scrollDown()
 
       axios({
         url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/revoke',
