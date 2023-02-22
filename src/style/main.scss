@@ -1,7 +1,7 @@
 @import "hljs.scss";
 @import "./iconfont/iconfont.css";
 
-$font-sans: system-ui,-apple-system,"Segoe UI","Roboto","Ubuntu","Cantarell","Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+$font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
 * {
   box-sizing: border-box;
@@ -30,12 +30,14 @@ body {
   display: flex;
   flex-direction: column-reverse;
   min-height: calc(100vh - 210px);
+
   .item {
     width: calc(100% - 30px);
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     border-radius: 8px;
     padding: 6px 8px;
-    background: #f8fafc;
+    border: 1px solid #eee;
+    background: #ffffff;
     margin-bottom: 10px;
     font-size: 14px;
     line-height: 1.85;
@@ -65,7 +67,7 @@ body {
         resize: none;
       }
 
-      input{
+      input {
         padding: 0 15px 0;
       }
     }
@@ -82,14 +84,47 @@ body {
       font-size: 13px;
     }
 
+    .code-wrapper {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      background-color: transparent;
+      margin-top: 2px;
+      margin-bottom: 12px;
+
+      .language-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        align-content: center;
+      }
+
+      .language-name {
+        padding: 4px 10px;
+        display: block;
+        content: attr(data-lang);
+        opacity: .8;
+        font-size: 12px;
+      }
+
+      .copy-code {
+        button {
+          padding: 0 6px;
+          height: 28px;
+          margin: 5px 0;
+          margin-right: 5px;
+          border-radius: 6px;
+          font-size: 12px;
+        }
+      }
+    }
+
     pre {
       overflow-x: auto;
+      position: relative;
       font-family: 'JetBrains Mono', monospace;
       margin: 0;
       padding: 5px;
-      border-radius: 6px;
-      margin-top: 8px;
-      margin-bottom: 4px;
+      border-radius: 0 0 6px 6px;
       background-color: rgba($color: #000000, $alpha: 0.06);
 
       code {
@@ -107,7 +142,11 @@ body {
     }
 
     p {
-      margin: 4px 0;
+      margin: 8px 0 16px;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
     }
 
     &.dark {
@@ -269,7 +308,7 @@ a {
   border-radius: 8px;
 
   &[target="_blank"] {
-    &:after{
+    &:after {
       content: "\2197"
     }
   }
@@ -353,18 +392,18 @@ ul {
   }
 }
 
-code{
+code {
   border-radius: 4px;
   border: 1px solid #999;
   padding: 2px;
   font-size: 13px;
 }
 
-table{
+table {
   border-collapse: collapse;
 
   tr {
-    td{
+    td {
       padding: 8px 8px;
     }
   }
@@ -437,10 +476,17 @@ table{
   .message-list {
     .item {
       box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-      background: #6b7280;
+      background: #505050;
       color: #fff;
+      border-color: transparent;
 
-      button{
+      .code-wrapper {
+        border: 1px solid #8a8a8a;
+        border-radius: 6px;
+        background-color: #626262;
+      }
+
+      button {
         color: #fff;
       }
 
@@ -453,7 +499,7 @@ table{
       }
 
       pre {
-        background-color: rgba(#000, 0.6);
+        background-color: rgba(#000, 0.5);
       }
 
       &.dark {

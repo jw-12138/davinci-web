@@ -118,8 +118,7 @@
             </div>
 
           </div>
-          <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"
-               style="font-family: 'Jetbrains Mono', monospace"></div>
+          <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"></div>
           <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px"
                v-show="item.sender === 'AI' && !item.displayText">{{ item.text }}</pre>
           <div class="ai-cost" v-if="item.sender === 'AI'">
@@ -210,7 +209,36 @@ import axios from 'axios'
 import {getApiBase, trim} from './utils/common.js'
 import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
-import {marked} from 'marked'
+import Markdownit from 'markdown-it'
+import ClipboardJS from 'clipboard'
+
+let md = new Markdownit({
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return `<pre class="hljs" data-lang="${lang}"><code>${hljs.highlight(str, {
+          language: lang,
+          ignoreIllegals: true
+        }).value}</code></pre>`
+      } catch (__) {
+      }
+    }
+
+    return ''
+  }
+})
+
+let fence = md.renderer.rules.fence
+
+md.renderer.rules.fence = function (...args) {
+  const [tokens, idx] = args
+  const token = tokens[idx]
+  const rawCode = fence(...args)
+  return `<div class="code-wrapper"><div class="language-tools">
+<div class="language-name">${token.info.trim()}</div>
+<div class="copy-code" role="button"><button class="copy-code-btn">Copy Code</button></div>
+</div>${rawCode}</div>`
+}
 
 let baseAPI = getApiBase()
 let busBaseApi = 'https://api.jw1.dev'
@@ -261,6 +289,31 @@ export default {
     }
   },
   methods: {
+    initClipboard() {
+      let cp = new ClipboardJS('.copy-code-btn', {
+        target: function (trigger) {
+          return trigger.parentNode.parentNode.parentNode.querySelector('.hljs code')
+        }
+      })
+
+      cp.on('success', function (e) {
+        let btn = e.trigger
+        e.clearSelection()
+        if(btn.innerHTML === 'Copied!'){
+          return false
+        }
+        btn.innerHTML = 'Copied!'
+
+        setTimeout(function () {
+          btn.innerHTML = 'Copy Code'
+        }, 1500)
+      })
+
+      cp.on('error', function (e) {
+        console.error('Action:', e.action)
+        console.error('Trigger:', e.trigger)
+      })
+    },
     systemCheck() {
       let _ = this
       let nowTime = Date.now()
@@ -399,11 +452,9 @@ export default {
       }
 
       this.messages = history
-      this.$nextTick(function () {
-        _.highlight()
-      })
       this.composeHistory()
       this.scrollDown()
+      this.initClipboard()
     },
     scrollDown(force) {
       let _ = this
@@ -526,6 +577,28 @@ export default {
       _.composeHistory()
       _.composeMessage(true)
     },
+    renderText(index, originalText) {
+      let _ = this
+      _.messages[index].displayText = md.render(originalText)
+      _.messages[index].displayText = xss(_.messages[index].displayText, {
+        whiteList: {
+          p: [],
+          i: ['class'],
+          button: ['class'],
+          div: ['class', 'data-lang'],
+          span: ['class', 'data-lang'],
+          pre: ['class', 'data-lang'],
+          code: [],
+          br: [],
+          ol: [],
+          li: [],
+          ul: [],
+          blockquote: [],
+          strong: [],
+          b: []
+        }
+      })
+    },
     composeMessage() {
       let _ = this
       _.systemCheck()
@@ -614,15 +687,15 @@ export default {
         .then((response) => {
           _.systemInfo = ''
           if (!response.ok) {
-            switch (response.status){
+            switch (response.status) {
               case 429:
                 _.systemInfo = 'Too many requests, please try again later'
                 break
               case 401:
-                _.systemInfo = "Seems like you're not authorized, please refresh this page and try again."
+                _.systemInfo = 'Seems like you\'re not authorized, please refresh this page and try again.'
                 break
               default:
-                _.systemInfo = response.status + ": We encountered an error, please refresh this page and try again."
+                _.systemInfo = response.status + ': We encountered an error, please refresh this page and try again.'
                 break
             }
           } else {
@@ -641,22 +714,7 @@ export default {
             reader.read().then(({value, done}) => {
               if (done) {
                 _.streaming = false
-                _.messages[dataIndex].displayText = marked(_.messages[dataIndex].text)
-                _.messages[dataIndex].displayText = xss(_.messages[dataIndex].displayText, {
-                  whiteList: {
-                    p: [],
-                    pre: [],
-                    code: [],
-                    br: [],
-                    ol: [],
-                    li: [],
-                    ul: [],
-                    blockquote: [],
-                    strong: [],
-                    b: []
-                  }
-                })
-
+                _.renderText(dataIndex, _.messages[dataIndex].text)
                 _.composeHistory()
                 _.scrollDown(true)
                 _.saveHistory()
@@ -680,7 +738,7 @@ export default {
               ).length
 
               _.messages[dataIndex].text = trim(_.messages[dataIndex].text)
-
+              _.renderText(dataIndex, _.messages[dataIndex].text)
               _.saveHistory()
               _.updateDisplayMessages()
               if (_.streamTimeoutCount) {
@@ -702,20 +760,12 @@ export default {
       setTimeout(function () {
         _.$refs.input.focus()
       }, 20)
-    },
-    highlight() {
-      document.querySelectorAll('pre code').forEach((el) => {
-        hljs.highlightElement(el)
-      })
     }
   },
   watch: {
-    streaming(val) {
-      let _ = this
+    streaming: function (val) {
       if (!val) {
-        _.$nextTick(() => {
-          _.highlight()
-        })
+        this.initClipboard()
       }
     },
     streamTimeout(val) {
