@@ -459,10 +459,8 @@ export default {
         }
         localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`, res.data.AuthenticationResult.AccessToken)
         localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.idToken`, res.data.AuthenticationResult.IdToken)
-        setTimeout(() => {
-          _.isLogin = true
-          _.checkingLogin = false
-        }, 1000)
+        _.isLogin = true
+        _.checkingLogin = false
         _.pageLoaded = true
       }).catch(err => {
         console.log(err)
