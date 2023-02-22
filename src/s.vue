@@ -42,6 +42,7 @@
 import axios from 'axios'
 import hljs from 'highlight.js/lib/common'
 import {getApiBase} from './utils/common.js'
+import ClipboardJS from 'clipboard'
 let baseAPI = getApiBase()
 
 export default {
@@ -50,6 +51,31 @@ export default {
     this.getMessages()
   },
   methods: {
+    initClipboard() {
+      let cp = new ClipboardJS('.copy-code-btn', {
+        target: function (trigger) {
+          return trigger.parentNode.parentNode.parentNode.querySelector('.hljs code')
+        }
+      })
+
+      cp.on('success', function (e) {
+        let btn = e.trigger
+        e.clearSelection()
+        if(btn.innerHTML === 'Copied!'){
+          return false
+        }
+        btn.innerHTML = 'Copied!'
+
+        setTimeout(function () {
+          btn.innerHTML = 'Copy Code'
+        }, 1500)
+      })
+
+      cp.on('error', function (e) {
+        console.error('Action:', e.action)
+        console.error('Trigger:', e.trigger)
+      })
+    },
     highlight() {
       document.querySelectorAll('pre code').forEach((el) => {
         hljs.highlightElement(el)
@@ -65,6 +91,7 @@ export default {
           _.messages = JSON.parse(res.data.messages).reverse()
           _.$nextTick(function () {
             _.highlight()
+            _.initClipboard()
           })
         }else{
           _.notFound = true
