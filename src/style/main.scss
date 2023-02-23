@@ -439,8 +439,8 @@ table {
   }
 
   .page-options {
-    background: #505050;
-    border: 1px solid #505050;
+    background: #2c2c2c;
+    border: 1px solid #2c2c2c;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
     hr {
@@ -484,6 +484,10 @@ table {
         border: 1px solid #8a8a8a;
         border-radius: 6px;
         background-color: #626262;
+
+        .copy-code-btn{
+          color: #333;
+        }
       }
 
       button {

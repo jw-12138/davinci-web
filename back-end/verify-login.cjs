@@ -17,10 +17,10 @@ let verify_login = function (token, userPool) {
   }
 
   return axios({
-    url: "https://api.jw1.dev/cognito/verify",
+    url: "https://v.api.jw1.dev/api/verify",
     method: 'post',
     data: {
-      accessToken: token,
+      AccessToken: token,
       userPool
     }
   })

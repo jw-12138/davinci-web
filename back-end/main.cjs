@@ -54,6 +54,8 @@ app.post('/api/share', (req, res) => {
     if (loginValid) {
       write_conversations({
         id,
+        created: Date.now(),
+        userName: r.data.Username,
         history: history_data
       }).then(r_2 => {
         console.log('Write to database successfully')

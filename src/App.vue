@@ -368,7 +368,7 @@ export default {
       this.scrollDown()
 
       axios({
-        url: 'https://cpo9n0zgj6.execute-api.ap-northeast-2.amazonaws.com/prod/davinci/revoke',
+        url: 'https://v.api.jw1.dev/api/revoke',
         method: 'post',
         data: {
           Token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
@@ -500,7 +500,7 @@ export default {
 
       axios({
         method: 'post',
-        url: 'https://api.jw1.dev/cognito/renew',
+        url: 'https://v.api.jw1.dev/api/renew',
         data: {
           refreshToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
           userPool: USER_POOL_CLIENT_ID
