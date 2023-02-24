@@ -257,13 +257,14 @@ export default {
     this.readHistory()
     this.updateDisplayMessages()
     this.getShareLink()
+    _.pageLoaded = true
     window.addEventListener('click', function () {
       _.showPageOptions = false
     })
   },
   data() {
     return {
-      checkingLogin: true,
+      checkingLogin: false,
       systemStartTime: Date.now(),
       systemInfo: '',
       showPageOptions: false,
@@ -484,16 +485,16 @@ export default {
     checkForLogin() {
       let _ = this
 
+      _.checkingLogin = true
+
       if (!localStorage.getItem('fromID')) {
         _.isLogin = false
-        _.pageLoaded = true
         _.checkingLogin = false
         return false
       }
 
       if (localStorage.getItem('fromID').split('_')[0] === 'key') {
         _.isLogin = true
-        _.pageLoaded = true
         _.checkingLogin = false
         return false
       }
@@ -513,12 +514,10 @@ export default {
         localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.idToken`, res.data.AuthenticationResult.IdToken)
         _.isLogin = true
         _.checkingLogin = false
-        _.pageLoaded = true
       }).catch(err => {
         console.log(err)
         _.isLogin = false
         _.checkingLogin = false
-        _.pageLoaded = true
       })
     },
     listenForKeys() {
