@@ -339,7 +339,7 @@ export default {
           location.href = location.href.split('?')[0]
         }
       }).catch(err => {
-        console.log(err)
+        throw err
       })
     },
     updateDisplayMessages() {
