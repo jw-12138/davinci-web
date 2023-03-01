@@ -82,6 +82,7 @@ app.post('/api/share', (req, res) => {
   })
 })
 
+// deprecated
 app.post('/api/checkLogin', function (req, res) {
   let token = req.body.token
   let loginValid = false
