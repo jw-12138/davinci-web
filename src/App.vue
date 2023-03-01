@@ -485,13 +485,7 @@ export default {
 
       _.checkingLogin = true
 
-      if (!localStorage.getItem('fromID')) {
-        _.isLogin = false
-        _.checkingLogin = false
-        return false
-      }
-
-      if (localStorage.getItem('fromID').split('_')[0] === 'key') {
+      if (localStorage.getItem('fromID') && localStorage.getItem('fromID').split('_')[0] === 'key') {
         _.isLogin = true
         _.checkingLogin = false
         return false
