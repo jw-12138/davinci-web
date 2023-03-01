@@ -325,6 +325,7 @@ export default {
       }
     },
     getLoginInfo(id) {
+      this.checkingLogin = true
       axios({
         url: busBaseApi + '/login-info/get',
         method: 'post',
