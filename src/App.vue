@@ -241,7 +241,7 @@ md.renderer.rules.fence = function (...args) {
 }
 
 let baseAPI = getApiBase()
-let busBaseApi = 'https://api.jw1.dev'
+let busBaseApi = 'https://sso.jw1.dev/api'
 
 export default {
   components: {Login},
@@ -300,7 +300,7 @@ export default {
       cp.on('success', function (e) {
         let btn = e.trigger
         e.clearSelection()
-        if(btn.innerHTML === 'Copied!'){
+        if (btn.innerHTML === 'Copied!') {
           return false
         }
         btn.innerHTML = 'Copied!'
@@ -326,7 +326,7 @@ export default {
     },
     getLoginInfo(id) {
       axios({
-        url: busBaseApi + '/davinci/get_info',
+        url: busBaseApi + '/login-info/get',
         method: 'post',
         data: {
           id
@@ -334,9 +334,7 @@ export default {
       }).then(res => {
         if (res.data.status === 0) {
           let d = JSON.parse(res.data.data.login_info)
-          Object.keys(d).forEach(key => {
-            localStorage.setItem(key, d[key])
-          })
+          localStorage.setItem('CognitoIdentityServiceProvider.' + USER_POOL_CLIENT_ID + '.jw1dev.refreshToken', d)
 
           location.href = location.href.split('?')[0]
         }
