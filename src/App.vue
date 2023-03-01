@@ -333,8 +333,8 @@ export default {
         }
       }).then(res => {
         if (res.data.status === 0) {
-          let d = JSON.parse(res.data.data.login_info)
-          localStorage.setItem('CognitoIdentityServiceProvider.' + USER_POOL_CLIENT_ID + '.jw1dev.refreshToken', d)
+          let token = res.data.data.login_info
+          localStorage.setItem('CognitoIdentityServiceProvider.' + USER_POOL_CLIENT_ID + '.jw1dev.refreshToken', token)
 
           location.href = location.href.split('?')[0]
         }
