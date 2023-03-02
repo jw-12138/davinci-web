@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const {Configuration, OpenAIApi} = require('openai')
 const GPT3Tokenizer = require('gpt3-tokenizer').default
-const tokenizer = new GPT3Tokenizer({ type: 'gpt3' })
+const tokenizer = new GPT3Tokenizer({type: 'gpt3'})
 
 /**
  *
@@ -11,7 +11,7 @@ const tokenizer = new GPT3Tokenizer({ type: 'gpt3' })
  * @param {function} cb - callback function
  */
 function ask(m, options, cb) {
-  if(options.key){
+  if (options.key) {
     process.env.OPENAI_KEY = options.key
   }
   delete options.key
@@ -23,22 +23,22 @@ function ask(m, options, cb) {
     'davinci': {
       oneDollorToken: 1 / 0.02 * 1000,
       name: 'text-davinci-003',
-      goodAt: 'Complex intent, cause and effect, summarization for audience'
+      info: 'Complex intent, cause and effect, summarization for audience'
     },
     'curie': {
       oneDollorToken: 1 / 0.002 * 1000,
       name: 'text-curie-001',
-      goodAt: 'Language translation, complex classification, text sentiment, summarization'
+      info: 'Language translation, complex classification, text sentiment, summarization'
     },
     'babbage': {
       oneDollorToken: 1 / 0.0005 * 1000,
       name: 'text-babbage-001',
-      goodAt: 'Capable of straightforward tasks, very fast, and lower cost.'
+      info: 'Capable of straightforward tasks, very fast, and lower cost.'
     },
     'ada': {
       oneDollorToken: 1 / 0.0004 * 1000,
       name: 'text-ada-001',
-      goodAt: 'Capable of very simple tasks, usually the fastest model in the GPT-3 series, and lowest cost.'
+      info: 'Capable of very simple tasks, usually the fastest model in the GPT-3 series, and lowest cost.'
     }
   }
 
@@ -88,6 +88,87 @@ function ask(m, options, cb) {
   })
 }
 
+function chat(m, options, cb) {
+  if (options.key) {
+    process.env.OPENAI_KEY = options.key
+  }
+
+  delete options.key
+
+  let configuration = new Configuration({
+    apiKey: process.env.OPENAI_KEY
+  })
+  let openai = new OpenAIApi(configuration)
+
+  let models = {
+    'chat-gpt': {
+      oneDollorToken: 1 / 0.002 * 1000,
+      name: 'gpt-3.5-turbo',
+      info: 'The standard ChatGPT model'
+    }
+  }
+
+  let model = models[m]
+  options.model = model.name
+  let axiosOptions = {}
+  let isStream = options.stream
+  if (isStream) {
+    axiosOptions = {
+      responseType: 'stream'
+    }
+  }
+
+  if (isStream) {
+    let tokenCount = 0
+    let stopSignal = 0
+    openai.createChatCompletion(options, axiosOptions).then(chatCompletion => {
+      chatCompletion.data.on('data', chunk => {
+        let s = chunk.toString()
+        let s_arr = s.split('data: ')
+        let d = s_arr[1]
+        let d_obj = null
+        if (d === '[DONE]\n\n') {
+          stopSignal++
+        } else {
+          d_obj = JSON.parse(d)
+          if (d_obj.choices[0].finish_reason === 'stop') {
+            stopSignal++
+          }
+        }
+
+        if (stopSignal > 1) {
+          return
+        }
+
+        if (stopSignal) {
+          let str = ''
+          options.messages.forEach((message) => {
+            str += message.content + '\n'
+          })
+          let encoded = tokenizer.encode(str)
+          let encodedPrompt = encoded.bpe
+          let promptTokens = encodedPrompt.length
+          let cost = (tokenCount + promptTokens) / model.oneDollorToken
+          cb && cb(null, cost)
+        } else {
+          tokenCount++
+          cb && cb(d_obj.choices[0].delta.content, null)
+        }
+      })
+    }).catch(err => {
+      cb && cb(null, null, e)
+    })
+  } else {
+    openai.createChatCompletion(options).then(chatCompletion => {
+      let cost = chatCompletion.data.usage.total_tokens / model.oneDollorToken
+      cb && cb(chatCompletion.data.choices[0].message.content, cost, null)
+    }).catch(e => {
+      cb && cb(null, null, e)
+    })
+  }
+}
+
 module.exports = {
-  ask
+  ask,
+  chat
 }

@@ -167,6 +167,17 @@
             <i class="iconfont" style="top: 2px" v-if="!showPageOptions">&#xe67e;</i>
             <i class="iconfont" style="top: 2px" v-if="showPageOptions">&#xe685;</i> Settings
           </button>
+
+          <div class="select-box" :class="{
+            focus: modelSelectFocus
+          }" style="margin-left: 10px">
+            <div class="value"><i class="iconfont icon-Bot"></i> {{apiMethod[apiMethodIndex].name}}</div>
+            <select v-model="apiMethodIndex" style="margin-left: 10px" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
+              <optgroup v-for="(item, index) in apiMethod" :label="item.model">
+                <option :value="index">{{ item.name }}</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -264,6 +275,20 @@ export default {
   },
   data() {
     return {
+      modelSelectFocus: false,
+      apiMethodIndex: 1,
+      apiMethod: [
+        {
+          name: 'DaVinci',
+          model: 'text-davinci-003',
+          url: '/ask'
+        },
+        {
+          name: 'ChatGPT',
+          model: 'gpt-3.5-turbo',
+          url: '/chat'
+        }
+      ],
       checkingLogin: false,
       systemStartTime: Date.now(),
       systemInfo: '',
@@ -566,7 +591,6 @@ export default {
       _.editIndex = undefined
       _.editMessage = undefined
 
-      _.composeHistory()
       _.composeMessage(true)
     },
     renderText(index, originalText) {
@@ -663,13 +687,16 @@ export default {
 
       this.updateDisplayMessages()
 
-      fetch(baseAPI + '/ask', {
+      let tempHistory = JSON.parse(JSON.stringify(_.messages))
+      tempHistory.splice(-1, 1)
+
+      fetch(baseAPI + _.apiMethod[_.apiMethodIndex].url, {
         method: 'POST',
         body: JSON.stringify({
           token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`) || localStorage.getItem('fromID'),
           userPool: USER_POOL_CLIENT_ID,
           message: userInput,
-          history: _.historyText
+          history: tempHistory
         }),
         headers: {
           'Content-Type': 'application/json'
@@ -690,6 +717,8 @@ export default {
                 _.systemInfo = response.status + ': We encountered an error, please refresh this page and try again.'
                 break
             }
+
+            _.streaming = false
           } else {
             _.messages[dataIndex] = {
               sender: 'AI',

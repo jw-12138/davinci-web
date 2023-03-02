@@ -264,6 +264,52 @@ textarea {
   }
 }
 
+.select-box {
+  position: relative;
+  line-height: 20px;
+  height: 40px;
+  font-size: 14px;
+  border-radius: 30px;
+  padding: 0 15px;
+  outline-offset: 2px;
+  background: #fff;
+  color: #1f2937;
+  border: 2px solid #1f2937;
+  display: inline-block;
+
+  &.focus {
+    outline: 2px #3b82f6 solid;
+  }
+
+  .iconfont {
+    font-size: 20px;
+    margin-right: 3px;
+    position: relative;
+  }
+
+  .value{
+    height: 40px;
+    line-height: 36px;
+    position: relative;
+    padding-left: 24px;
+
+    .iconfont{
+      position: absolute;
+      left: 0;
+    }
+  }
+
+  select {
+    position: absolute;
+    opacity: 0;
+    left: 0;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    cursor: pointer;
+  }
+}
+
 button {
   cursor: pointer;
   line-height: 20px;
@@ -485,7 +531,7 @@ table {
         border-radius: 6px;
         background-color: #626262;
 
-        .copy-code-btn{
+        .copy-code-btn {
           color: #333;
         }
       }
@@ -563,6 +609,52 @@ table {
       background: transparent;
       color: #fff;
       border-color: #c0c0c0;
+    }
+  }
+
+  .select-box {
+    position: relative;
+    line-height: 20px;
+    height: 40px;
+    font-size: 14px;
+    border-radius: 30px;
+    padding: 0 15px;
+    outline-offset: 2px;
+    background: transparent;
+    color: #fff;
+    border-color: #c0c0c0;
+    display: inline-block;
+
+    &.focus {
+      outline: 2px #3b82f6 solid;
+    }
+
+    .iconfont {
+      font-size: 20px;
+      margin-right: 3px;
+      position: relative;
+    }
+
+    .value{
+      height: 40px;
+      line-height: 36px;
+      position: relative;
+      padding-left: 24px;
+
+      .iconfont{
+        position: absolute;
+        left: 0;
+      }
+    }
+
+    select {
+      position: absolute;
+      opacity: 0;
+      left: 0;
+      width: 100%;
+      top: 0;
+      height: 100%;
+      cursor: pointer;
     }
   }
 }
