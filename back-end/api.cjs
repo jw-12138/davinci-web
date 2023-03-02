@@ -77,7 +77,6 @@ function ask(m, options, cb) {
         let eventData = chunk.toString()
         let s = eventData.split('\n\n')
         s.pop()
-        console.log(s)
         s.forEach(el => {
           let s_arr = el.split('data: ')
           let d = s_arr[1]
@@ -90,6 +89,7 @@ function ask(m, options, cb) {
       })
     }
   }).catch(err => {
+    console.log(err.toJSON())
     cb && cb(null, null, err)
   })
 }
@@ -116,7 +116,6 @@ function chat(m, options, cb) {
 
   let model = models[m]
   options.model = model.name
-  console.log(options)
   let axiosOptions = {}
   let isStream = options.stream
   if (isStream) {

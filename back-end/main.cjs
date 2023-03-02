@@ -151,7 +151,6 @@ ${composedHistory}
 Human: ${message}
 AI: `,
           temperature: 0.5,
-          max_tokens: 2000,
           top_p: 1,
           frequency_penalty: 0,
           presence_penalty: 0.6,
@@ -227,11 +226,11 @@ app.post('/api/chat', function(req, res) {
         'chat-gpt',
         {
           messages: [
-            {
-              role: 'system',
-              content: instruction
-            },
-            ...composedHistory,
+            // {
+            //   role: 'system',
+            //   content: instruction
+            // },
+            // ...composedHistory,
             {
               role: 'user',
               content: message
