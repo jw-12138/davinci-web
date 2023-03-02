@@ -159,13 +159,16 @@ AI: `,
           key: loginType === 'key' ? token.split('_')[1] : false
         },
         function (text, cost, err) {
-          if (err) {
-            console.log(err.response)
+          if (err && err.response) {
             if (err.response.status === 429) {
               res.status(429)
             } else {
               res.status(err.response.status)
             }
+            res.end()
+            return false
+          }else{
+            res.status(500)
             res.end()
             return false
           }
@@ -235,7 +238,6 @@ app.post('/api/chat', function(req, res) {
             }
           ],
           temperature: 0.6,
-          max_tokens: 4000,
           top_p: 1,
           frequency_penalty: 0,
           presence_penalty: 0.6,
@@ -243,13 +245,16 @@ app.post('/api/chat', function(req, res) {
           key: loginType === 'key' ? token.split('_')[1] : false
         },
         function (text, cost, err) {
-          if (err) {
+          if (err && err.response) {
             if (err.response && err.response.status === 429) {
               res.status(429)
             } else {
               res.status(err.response.status)
             }
             res.end()
+            return false
+          }else{
+            res.status(500).end()
             return false
           }
           if (text) {

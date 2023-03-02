@@ -116,6 +116,7 @@ function chat(m, options, cb) {
 
   let model = models[m]
   options.model = model.name
+  console.log(options)
   let axiosOptions = {}
   let isStream = options.stream
   if (isStream) {
@@ -154,14 +155,15 @@ function chat(m, options, cb) {
         })
       })
     }).catch(err => {
+      console.log(err.toJSON())
       cb && cb(null, null, err)
     })
   } else {
     openai.createChatCompletion(options).then(chatCompletion => {
       let cost = chatCompletion.data.usage.total_tokens / model.oneDollorToken
       cb && cb(chatCompletion.data.choices[0].message.content, cost, null)
-    }).catch(e => {
-      cb && cb(null, null, e)
+    }).catch(err => {
+      cb && cb(null, null, err)
     })
   }
 }

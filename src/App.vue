@@ -776,7 +776,11 @@ export default {
           console.log(err)
           _.streaming = false
           _.composeHistory()
-          _.systemInfo = err.response.status + ': Something went wrong, please try again later'
+          if(err.response){
+            _.systemInfo = err.response.status + ': Something went wrong, please try again later'
+          }else{
+            _.systemInfo = err.message
+          }
         })
       setTimeout(function () {
         _.$refs.input.focus()
