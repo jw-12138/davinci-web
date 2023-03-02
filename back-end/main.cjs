@@ -164,6 +164,7 @@ AI: `,
           if (cost) {
             res.write(Buffer.from('####[COST]:' + cost))
             res.end()
+            return false
           }
           if (err && err.response) {
             if (err.response.status === 429) {
@@ -253,6 +254,7 @@ app.post('/api/chat', function (req, res) {
           if (cost) {
             res.write(Buffer.from('####[COST]:' + cost))
             res.end()
+            return false
           }
 
           if (err && err.response) {
