@@ -151,7 +151,7 @@ ${composedHistory}
 Human: ${message}
 AI: `,
           temperature: 0.5,
-          max_tokens: 1000,
+          max_tokens: 2000,
           top_p: 1,
           frequency_penalty: 0,
           presence_penalty: 0.6,
@@ -235,7 +235,7 @@ app.post('/api/chat', function(req, res) {
             }
           ],
           temperature: 0.6,
-          max_tokens: 2048,
+          max_tokens: 4000,
           top_p: 1,
           frequency_penalty: 0,
           presence_penalty: 0.6,
