@@ -158,6 +158,13 @@ AI: `,
           key: loginType === 'key' ? token.split('_')[1] : false
         },
         function (text, cost, err) {
+          if (text) {
+            res.write(Buffer.from(text))
+          }
+          if (cost) {
+            res.write(Buffer.from('####[COST]:' + cost))
+            res.end()
+          }
           if (err && err.response) {
             if (err.response.status === 429) {
               res.status(429)
@@ -165,17 +172,12 @@ AI: `,
               res.status(err.response.status)
             }
             res.end()
+            console.log(err)
             return false
           } else {
-            res.status(500).end(Buffer.from(err.toJSON().message))
+            console.log(err)
+            res.status(500).end()
             return false
-          }
-          if (text) {
-            res.write(Buffer.from(text))
-          }
-          if (cost) {
-            res.write(Buffer.from('####[COST]:' + cost))
-            res.end()
           }
         }
       )
@@ -243,6 +245,16 @@ app.post('/api/chat', function (req, res) {
           key: loginType === 'key' ? token.split('_')[1] : false
         },
         function (text, cost, err) {
+
+          if (text) {
+            res.write(Buffer.from(text))
+          }
+
+          if (cost) {
+            res.write(Buffer.from('####[COST]:' + cost))
+            res.end()
+          }
+
           if (err && err.response) {
             if (err.response && err.response.status === 429) {
               res.status(429)
@@ -250,17 +262,12 @@ app.post('/api/chat', function (req, res) {
               res.status(err.response.status)
             }
             res.end()
+            console.log(err)
             return false
           } else {
-            res.status(500).end(Buffer.from(err.toJSON().message))
+            console.log(err)
+            res.status(500).end()
             return false
-          }
-          if (text) {
-            res.write(Buffer.from(text))
-          }
-          if (cost) {
-            res.write(Buffer.from('####[COST]:' + cost))
-            res.end()
           }
         }
       )
