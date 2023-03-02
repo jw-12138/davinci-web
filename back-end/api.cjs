@@ -162,6 +162,7 @@ function chat(m, options, cb) {
       let cost = chatCompletion.data.usage.total_tokens / model.oneDollorToken
       cb && cb(chatCompletion.data.choices[0].message.content, cost, null)
     }).catch(err => {
+      console.log(err.toJSON())
       cb && cb(null, null, err)
     })
   }

@@ -226,11 +226,11 @@ app.post('/api/chat', function(req, res) {
         'chat-gpt',
         {
           messages: [
-            // {
-            //   role: 'system',
-            //   content: instruction
-            // },
-            // ...composedHistory,
+            {
+              role: 'system',
+              content: instruction
+            },
+            ...composedHistory,
             {
               role: 'user',
               content: message
