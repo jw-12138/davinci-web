@@ -13,7 +13,7 @@
           <li>
             To authenticate with OpenAI, we will send your API key to our server for processing but it will never be
             stored there. Don't believe it? Check the <a
-            href="https://github.com/jw-12138/davinci-web/blob/main/back-end/main.cjs#L158" target="_blank">source code</a>.
+            href="https://github.com/jw-12138/davinci-web/blob/main/back-end/main.cjs" target="_blank">source code</a>.
           </li>
           <li>
             Make sure this device is trusted, we will store your API key in this browser. If you're using a public
