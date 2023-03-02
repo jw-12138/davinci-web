@@ -166,9 +166,8 @@ AI: `,
             }
             res.end()
             return false
-          }else{
-            res.status(500)
-            res.end()
+          } else {
+            res.status(500).end(Buffer.from(err.toJSON().message))
             return false
           }
           if (text) {
@@ -190,7 +189,7 @@ AI: `,
   })
 })
 
-app.post('/api/chat', function(req, res) {
+app.post('/api/chat', function (req, res) {
   res.set('Content-Type', 'application/octet-stream')
   res.set('Transfer-Encoding', 'chunked')
 
@@ -252,8 +251,8 @@ app.post('/api/chat', function(req, res) {
             }
             res.end()
             return false
-          }else{
-            res.status(500).end()
+          } else {
+            res.status(500).end(Buffer.from(err.toJSON().message))
             return false
           }
           if (text) {
