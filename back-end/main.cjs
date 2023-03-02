@@ -183,7 +183,8 @@ AI: `,
       res.end()
     }
   }).catch(err => {
-    res.write(Buffer.from('Seems like you are not authenticated, try refresh the page! 🥲'))
+    console.log(err)
+    res.status(401)
     res.end()
   })
 })
@@ -271,11 +272,11 @@ app.post('/api/chat', function (req, res) {
     }
   }).catch(err => {
     console.log(err)
-    res.status(500).json(err)
+    res.status(401)
     res.end()
   })
 })
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+  console.log(`DaVinci GPT-3 is now listening on port ${port}`)
 })
