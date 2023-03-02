@@ -166,18 +166,14 @@ AI: `,
             res.end()
             return false
           }
-          if (err && err.response) {
-            if (err.response.status === 429) {
+          if (err) {
+            console.log(err)
+            if (err.response && err.response.status === 429) {
               res.status(429)
             } else {
-              res.status(err.response.status)
+              res.status(500)
             }
             res.end()
-            console.log(err)
-            return false
-          } else {
-            console.log(err)
-            res.status(500).end()
             return false
           }
         }
@@ -257,18 +253,14 @@ app.post('/api/chat', function (req, res) {
             return false
           }
 
-          if (err && err.response) {
+          if (err) {
+            console.log(err)
             if (err.response && err.response.status === 429) {
               res.status(429)
             } else {
-              res.status(err.response.status)
+              res.status(500)
             }
             res.end()
-            console.log(err)
-            return false
-          } else {
-            console.log(err)
-            res.status(500).end()
             return false
           }
         }
