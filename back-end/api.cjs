@@ -148,7 +148,7 @@ function chat(m, options, cb) {
           tokenCount++
           cb && cb(d_obj.choices[0].delta.content, null)
         }
-      }, 10)
+      }, 0)
     }
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
