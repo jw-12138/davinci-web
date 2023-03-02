@@ -74,14 +74,19 @@ function ask(m, options, cb) {
         }, 50)
       })
       res.data.on('data', chunk => {
-        let s = chunk.toString()
-        let s_arr = s.split('data: ')
-        let d = s_arr[1]
-        if (d.startsWith('{')) {
-          tokenCount++
-          let d_obj = JSON.parse(d)
-          cb && cb(d_obj.choices[0].text, null)
-        }
+        let eventData = chunk.toString()
+        let s = eventData.split('\n\n')
+        s.pop()
+        console.log(s)
+        s.forEach(el => {
+          let s_arr = el.split('data: ')
+          let d = s_arr[1]
+          if (d.startsWith('{')) {
+            tokenCount++
+            let d_obj = JSON.parse(d)
+            cb && cb(d_obj.choices[0].text, null)
+          }
+        })
       })
     }
   }).catch(err => {
@@ -111,96 +116,46 @@ function chat(m, options, cb) {
 
   let model = models[m]
   options.model = model.name
+  let axiosOptions = {}
   let isStream = options.stream
+  if (isStream) {
+    axiosOptions = {
+      responseType: 'stream'
+    }
+  }
 
   if (isStream) {
-    let streamPool = []
-    let pushingInterval = 0
     let tokenCount = 0
-    let startPushing = function () {
-      pushingInterval = setInterval(function () {
-        if (streamPool.length > 0) {
-          let s = streamPool.shift()
-          let s_arr = s.toString().split('data: ')
-          let d = s_arr[1]
-          let d_obj = null
-          if (d.startsWith('{')) {
-            d_obj = JSON.parse(d)
-          } else {
-            d_obj = {
-              choices: [{finish_reason: 'stop'}]
-            }
-          }
-
-          if (d_obj.choices[0].finish_reason === 'stop') {
-            clearInterval(pushingInterval)
-            let textForCounting = ''
-            options.messages.forEach((message) => {
-              textForCounting += message.content + '\n'
-            })
-            let encoded = tokenizer.encode(textForCounting)
-            let encodedPrompt = encoded.bpe
-            let promptTokens = encodedPrompt.length
-            let cost = (tokenCount + promptTokens) / model.oneDollorToken
-            cb && cb(null, cost)
-          }
-
-          tokenCount++
-          cb && cb(d_obj.choices[0].delta.content, null)
-        }
-      }, 0)
-    }
-    fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      body: JSON.stringify(options),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + process.env.OPENAI_KEY
-      },
-      stream: true
-    }).then(res => {
-      startPushing()
-      res.body.on('data', chunk => {
-        streamPool.push(chunk)
+    openai.createChatCompletion(options, axiosOptions).then(chatCompletion => {
+      chatCompletion.data.on('end', function () {
+        let str = ''
+        options.messages.forEach((message) => {
+          str += message.content + '\n'
+        })
+        let encoded = tokenizer.encode(str)
+        let encodedPrompt = encoded.bpe
+        let promptTokens = encodedPrompt.length
+        let cost = (tokenCount + promptTokens) / model.oneDollorToken
+        cb && cb(null, cost)
       })
+
+      chatCompletion.data.on('data', chunk => {
+        let eventData = chunk.toString()
+        let s = eventData.split('\n\n')
+        s.pop()
+        s.forEach(el => {
+          let s_arr = el.split('data: ')
+          let d = s_arr[1]
+          if (d.startsWith('{')) {
+            let d_obj = JSON.parse(d)
+            tokenCount++
+            cb && cb(d_obj.choices[0].delta.content, null)
+          }
+        })
+      })
+    }).catch(err => {
+      cb && cb(null, null, e)
     })
-    // openai.createChatCompletion(options, axiosOptions).then(chatCompletion => {
-    //   chatCompletion.data.on('data', chunk => {
-    //     let s = chunk.toString()
-    //     let s_arr = s.split('data: ')
-    //     let d = s_arr[1]
-    //     let d_obj = null
-    //     if (d === '[DONE]\n\n') {
-    //       stopSignal++
-    //     } else {
-    //       d_obj = JSON.parse(d)
-    //       if (d_obj.choices[0].finish_reason === 'stop') {
-    //         stopSignal++
-    //       }
-    //     }
-    //
-    //     if (stopSignal > 1) {
-    //       return
-    //     }
-    //
-    //     if (stopSignal) {
-    //       let str = ''
-    //       options.messages.forEach((message) => {
-    //         str += message.content + '\n'
-    //       })
-    //       let encoded = tokenizer.encode(str)
-    //       let encodedPrompt = encoded.bpe
-    //       let promptTokens = encodedPrompt.length
-    //       let cost = (tokenCount + promptTokens) / model.oneDollorToken
-    //       cb && cb(null, cost)
-    //     } else {
-    //       tokenCount++
-    //       cb && cb(d_obj.choices[0].delta.content, null)
-    //     }
-    //   })
-    // }).catch(err => {
-    //   cb && cb(null, null, e)
-    // })
   } else {
     openai.createChatCompletion(options).then(chatCompletion => {
       let cost = chatCompletion.data.usage.total_tokens / model.oneDollorToken
