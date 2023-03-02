@@ -154,7 +154,7 @@ function chat(m, options, cb) {
         })
       })
     }).catch(err => {
-      cb && cb(null, null, e)
+      cb && cb(null, null, err)
     })
   } else {
     openai.createChatCompletion(options).then(chatCompletion => {
