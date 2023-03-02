@@ -429,7 +429,7 @@ export default {
 
       axios.post(baseAPI + '/share', {
         history: JSON.stringify(this.messages),
-        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
+        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`) || localStorage.getItem('fromID'),
         userPool: USER_POOL_CLIENT_ID
       }).then(res => {
         this.sharing = false
