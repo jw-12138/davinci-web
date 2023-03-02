@@ -54,7 +54,7 @@ export default {
     initClipboard() {
       let cp = new ClipboardJS('.copy-code-btn', {
         target: function (trigger) {
-          return trigger.parentNode.parentNode.parentNode.querySelector('.hljs code')
+          return trigger.parentNode.parentNode.parentNode.querySelector('pre code')
         }
       })
 
