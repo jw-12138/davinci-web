@@ -272,7 +272,7 @@ app.post('/api/chat', function (req, res) {
     }
   }).catch(err => {
     console.log(err)
-    res.status(401)
+    res.status(err.response.status)
     res.end()
   })
 })

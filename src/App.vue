@@ -725,6 +725,9 @@ export default {
               case 401:
                 _.systemInfo = 'Seems like you\'re not authorized, please refresh this page and try again.'
                 break
+              case 403:
+                _.systemInfo = "Your account is perfectly fine, but you're not allowed to use this service at the moment. 🥹 Sorry about that."
+                break
               default:
                 _.systemInfo = response.status + ': We encountered an error, please refresh this page and try again.'
                 break
