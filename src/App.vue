@@ -171,8 +171,8 @@
           <div class="select-box" :class="{
             focus: modelSelectFocus
           }" style="margin-left: 10px">
-            <div class="value"><i class="iconfont icon-Bot"></i> {{apiMethod[apiMethodIndex].name}}</div>
-            <select v-model="apiMethodIndex" style="margin-left: 10px" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
+            <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
+            <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
               <optgroup v-for="(item, index) in apiMethod" :label="item.model">
                 <option :value="index">{{ item.name }}</option>
               </optgroup>
@@ -222,6 +222,7 @@ import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
 import Markdownit from 'markdown-it'
 import ClipboardJS from 'clipboard'
+import jwt from 'jsonwebtoken'
 
 let md = new Markdownit({
   highlight: function (str, lang) {
@@ -359,9 +360,11 @@ export default {
         }
       }).then(res => {
         if (res.data.status === 0) {
-          let token = res.data.data.login_info
-          localStorage.setItem('CognitoIdentityServiceProvider.' + USER_POOL_CLIENT_ID + '.jw1dev.refreshToken', token)
-
+          let loginInfo = JSON.parse(res.data.data.login_info)
+          let token = loginInfo.refreshToken
+          let username = loginInfo.username
+          localStorage.setItem('username_from_sso', username)
+          localStorage.setItem('CognitoIdentityServiceProvider.' + USER_POOL_CLIENT_ID + '.' + username + '.refreshToken', token)
           location.href = location.href.split('?')[0]
         }
       }).catch(err => {
@@ -396,8 +399,9 @@ export default {
         url: 'https://v.api.jw1.dev/api/revoke',
         method: 'post',
         data: {
-          Token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`) || localStorage.getItem('fromID'),
-          ClientId: USER_POOL_CLIENT_ID
+          token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`) || localStorage.getItem('fromID'),
+          userPool: USER_POOL_ID,
+          clientId: USER_POOL_CLIENT_ID
         }
       }).then(res => {
         this.isLogin = false
@@ -429,8 +433,9 @@ export default {
 
       axios.post(baseAPI + '/share', {
         history: JSON.stringify(this.messages),
-        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`) || localStorage.getItem('fromID'),
-        userPool: USER_POOL_CLIENT_ID
+        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.accessToken`) || localStorage.getItem('fromID'),
+        userPool: USER_POOL_ID,
+        clientId: USER_POOL_CLIENT_ID
       }).then(res => {
         this.sharing = false
         this.shareLink = window.location.origin + '/s.html?id=' + res.data.id
@@ -511,7 +516,7 @@ export default {
 
       _.checkingLogin = true
 
-      if(!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`)){
+      if (!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`)) {
         _.checkingLogin = false
         return false
       }
@@ -526,15 +531,15 @@ export default {
         method: 'post',
         url: 'https://v.api.jw1.dev/api/renew',
         data: {
-          refreshToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
-          userPool: USER_POOL_CLIENT_ID
+          refreshToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`),
+          userPool: USER_POOL_ID
         }
       }).then(res => {
         if (!res.data.AuthenticationResult) {
           throw new Error('oops')
         }
-        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`, res.data.AuthenticationResult.AccessToken)
-        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.idToken`, res.data.AuthenticationResult.IdToken)
+        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.accessToken`, res.data.AuthenticationResult.AccessToken)
+        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.idToken`, res.data.AuthenticationResult.IdToken)
         _.isLogin = true
         _.checkingLogin = false
       }).catch(err => {
@@ -698,8 +703,9 @@ export default {
       fetch(baseAPI + _.apiMethod[_.apiMethodIndex].url, {
         method: 'POST',
         body: JSON.stringify({
-          token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`) || localStorage.getItem('fromID'),
-          userPool: USER_POOL_CLIENT_ID,
+          token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.accessToken`) || localStorage.getItem('fromID'),
+          userPool: USER_POOL_ID,
+          clientID: USER_POOL_CLIENT_ID,
           message: userInput,
           history: tempHistory
         }),
@@ -781,9 +787,9 @@ export default {
           console.log(err)
           _.streaming = false
           _.composeHistory()
-          if(err.response){
+          if (err.response) {
             _.systemInfo = err.response.status + ': Something went wrong, please try again later'
-          }else{
+          } else {
             _.systemInfo = err.message
           }
         })

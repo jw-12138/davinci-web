@@ -5,6 +5,7 @@ import {resolve} from 'path'
 export default defineConfig({
   plugins: [vue()],
   build: {
+    sourcemap: true,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),

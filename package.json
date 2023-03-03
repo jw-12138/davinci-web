@@ -19,6 +19,7 @@
     "express": "^4.18.2",
     "gpt3-tokenizer": "^1.1.5",
     "highlight.js": "^11.7.0",
+    "jsonwebtoken": "^9.0.0",
     "markdown-it": "^13.0.1",
     "marked": "^4.2.12",
     "nanoid": "3",
