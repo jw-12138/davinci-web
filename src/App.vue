@@ -511,9 +511,9 @@ export default {
 
       _.checkingLogin = true
 
-      if(!localStorage.getItem('fromID')){
+      if(!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`)){
         _.checkingLogin = false
-        return
+        return false
       }
 
       if (localStorage.getItem('fromID').startsWith('key_sk')) {
