@@ -396,7 +396,7 @@ export default {
         url: 'https://v.api.jw1.dev/api/revoke',
         method: 'post',
         data: {
-          Token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`),
+          Token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.refreshToken`) || localStorage.getItem('fromID'),
           ClientId: USER_POOL_CLIENT_ID
         }
       }).then(res => {
