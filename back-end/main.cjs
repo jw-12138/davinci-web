@@ -151,7 +151,6 @@ ${composedHistory}
 Human: ${message}
 AI: `,
           temperature: 0.5,
-          max_tokens: 1000,
           top_p: 1,
           frequency_penalty: 0,
           presence_penalty: 0.6,
@@ -159,22 +158,23 @@ AI: `,
           key: loginType === 'key' ? token.split('_')[1] : false
         },
         function (text, cost, err) {
-          if (err) {
-            console.log(err.response)
-            if (err.response.status === 429) {
-              res.status(429)
-            } else {
-              res.status(err.response.status)
-            }
-            res.end()
-            return false
-          }
           if (text) {
             res.write(Buffer.from(text))
           }
           if (cost) {
             res.write(Buffer.from('####[COST]:' + cost))
             res.end()
+            return false
+          }
+          if (err) {
+            console.log(err)
+            if (err.response && err.response.status === 429) {
+              res.status(429)
+            } else {
+              res.status(500)
+            }
+            res.end()
+            return false
           }
         }
       )
@@ -183,12 +183,13 @@ AI: `,
       res.end()
     }
   }).catch(err => {
-    res.write(Buffer.from('Seems like you are not authenticated, try refresh the page! 🥲'))
+    console.log(err)
+    res.status(401)
     res.end()
   })
 })
 
-app.post('/api/chat', function(req, res) {
+app.post('/api/chat', function (req, res) {
   res.set('Content-Type', 'application/octet-stream')
   res.set('Transfer-Encoding', 'chunked')
 
@@ -235,7 +236,6 @@ app.post('/api/chat', function(req, res) {
             }
           ],
           temperature: 0.6,
-          max_tokens: 2048,
           top_p: 1,
           frequency_penalty: 0,
           presence_penalty: 0.6,
@@ -243,21 +243,26 @@ app.post('/api/chat', function(req, res) {
           key: loginType === 'key' ? token.split('_')[1] : false
         },
         function (text, cost, err) {
-          if (err) {
-            if (err.response && err.response.status === 429) {
-              res.status(429)
-            } else {
-              res.status(err.response.status)
-            }
-            res.end()
-            return false
-          }
+
           if (text) {
             res.write(Buffer.from(text))
           }
+
           if (cost) {
             res.write(Buffer.from('####[COST]:' + cost))
             res.end()
+            return false
+          }
+
+          if (err) {
+            console.log(err)
+            if (err.response && err.response.status === 429) {
+              res.status(429)
+            } else {
+              res.status(500)
+            }
+            res.end()
+            return false
           }
         }
       )
@@ -267,11 +272,11 @@ app.post('/api/chat', function(req, res) {
     }
   }).catch(err => {
     console.log(err)
-    res.status(500).json(err)
+    res.status(401)
     res.end()
   })
 })
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
+  console.log(`DaVinci GPT-3 is now listening on port ${port}`)
 })

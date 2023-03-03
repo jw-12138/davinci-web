@@ -318,7 +318,7 @@ export default {
     initClipboard() {
       let cp = new ClipboardJS('.copy-code-btn', {
         target: function (trigger) {
-          return trigger.parentNode.parentNode.parentNode.querySelector('.hljs code')
+          return trigger.parentNode.parentNode.parentNode.querySelector('pre code')
         }
       })
 
@@ -429,7 +429,7 @@ export default {
 
       axios.post(baseAPI + '/share', {
         history: JSON.stringify(this.messages),
-        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`),
+        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.jw1dev.accessToken`) || localStorage.getItem('fromID'),
         userPool: USER_POOL_CLIENT_ID
       }).then(res => {
         this.sharing = false
@@ -776,7 +776,11 @@ export default {
           console.log(err)
           _.streaming = false
           _.composeHistory()
-          _.systemInfo = err.response.status + ': Something went wrong, please try again later'
+          if(err.response){
+            _.systemInfo = err.response.status + ': Something went wrong, please try again later'
+          }else{
+            _.systemInfo = err.message
+          }
         })
       setTimeout(function () {
         _.$refs.input.focus()

@@ -77,7 +77,6 @@ function ask(m, options, cb) {
         let eventData = chunk.toString()
         let s = eventData.split('\n\n')
         s.pop()
-        console.log(s)
         s.forEach(el => {
           let s_arr = el.split('data: ')
           let d = s_arr[1]
@@ -90,6 +89,7 @@ function ask(m, options, cb) {
       })
     }
   }).catch(err => {
+    console.log(err.toJSON())
     cb && cb(null, null, err)
   })
 }
@@ -154,14 +154,16 @@ function chat(m, options, cb) {
         })
       })
     }).catch(err => {
-      cb && cb(null, null, e)
+      console.log(err.toJSON())
+      cb && cb(null, null, err)
     })
   } else {
     openai.createChatCompletion(options).then(chatCompletion => {
       let cost = chatCompletion.data.usage.total_tokens / model.oneDollorToken
       cb && cb(chatCompletion.data.choices[0].message.content, cost, null)
-    }).catch(e => {
-      cb && cb(null, null, e)
+    }).catch(err => {
+      console.log(err.toJSON())
+      cb && cb(null, null, err)
     })
   }
 }
