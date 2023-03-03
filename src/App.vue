@@ -222,7 +222,6 @@ import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
 import Markdownit from 'markdown-it'
 import ClipboardJS from 'clipboard'
-import jwt from 'jsonwebtoken'
 
 let md = new Markdownit({
   highlight: function (str, lang) {
@@ -363,6 +362,7 @@ export default {
           let loginInfo = JSON.parse(res.data.data.login_info)
           let token = loginInfo.refreshToken
           let username = loginInfo.username
+          console.log(loginInfo)
           localStorage.setItem('username_from_sso', username)
           localStorage.setItem('CognitoIdentityServiceProvider.' + USER_POOL_CLIENT_ID + '.' + username + '.refreshToken', token)
           location.href = location.href.split('?')[0]
@@ -532,7 +532,8 @@ export default {
         url: 'https://v.api.jw1.dev/api/renew',
         data: {
           refreshToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`),
-          userPool: USER_POOL_ID
+          userPool: USER_POOL_ID,
+          clientId: USER_POOL_CLIENT_ID
         }
       }).then(res => {
         if (!res.data.AuthenticationResult) {

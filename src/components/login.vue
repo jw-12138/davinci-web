@@ -46,7 +46,7 @@
         <button class="plain" @click="loginType = 'key'">Sign In with API Key</button>
       </p>
       <p v-show="loginType === 'key'">
-        <button class="plain" @click="loginType = 'password'">Sign in</button>
+        <button class="plain" @click="loginType = 'password'">Back to Sign in</button>
       </p>
     </div>
   </div>
