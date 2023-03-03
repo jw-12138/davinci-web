@@ -516,7 +516,7 @@ export default {
         return false
       }
 
-      if (localStorage.getItem('fromID').startsWith('key_sk')) {
+      if (localStorage.getItem('fromID') && localStorage.getItem('fromID').startsWith('key_sk')) {
         _.isLogin = true
         _.checkingLogin = false
         return false
