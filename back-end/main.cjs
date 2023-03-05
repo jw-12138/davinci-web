@@ -293,6 +293,10 @@ app.post('/api/siri/ask', function (req, res) {
     {
       messages: [
         {
+          role: 'system',
+          content: instruction
+        },
+        {
           role: 'user',
           content: userText
         }
