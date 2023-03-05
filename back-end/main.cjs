@@ -277,6 +277,52 @@ app.post('/api/chat', function (req, res) {
   })
 })
 
+app.post('/api/siri/ask', function (req, res) {
+  let userText = req.body.userText
+  let token = req.body.token
+
+  res.setHeader('Content-Type', 'text/plain')
+
+  if(!token || !userText){
+    res.status(400)
+    return false
+  }
+
+  chat(
+    'chat-gpt',
+    {
+      messages: [
+        {
+          role: 'user',
+          content: userText
+        }
+      ],
+      temperature: 0.6,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0.6,
+      key: token
+    },
+    function (text, cost, err) {
+      if (text) {
+        res.end(text)
+      }
+
+      if (err) {
+        console.log(err)
+        if (err.response && err.response.status === 429) {
+          res.status(429)
+        } else {
+          res.status(500)
+        }
+        res.end()
+        return false
+      }
+    }
+  )
+
+})
+
 app.listen(port, () => {
   console.log(`DaVinci GPT-3 is now listening on port ${port}`)
 })
