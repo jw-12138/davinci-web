@@ -30,7 +30,10 @@ let modelName = function (index) {
 
 export function calcTokenCost(messages, model) {
   let tokenCount = 0
+  let instructionTokenCount = 208
   let m = modelName(model)
+
+  tokenCount += instructionTokenCount
 
   messages.forEach(message => {
     let tokens = calcToken(message.text)
