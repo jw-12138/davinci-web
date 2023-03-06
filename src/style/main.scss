@@ -16,6 +16,7 @@ html {
 body {
   margin: 0;
   padding: 0;
+  min-height: 100vh;
 }
 
 #app {
@@ -23,13 +24,13 @@ body {
   max-width: 640px;
   margin: 0 auto;
   font-size: 16px;
-  padding: 0 10px 60px;
+  padding: 1px 10px 60px;
 }
 
 .message-list {
   display: flex;
   flex-direction: column-reverse;
-  min-height: calc(100vh - 210px);
+  min-height: calc(100vh - 190px);
 
   .item {
     width: calc(100% - 30px);
@@ -481,6 +482,14 @@ table {
 }
 
 .page-options-wrap {
+  .box-wrapper{
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    display: block;
+    position: relative;
+    height: 100vh;
+  }
   position: fixed;
   right: 0;
   z-index: 3000;
@@ -493,14 +502,16 @@ table {
   pointer-events: auto;
 
   .box {
+    opacity: 0;
     width: 200px;
     position: absolute;
-    right: -210px;
-    bottom: 60px;
-    transition: right .3s ease;
+    right: -30px;
+    bottom: 70px;
+    transition: right .3s ease, opacity .3s ease;
 
     &.in{
       right: 10px;
+      opacity: 1;
     }
   }
 

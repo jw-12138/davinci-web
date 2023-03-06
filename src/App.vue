@@ -172,9 +172,13 @@
         </div>
       </div>
     </div>
-    <div class="page-options-wrap" :class="{
+  </div>
+
+  <div class="page-options-wrap" :class="{
       hide: !showPageOptions
     }">
+    <div class="box-wrapper">
+
       <div class="box" :class="{
         in: showPageOptions
       }">
@@ -203,7 +207,6 @@
             </button>
           </div>
         </div>
-
         <div style="text-align: center; margin-top: 10px">
           <div class="select-box" :class="{
             focus: modelSelectFocus
@@ -216,14 +219,11 @@
             </select>
           </div>
         </div>
-
         <div style="text-align: center; margin-top: 10px">
           <button class="plain" @click="showPageOptions = false" ref="pageOptionsClose"><i class="iconfont icon-close-bold" style="top: 2px; left: 2px"></i></button>
         </div>
       </div>
-
     </div>
-
   </div>
 </template>
 
