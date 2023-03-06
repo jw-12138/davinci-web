@@ -288,13 +288,13 @@ textarea {
     position: relative;
   }
 
-  .value{
+  .value {
     height: 40px;
     line-height: 36px;
     position: relative;
     padding-left: 24px;
 
-    .iconfont{
+    .iconfont {
       position: absolute;
       left: 0;
     }
@@ -396,15 +396,16 @@ ul {
 }
 
 .page-options {
-  width: 180px;
   padding: 8px;
   border-radius: 12px;
-  position: absolute;
-  left: -38px;
-  bottom: 50px;
+  position: relative;
   background: #fff;
   border: 1px solid #eee;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  &.in {
+    right: 10px;
+  }
 
   &[aria-hidden="true"] {
     display: none;
@@ -424,7 +425,7 @@ ul {
       border-radius: 6px;
 
       span {
-        width: 90px;
+        width: 110px;
         display: inline-block;
       }
 
@@ -479,10 +480,44 @@ table {
   display: inline-block;
 }
 
+.page-options-wrap {
+  position: fixed;
+  right: 0;
+  z-index: 3000;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  pointer-events: auto;
+
+  .box {
+    width: 200px;
+    position: absolute;
+    right: -210px;
+    bottom: 60px;
+    transition: right .3s ease;
+
+    &.in{
+      right: 10px;
+    }
+  }
+
+  &.hide {
+    opacity: 0;
+    z-index: -50;
+    pointer-events: none;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background: #121212;
     color: #fff;
+  }
+
+  .page-options-wrap{
+    background: rgba(0,0,0,.7);
   }
 
   .page-options {
@@ -636,13 +671,13 @@ table {
       position: relative;
     }
 
-    .value{
+    .value {
       height: 40px;
       line-height: 36px;
       position: relative;
       padding-left: 24px;
 
-      .iconfont{
+      .iconfont {
         position: absolute;
         left: 0;
       }
@@ -669,8 +704,8 @@ pre code.hljs {
 }
 
 @media screen and (max-width: 640px) {
-  .message-list{
-    .item{
+  .message-list {
+    .item {
       width: 100%;
     }
   }

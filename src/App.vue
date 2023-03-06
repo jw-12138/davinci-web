@@ -116,16 +116,15 @@
                 <i class="iconfont">&#xe67b;</i>
               </button>
             </div>
-
           </div>
           <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"></div>
           <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px"
                v-show="item.sender === 'AI' && !item.displayText">{{ item.text }}</pre>
           <div class="ai-cost" v-if="item.sender === 'AI'">
             <span v-if="item.cost"
-            >{{ item.bytes }} bytes, ${{ item.cost }}</span
+            >{{ item.tokens }} tokens, ${{ item.cost }}</span
             >
-            <span v-else>{{ item.bytes }} bytes</span>
+            <span v-else>{{ item.tokens }} tokens</span>
           </div>
         </div>
       </div>
@@ -137,47 +136,9 @@
       </div>
       <div style="text-align: center" v-show="isLogin && !checkingLogin" aria-label="Settings">
         <div style="display: inline-block; position: relative">
-          <div class="page-options" v-if="showPageOptions" style="animation: fadeIn .3s ease">
-            <div class="item" v-show="messages.length > 1">
-              <button @click="clearHistory" title="Reset current conversation">
-                <i class="iconfont" style="top: 2px">&#xe66a;</i>
-                <span>Reset</span>
-              </button>
-            </div>
-            <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
-              <button @click="reGen(null)" :disabled="streaming">
-                <i class="iconfont" style="top: 2px">&#xe67b;</i>
-                <span>Regenerate</span>
-              </button>
-            </div>
-            <div class="item" v-show="messages.length > 1">
-              <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
-                <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
-              </button>
-            </div>
-            <hr v-show="messages.length > 1">
-            <div class="item">
-              <button @click="logout" title="Sign out" :disabled="loggingOut">
-                <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
-              </button>
-            </div>
-          </div>
-
           <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true">
-            <i class="iconfont" style="top: 2px" v-if="!showPageOptions">&#xe67e;</i>
-            <i class="iconfont" style="top: 2px" v-if="showPageOptions">&#xe685;</i> Settings
+            <i class="iconfont" style="top: 2px">&#xe67e;</i> Settings
           </button>
-
-          <div class="select-box" :class="{
-            focus: modelSelectFocus
-          }" style="margin-left: 10px">
-            <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
-            <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
-              <optgroup v-for="(item, index) in apiMethod" :label="item.model">
-                <option :value="index">{{ item.name }}</option>
-              </optgroup>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -211,6 +172,58 @@
         </div>
       </div>
     </div>
+    <div class="page-options-wrap" :class="{
+      hide: !showPageOptions
+    }">
+      <div class="box" :class="{
+        in: showPageOptions
+      }">
+        <div class="page-options">
+          <div class="item" v-show="messages.length > 1">
+            <button @click="clearHistory" title="Reset current conversation">
+              <i class="iconfont" style="top: 2px">&#xe66a;</i>
+              <span>Reset</span>
+            </button>
+          </div>
+          <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
+            <button @click="reGen(null)" :disabled="streaming">
+              <i class="iconfont" style="top: 2px">&#xe67b;</i>
+              <span>Regenerate</span>
+            </button>
+          </div>
+          <div class="item" v-show="messages.length > 1">
+            <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
+              <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
+            </button>
+          </div>
+          <hr v-show="messages.length > 1">
+          <div class="item">
+            <button @click="logout" title="Sign out" :disabled="loggingOut">
+              <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px">
+          <div class="select-box" :class="{
+            focus: modelSelectFocus
+          }" style="margin-left: 10px">
+            <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
+            <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
+              <optgroup v-for="(item, index) in apiMethod" :label="item.model">
+                <option :value="index">{{ item.name }}</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px">
+          <button class="plain" @click="showPageOptions = false" ref="pageOptionsClose"><i class="iconfont icon-close-bold" style="top: 2px; left: 2px"></i></button>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </template>
 
@@ -222,6 +235,7 @@ import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
 import Markdownit from 'markdown-it'
 import ClipboardJS from 'clipboard'
+import {calcTokenCost, calcToken} from './utils/price-calc.js'
 
 let md = new Markdownit({
   highlight: function (str, lang) {
@@ -269,12 +283,10 @@ export default {
     this.updateDisplayMessages()
     this.getShareLink()
     _.pageLoaded = true
-    window.addEventListener('click', function () {
-      _.showPageOptions = false
-    })
   },
   data() {
     return {
+      editInstructionWindow: '',
       modelSelectFocus: false,
       apiMethodIndex: 1,
       apiMethod: [
@@ -392,6 +404,8 @@ export default {
         return
       }
 
+      this.showPageOptions = false
+
       this.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Signing you out ...</div>'
       this.scrollDown()
 
@@ -428,6 +442,8 @@ export default {
       let c = confirm('Please make sure that this conversation does not contain any sensitive information. Are you sure you want to publish this conversation?')
       if (!c) return
 
+      this.showPageOptions = false
+
       this.shareLink = ''
       localStorage.removeItem('shareLink')
 
@@ -452,6 +468,7 @@ export default {
       this.systemInfo = ''
       localStorage.removeItem('history')
       localStorage.removeItem('shareLink')
+      _.showPageOptions = false
       this.shareLink = ''
       clearTimeout(_.streamTimeoutCount)
     },
@@ -552,6 +569,9 @@ export default {
     listenForKeys() {
       let _ = this
       window.addEventListener('keydown', function (e) {
+        if(e.key === 'Escape'){
+          _.showPageOptions = false
+        }
         if (e.key === 'Enter' && !_.userIsComposting && _.inputOnFocus) {
           if (_.editIndex !== undefined) {
             _.reGen(_.editIndex)
@@ -597,6 +617,7 @@ export default {
       let length = _.messages.length
 
       _.userInput = _.editMessage || _.messages[position].text
+      _.showPageOptions = false
       _.messages.splice(position, length - position)
 
       _.editIndex = undefined
@@ -656,6 +677,7 @@ export default {
         setTimeout(() => {
           _.userInput = ''
         }, 30)
+        _.showPageOptions = false
         return false
       }
 
@@ -750,6 +772,7 @@ export default {
             reader.read().then(({value, done}) => {
               if (done) {
                 _.streaming = false
+                _.messages[dataIndex].cost = calcTokenCost(_.messages, _.apiMethodIndex)
                 _.renderText(dataIndex, _.messages[dataIndex].text)
                 _.composeHistory()
                 _.scrollDown(true)
@@ -762,16 +785,13 @@ export default {
                 return
               }
               let s = new TextDecoder().decode(value)
-              if (s.includes('####[COST]:')) {
-                _.messages[dataIndex].cost = s.replace('####[COST]:', '')
-                read()
-                return false
-              }
               _.scrollDown()
               _.messages[dataIndex].text += s
               _.messages[dataIndex].bytes = new TextEncoder().encode(
                 _.messages[dataIndex].text
               ).length
+
+              _.messages[dataIndex].tokens = calcToken(_.messages[dataIndex].text)
 
               _.messages[dataIndex].text = trim(_.messages[dataIndex].text)
               _.renderText(dataIndex, _.messages[dataIndex].text)
@@ -803,6 +823,11 @@ export default {
     }
   },
   watch: {
+    showPageOptions: function (val) {
+      if (val) {
+        this.$refs.pageOptionsClose.focus()
+      }
+    },
     streaming: function (val) {
       if (!val) {
         this.initClipboard()

@@ -162,7 +162,6 @@ AI: `,
             res.write(Buffer.from(text))
           }
           if (cost) {
-            res.write(Buffer.from('####[COST]:' + cost))
             res.end()
             return false
           }
@@ -249,7 +248,6 @@ app.post('/api/chat', function (req, res) {
           }
 
           if (cost) {
-            res.write(Buffer.from('####[COST]:' + cost))
             res.end()
             return false
           }
