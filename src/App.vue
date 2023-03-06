@@ -533,13 +533,13 @@ export default {
 
       _.checkingLogin = true
 
-      if (!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`)) {
+      if (localStorage.getItem('fromID') && localStorage.getItem('fromID').startsWith('key_sk')) {
+        _.isLogin = true
         _.checkingLogin = false
         return false
       }
 
-      if (localStorage.getItem('fromID') && localStorage.getItem('fromID').startsWith('key_sk')) {
-        _.isLogin = true
+      if (!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`)) {
         _.checkingLogin = false
         return false
       }
