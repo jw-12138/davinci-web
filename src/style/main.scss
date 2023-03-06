@@ -486,6 +486,7 @@ table {
   z-index: 3000;
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   width: 100vw;
   height: 100vh;
   top: 0;
