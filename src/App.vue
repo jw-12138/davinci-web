@@ -136,8 +136,51 @@
       </div>
       <div style="text-align: center" v-show="isLogin && !checkingLogin" aria-label="Settings">
         <div style="display: inline-block; position: relative">
-          <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true">
-            <i class="iconfont" style="top: 2px">&#xe67e;</i> Settings
+
+          <div class="page-options-box" :class="{
+            in: showPageOptions
+          }" @click.stop>
+            <div class="page-options">
+              <div class="item" v-show="messages.length > 1">
+                <button @click="clearHistory" title="Reset current conversation">
+                  <i class="iconfont" style="top: 2px">&#xe66a;</i>
+                  <span>Reset</span>
+                </button>
+              </div>
+              <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
+                <button @click="reGen(null)" :disabled="streaming">
+                  <i class="iconfont" style="top: 2px">&#xe67b;</i>
+                  <span>Regenerate</span>
+                </button>
+              </div>
+              <div class="item" v-show="messages.length > 1">
+                <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
+                  <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
+                </button>
+              </div>
+              <hr v-show="messages.length > 1">
+              <div class="item">
+                <button @click="logout" title="Sign out" :disabled="loggingOut">
+                  <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+            <div style="text-align: center; margin-top: 10px">
+              <div class="select-box" :class="{
+            focus: modelSelectFocus
+          }">
+                <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
+                <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
+                  <optgroup v-for="(item, index) in apiMethod" :label="item.model">
+                    <option :value="index">{{ item.name }}</option>
+                  </optgroup>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true" style="position: relative; z-index: 300">
+            <i class="iconfont icon-setting" style="top: 2px" v-show="!showPageOptions"></i>
+            <i class="iconfont icon-close-bold" style="top: 2px" v-show="showPageOptions"></i>Settings
           </button>
         </div>
       </div>
@@ -174,55 +217,8 @@
     </div>
   </div>
 
-  <div class="page-options-wrap" :class="{
-      hide: !showPageOptions
-    }">
+  <div class="page-options-wrap hide">
     <div class="box-wrapper">
-
-      <div class="box" :class="{
-        in: showPageOptions
-      }">
-        <div class="page-options">
-          <div class="item" v-show="messages.length > 1">
-            <button @click="clearHistory" title="Reset current conversation">
-              <i class="iconfont" style="top: 2px">&#xe66a;</i>
-              <span>Reset</span>
-            </button>
-          </div>
-          <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
-            <button @click="reGen(null)" :disabled="streaming">
-              <i class="iconfont" style="top: 2px">&#xe67b;</i>
-              <span>Regenerate</span>
-            </button>
-          </div>
-          <div class="item" v-show="messages.length > 1">
-            <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
-              <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
-            </button>
-          </div>
-          <hr v-show="messages.length > 1">
-          <div class="item">
-            <button @click="logout" title="Sign out" :disabled="loggingOut">
-              <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
-            </button>
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 10px">
-          <div class="select-box" :class="{
-            focus: modelSelectFocus
-          }" style="margin-left: 10px">
-            <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
-            <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
-              <optgroup v-for="(item, index) in apiMethod" :label="item.model">
-                <option :value="index">{{ item.name }}</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 10px">
-          <button class="plain" @click="showPageOptions = false" ref="pageOptionsClose"><i class="iconfont icon-close-bold" style="top: 2px; left: 2px"></i></button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -283,6 +279,10 @@ export default {
     this.updateDisplayMessages()
     this.getShareLink()
     _.pageLoaded = true
+
+    window.addEventListener('click', function () {
+      _.showPageOptions = false
+    })
   },
   data() {
     return {
@@ -823,11 +823,6 @@ export default {
     }
   },
   watch: {
-    showPageOptions: function (val) {
-      if (val) {
-        this.$refs.pageOptionsClose.focus()
-      }
-    },
     streaming: function (val) {
       if (!val) {
         this.initClipboard()

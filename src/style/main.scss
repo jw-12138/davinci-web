@@ -176,6 +176,7 @@ body {
   height: 60px;
   width: 100%;
   left: 0;
+  z-index: 3000;
 
   .wrap {
     display: flex;
@@ -396,50 +397,68 @@ ul {
   }
 }
 
-.page-options {
-  padding: 8px;
-  border-radius: 12px;
-  position: relative;
-  background: #fff;
-  border: 1px solid #eee;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+.page-options-box {
+  position: absolute;
+  bottom: 0;
+  width: 200px;
+  left: -46px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s ease, bottom .15s ease;
 
-  &.in {
-    right: 10px;
+  &.in{
+    pointer-events: auto;
+    z-index: 200;
+    bottom: 50px;
+    opacity: 1;
   }
 
-  &[aria-hidden="true"] {
-    display: none;
-  }
+  .page-options {
+    padding: 8px;
+    border-radius: 12px;
+    position: relative;
+    background: #fff;
+    border: 1px solid #eee;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-  hr {
-    border: none;
-    height: 1px;
-    background: #ddd;
-  }
+    &.in {
+      right: 10px;
+    }
 
-  .item {
-    button {
-      background: transparent;
-      color: #333;
-      width: 100%;
-      border-radius: 6px;
+    &[aria-hidden="true"] {
+      display: none;
+    }
 
-      span {
-        width: 110px;
-        display: inline-block;
-      }
+    hr {
+      border: none;
+      height: 1px;
+      background: #ddd;
+    }
 
-      &:hover {
-        background: rgba(#000, 0.05);
-      }
+    .item {
+      button {
+        background: transparent;
+        color: #333;
+        width: 100%;
+        border-radius: 6px;
 
-      &:focus {
-        background: rgba(#000, 0.05);
+        span {
+          width: 110px;
+          display: inline-block;
+        }
+
+        &:hover {
+          background: rgba(#000, 0.05);
+        }
+
+        &:focus {
+          background: rgba(#000, 0.05);
+        }
       }
     }
   }
 }
+
 
 code {
   border-radius: 4px;
@@ -481,81 +500,39 @@ table {
   display: inline-block;
 }
 
-.page-options-wrap {
-  .box-wrapper{
-    width: 100%;
-    max-width: 640px;
-    margin: 0 auto;
-    display: block;
-    position: relative;
-    height: 100vh;
-  }
-  position: fixed;
-  right: 0;
-  z-index: 3000;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  pointer-events: auto;
-
-  .box {
-    opacity: 0;
-    width: 200px;
-    position: absolute;
-    right: -30px;
-    bottom: 70px;
-    transition: right .3s ease, opacity .3s ease;
-
-    &.in{
-      right: 10px;
-      opacity: 1;
-    }
-  }
-
-  &.hide {
-    opacity: 0;
-    z-index: -50;
-    pointer-events: none;
-  }
-}
-
 @media (prefers-color-scheme: dark) {
   body {
     background: #121212;
     color: #fff;
   }
 
-  .page-options-wrap{
-    background: rgba(0,0,0,.7);
-  }
+  .page-options-box {
+    .page-options {
+      background: #2c2c2c;
+      border: 1px solid #2c2c2c;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-  .page-options {
-    background: #2c2c2c;
-    border: 1px solid #2c2c2c;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      hr {
+        background: #666;
+      }
 
-    hr {
-      background: #666;
-    }
+      .item {
+        button {
+          background: transparent;
+          color: #fff;
 
-    .item {
-      button {
-        background: transparent;
-        color: #fff;
+          &:hover {
+            background: rgba(#fff, 0.1);
+          }
 
-        &:hover {
-          background: rgba(#fff, 0.1);
-        }
-
-        &:focus {
-          background: rgba(#fff, 0.1);
+          &:focus {
+            background: rgba(#fff, 0.1);
+          }
         }
       }
     }
   }
+
 
   a {
     color: #eee;
@@ -668,7 +645,7 @@ table {
     border-radius: 30px;
     padding: 0 15px;
     outline-offset: 2px;
-    background: transparent;
+    background: rgba(#121212, 0.9);
     color: #fff;
     border-color: #c0c0c0;
     display: inline-block;
