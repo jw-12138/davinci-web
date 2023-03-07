@@ -137,47 +137,49 @@
       <div style="text-align: center" v-show="isLogin && !checkingLogin" aria-label="Settings">
         <div style="display: inline-block; position: relative">
 
-          <div class="page-options-box" :class="{
+          <Transition name="slide-up">
+            <div class="page-options-box" v-show="showPageOptions" :class="{
             in: showPageOptions
           }" @click.stop>
-            <div class="page-options">
-              <div class="item" v-show="messages.length > 1">
-                <button @click="clearHistory" title="Reset current conversation">
-                  <i class="iconfont" style="top: 2px">&#xe66a;</i>
-                  <span>Reset</span>
-                </button>
+              <div class="page-options">
+                <div class="item" v-show="messages.length > 1">
+                  <button @click="clearHistory" title="Reset current conversation">
+                    <i class="iconfont" style="top: 2px">&#xe66a;</i>
+                    <span>Reset</span>
+                  </button>
+                </div>
+                <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
+                  <button @click="reGen(null)" :disabled="streaming">
+                    <i class="iconfont" style="top: 2px">&#xe67b;</i>
+                    <span>Regenerate</span>
+                  </button>
+                </div>
+                <div class="item" v-show="messages.length > 1">
+                  <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
+                    <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
+                  </button>
+                </div>
+                <hr v-show="messages.length > 1">
+                <div class="item">
+                  <button @click="logout" title="Sign out" :disabled="loggingOut">
+                    <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
+                  </button>
+                </div>
               </div>
-              <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
-                <button @click="reGen(null)" :disabled="streaming">
-                  <i class="iconfont" style="top: 2px">&#xe67b;</i>
-                  <span>Regenerate</span>
-                </button>
-              </div>
-              <div class="item" v-show="messages.length > 1">
-                <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
-                  <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
-                </button>
-              </div>
-              <hr v-show="messages.length > 1">
-              <div class="item">
-                <button @click="logout" title="Sign out" :disabled="loggingOut">
-                  <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
-                </button>
-              </div>
-            </div>
-            <div style="text-align: center; margin-top: 10px">
-              <div class="select-box" :class="{
+              <div style="text-align: center; margin-top: 10px">
+                <div class="select-box" :class="{
             focus: modelSelectFocus
           }">
-                <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
-                <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
-                  <optgroup v-for="(item, index) in apiMethod" :label="item.model">
-                    <option :value="index">{{ item.name }}</option>
-                  </optgroup>
-                </select>
+                  <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
+                  <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
+                    <optgroup v-for="(item, index) in apiMethod" :label="item.model">
+                      <option :value="index">{{ item.name }}</option>
+                    </optgroup>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
+          </Transition>
           <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true" style="position: relative; z-index: 300">
             <i class="iconfont icon-setting" style="top: 2px" v-show="!showPageOptions"></i>
             <i class="iconfont icon-close-bold" style="top: 2px" v-show="showPageOptions"></i>Settings

@@ -27,6 +27,35 @@ body {
   padding: 1px 10px 60px;
 }
 
+.slide-up-enter-active {
+  animation: slideUp_3 0.15s;
+}
+.slide-up-leave-active {
+  animation: slideDown_3 0.15s;
+}
+
+@keyframes slideUp_3 {
+  0% {
+    opacity: 0;
+    bottom: 0
+  }
+  100% {
+    opacity: 1;
+    bottom: 50px
+  }
+}
+
+@keyframes slideDown_3 {
+  0% {
+    opacity: 1;
+    bottom: 50px
+  }
+  100% {
+    opacity: 0;
+    bottom: 0
+  }
+}
+
 .message-list {
   display: flex;
   flex-direction: column-reverse;
@@ -404,9 +433,8 @@ ul {
   left: -46px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity .15s ease, bottom .15s ease;
 
-  &.in{
+  &.in {
     pointer-events: auto;
     z-index: 200;
     bottom: 50px;
