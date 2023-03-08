@@ -9,33 +9,34 @@
       }"></i> Custom Mode
       </button>
     </h3>
-    <div>
-      <div class="title" style="margin-top: 0">
-        <label for="chat_mode">Instructions ({{ activeChatMode.instructionTokens ? activeChatMode.instructionTokens : 0 }}
-          tokens):</label>
-      </div>
-      <div>
-        <textarea id="chat_mode" v-model="activeChatMode.instructions"></textarea>
-      </div>
-      <div class="title">
-        <label for="prefix">Message Modifier:</label>
-      </div>
-      <div class="message-modifier">
-        <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code> <input
-        type="text" placeholder="Suffix" v-model="activeChatMode.suffix">
-      </div>
-      <div style="margin-top: 10px">
-        <v-check-box @check-change="handleCheckChange" :checked="activeChatMode.noHistory">No History</v-check-box>
-      </div>
-      <div class="title">
-        <label>Shortcuts:</label>
-      </div>
-      <div class="switches">
-        <button class="plain" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{ item.title }}
-        </button>
-        <button @click="addCustomShortcuts"><i class="iconfont icon-add" style="top: 2px; left: 2px"></i></button>
-        <br v-if="customShortCuts.length">
-        <span v-for="(item, index) in customShortCuts" style="position: relative">
+    <Transition duration="300">
+      <div v-show="customModeExpand">
+        <div class="title" style="margin-top: 0">
+          <label for="chat_mode">Instructions ({{ activeChatMode.instructionTokens ? activeChatMode.instructionTokens : 0 }}
+            tokens):</label>
+        </div>
+        <div>
+          <textarea id="chat_mode" v-model="activeChatMode.instructions"></textarea>
+        </div>
+        <div class="title">
+          <label for="prefix">Message Modifier:</label>
+        </div>
+        <div class="message-modifier">
+          <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code> <input
+          type="text" placeholder="Suffix" v-model="activeChatMode.suffix">
+        </div>
+        <div style="margin-top: 10px">
+          <v-check-box @check-change="handleCheckChange" :checked="activeChatMode.noHistory">No History</v-check-box>
+        </div>
+        <div class="title">
+          <label>Shortcuts:</label>
+        </div>
+        <div class="switches">
+          <button class="plain" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{ item.title }}
+          </button>
+          <button @click="addCustomShortcuts"><i class="iconfont icon-add" style="top: 2px; left: 2px"></i></button>
+          <br v-if="customShortCuts.length">
+          <span v-for="(item, index) in customShortCuts" style="position: relative">
         <button style="padding-right: 30px" class="plain" @click="handleCustomModeChange(index)"
                 :disabled="customShortcutsDeleteFocus === index">
         {{ item.title }}
@@ -47,25 +48,26 @@
              style="top: 0;"></i>
         </button>
       </span>
-        <br>
+          <br>
+        </div>
+        <div class="info">
+          <p>
+            <b>Note:</b> Custom Mode only works for <code>gpt-3.5-turbo</code>
+          </p>
+          <p>
+            - You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
+            GPT-3.
+          </p>
+          <p>
+            - <code>No History</code> option works great for non-conversation tasks like translation, code generation and
+            writing improvement, etc.
+          </p>
+          <p>
+            - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the button with the plus sign.
+          </p>
+        </div>
       </div>
-      <div class="info">
-        <p>
-          <b>Note:</b> Custom Mode only works for <code>gpt-3.5-turbo</code>
-        </p>
-        <p>
-          - You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
-          GPT-3.
-        </p>
-        <p>
-          - <code>No History</code> option works great for non-conversation tasks like translation, code generation and
-          writing improvement, etc.
-        </p>
-        <p>
-          - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the button with the plus sign.
-        </p>
-      </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
