@@ -18,6 +18,7 @@
     </div>
     <login v-show="!isLogin && !checkingLogin" @logged="loggedIn"></login>
     <div>
+      <chat-mode @data-change="handleChatModeChange" v-show="apiMethodIndex === 1 && isLogin && !checkingLogin"></chat-mode>
       <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px">
         <p> 😎 Capabilities: </p>
         <ul>
@@ -180,7 +181,8 @@
               </div>
             </div>
           </Transition>
-          <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true" style="position: relative; z-index: 300">
+          <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true"
+                  style="position: relative; z-index: 300">
             <i class="iconfont icon-setting" style="top: 2px" v-show="!showPageOptions"></i>
             <i class="iconfont icon-close-bold" style="top: 2px" v-show="showPageOptions"></i>Settings
           </button>
@@ -234,6 +236,7 @@ import xss from 'xss'
 import Markdownit from 'markdown-it'
 import ClipboardJS from 'clipboard'
 import {calcTokenCost, calcToken} from './utils/price-calc.js'
+import ChatMode from './components/chat-mode.vue'
 
 let md = new Markdownit({
   highlight: function (str, lang) {
@@ -267,7 +270,7 @@ let baseAPI = getApiBase()
 let busBaseApi = 'https://sso.jw1.dev/api'
 
 export default {
-  components: {Login},
+  components: {ChatMode, Login},
   mounted() {
     let _ = this
     let search = new URLSearchParams(location.search)
@@ -325,10 +328,22 @@ export default {
       display_messages: [],
       sharing: false,
       shareLink: null,
-      loggingOut: false
+      loggingOut: false,
+      chatMode: {}
     }
   },
   methods: {
+    handleChatModeChange(chatMode) {
+      let defaultChatMode = {
+        instructionTokens: 0,
+        title: '',
+        instructions: '',
+        prefix: '',
+        suffix: '"',
+        noHistory: false
+      }
+      this.chatMode = {...defaultChatMode, ...chatMode}
+    },
     initClipboard() {
       let cp = new ClipboardJS('.copy-code-btn', {
         target: function (trigger) {
@@ -571,7 +586,7 @@ export default {
     listenForKeys() {
       let _ = this
       window.addEventListener('keydown', function (e) {
-        if(e.key === 'Escape'){
+        if (e.key === 'Escape') {
           _.showPageOptions = false
         }
         if (e.key === 'Enter' && !_.userIsComposting && _.inputOnFocus) {
@@ -725,15 +740,25 @@ export default {
       let tempHistory = JSON.parse(JSON.stringify(_.messages))
       tempHistory.splice(-1, 1)
 
+      let axiosBody = {
+        token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.accessToken`) || localStorage.getItem('fromID'),
+        userPool: USER_POOL_ID,
+        clientID: USER_POOL_CLIENT_ID,
+        message: _.chatMode.prefix + userInput + _.chatMode.suffix,
+        history: _.chatMode.noHistory ? [] : tempHistory,
+        instructions: _.chatMode.instructions
+      }
+
+      if (_.apiMethodIndex === 0) {
+        axiosBody.history = tempHistory
+        axiosBody.instructions = ''
+        axiosBody.message = userInput
+        _.chatMode.instructionTokens = 208
+      }
+
       fetch(baseAPI + _.apiMethod[_.apiMethodIndex].url, {
         method: 'POST',
-        body: JSON.stringify({
-          token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.accessToken`) || localStorage.getItem('fromID'),
-          userPool: USER_POOL_ID,
-          clientID: USER_POOL_CLIENT_ID,
-          message: userInput,
-          history: tempHistory
-        }),
+        body: JSON.stringify(axiosBody),
         headers: {
           'Content-Type': 'application/json'
         },
@@ -750,7 +775,7 @@ export default {
                 _.systemInfo = 'Seems like you\'re not authorized, please refresh this page and try again.'
                 break
               case 403:
-                _.systemInfo = "Your account is perfectly fine, but you're not allowed to use this service at the moment. 🥹 Sorry about that."
+                _.systemInfo = 'Your account is perfectly fine, but you\'re not allowed to use this service at the moment. 🥹 Sorry about that.'
                 break
               default:
                 _.systemInfo = response.status + ': We encountered an error, please refresh this page and try again.'
@@ -774,7 +799,7 @@ export default {
             reader.read().then(({value, done}) => {
               if (done) {
                 _.streaming = false
-                _.messages[dataIndex].cost = calcTokenCost(_.messages, _.apiMethodIndex)
+                _.messages[dataIndex].cost = calcTokenCost(_.messages, _.apiMethodIndex, _.chatMode.instructionTokens)
                 _.renderText(dataIndex, _.messages[dataIndex].text)
                 _.composeHistory()
                 _.scrollDown(true)

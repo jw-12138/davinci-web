@@ -17,7 +17,7 @@ let models = {
 
 let modelName = function (index) {
   let name = ''
-  switch(index) {
+  switch (index) {
     case 0:
       name = 'davinci'
       break
@@ -28,9 +28,11 @@ let modelName = function (index) {
   return name
 }
 
-export function calcTokenCost(messages, model) {
+export function calcTokenCost(messages, model, instructionTokenCount) {
   let tokenCount = 0
-  let instructionTokenCount = 208
+  if (instructionTokenCount === undefined) {
+    instructionTokenCount = 0
+  }
   let m = modelName(model)
 
   tokenCount += instructionTokenCount
@@ -43,7 +45,7 @@ export function calcTokenCost(messages, model) {
   return tokenCount / models[m].oneDollorToken
 }
 
-export function calcToken(text){
+export function calcToken(text) {
   let encoded = tokenizer.encode(text)
   return encoded.bpe.length
 }

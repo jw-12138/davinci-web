@@ -13,6 +13,12 @@ app.use(cors())
 app.use(express.static(path.join(__dirname, '../dist')))
 app.use(express.json())
 
+function prependArray(value, array) {
+  let newArray = array.slice()
+  newArray.unshift(value)
+  return newArray
+}
+
 const instruction = `Your name is DaVinci, and you are a large language model trained by OpenAI. Your job is to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
 If the input is a question, try your best to answer it. Otherwise, provide as much information as you can.
 You should use "code blocks" syntax from markdown including language name to encapsulate any part in responses that's longer-format content such as poem, code, lyrics.
@@ -197,6 +203,7 @@ app.post('/api/chat', function (req, res) {
   let message = req.body.message
   let token = req.body.token || ''
   let userPool = req.body.userPool || ''
+  let userInstruction = req.body.instructions || ''
 
   history.forEach(el => {
     composedHistory.push({
@@ -218,16 +225,19 @@ app.post('/api/chat', function (req, res) {
     loginType = 'key'
   }
 
+  if(userInstruction){
+    composedHistory = prependArray({
+      role: 'system',
+      content: userInstruction
+    }, composedHistory)
+  }
+
   verify_login(token, userPool).then(r => {
     if (r.data.Username) {
       chat(
         'chat-gpt',
         {
           messages: [
-            {
-              role: 'system',
-              content: instruction
-            },
             ...composedHistory,
             {
               role: 'user',
@@ -281,7 +291,7 @@ app.post('/api/siri/ask', function (req, res) {
 
   res.setHeader('Content-Type', 'text/plain')
 
-  if(!token || !userText){
+  if (!token || !userText) {
     res.status(400)
     return false
   }

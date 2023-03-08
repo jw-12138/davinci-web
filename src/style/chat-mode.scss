@@ -1,0 +1,137 @@
+$font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+.chat-mode {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  padding: 10px;
+
+  label {
+    font-size: 12px;
+    margin-bottom: 5px;
+    display: inline-block;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 100px;
+    border: none;
+    background: rgba(#000, 0.07);
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 13px;
+    font-family: $font-sans;
+    resize: vertical;
+  }
+
+  .message-modifier {
+    display: flex;
+    align-items: center;
+
+    input {
+      height: 32px;
+      background: rgba(#000, .07);
+      display: block;
+      border-radius: 6px;
+      width: 50%;
+      border: none;
+      text-indent: 10px;
+    }
+
+    code {
+      margin: 0 10px;
+      flex-shrink: 0;
+    }
+  }
+
+  .title {
+    margin-top: 10px;
+  }
+
+  .switches {
+    button {
+      height: 32px;
+      margin-right: 5px;
+      margin-bottom: 5px;
+
+      &:disabled {
+        opacity: 0.3;
+      }
+
+      &.no_style {
+        padding: 0;
+        background: transparent;
+        border: none;
+        color: inherit;
+        margin: 0;
+        height: 28px;
+
+        i {
+          margin-right: 0;
+          font-size: 18px;
+        }
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: #333;
+    }
+  }
+
+  .info {
+    font-size: 12px;
+    margin-top: 20px;
+    color: #555;
+
+    p {
+      margin-bottom: 4px;
+      margin-top: 0;
+    }
+
+    code {
+      font-size: 12px;
+      padding: 2px;
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .chat-mode {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -4px rgb(0 0 0 / 10%);
+    border: 1px solid transparent;
+    background: #2c2c2c;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 10px;
+
+    textarea {
+      background: rgba(#fff, 0.07);
+      color: #fff;
+    }
+
+    .message-modifier {
+      input {
+        background: rgba(#fff, .07);
+        color: #fff;
+      }
+    }
+
+    .switches {
+      button {
+        &.no_style {
+          background: transparent;
+        }
+      }
+
+      a {
+        color: #333;
+      }
+    }
+
+    .info {
+      color: #ccc;
+    }
+  }
+}
