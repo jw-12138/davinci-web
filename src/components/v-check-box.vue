@@ -50,20 +50,20 @@ export default {
   display: inline-block;
 
   &:hover {
-    label{
+    label {
       background: rgba(#000, .2);
     }
 
   }
 
   &.focus {
-    label{
+    label {
       outline: 2px #3b82f6 solid;
     }
   }
 
   &.checked {
-    label{
+    label {
       border: 2px solid #1f2937;
       background: #1f2937;
       color: #fff;
@@ -98,18 +98,24 @@ export default {
 
 @media (prefers-color-scheme: dark) {
   .checkbox {
-    background: rgba(#fff, .1);
-
     outline-offset: 2px;
 
+    label {
+      background: rgba(#fff, .1);
+    }
+
     &:hover {
-      background: rgba(#fff, .2);
+      label {
+        background: rgba(#fff, .2);
+      }
     }
 
     &.checked {
-      border: 2px solid transparent;
-      background: #fff;
-      color: #404040;
+      label {
+        border: 2px solid transparent;
+        background: #fff;
+        color: #404040;
+      }
     }
   }
 }
