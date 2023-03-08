@@ -59,7 +59,7 @@
         </p>
         <p>
           - <code>No History</code> option works great for non-conversation tasks like translation, code generation and
-          writing improvement etc.
+          writing improvement, etc.
         </p>
         <p>
           - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the plus button.
