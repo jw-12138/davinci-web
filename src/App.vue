@@ -735,7 +735,7 @@ export default {
 
       _.saveHistory()
 
-      _.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Thinking...</div>'
+      _.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Processing...</div>'
 
       _.shareLink = ''
       localStorage.removeItem('shareLink')

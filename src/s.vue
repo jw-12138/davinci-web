@@ -28,7 +28,7 @@
           {{ item.text }}
         </div>
         <div v-if="item.sender === 'AI'" style="font-size: 12px; position: absolute; top: -25px; color: #999">AI</div>
-        <div v-if="item.sender === 'AI'" v-html="item.displayText" style="font-family: 'JetBrains Mono', monospace"></div>
+        <div v-if="item.sender === 'AI'" v-html="item.displayText"></div>
       </div>
     </div>
 
