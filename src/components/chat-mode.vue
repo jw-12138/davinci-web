@@ -62,7 +62,7 @@
           writing improvement, etc.
         </p>
         <p>
-          - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the plus button.
+          - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the button with the plus sign.
         </p>
       </div>
     </div>
