@@ -6,6 +6,27 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
   border-radius: 8px;
   margin-bottom: 30px;
   padding: 10px;
+  overflow: hidden;
+  max-height: 810px;
+  transition: max-height .3s ease;
+
+  h3 {
+    button {
+      color: #333;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      border: none;
+      font-size: inherit;
+      font-weight: inherit;
+      height: auto;
+
+      i{
+        position: relative;
+        top: 1px;
+      }
+    }
+  }
 
   label {
     font-size: 12px;
@@ -23,6 +44,7 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
     font-size: 13px;
     font-family: $font-sans;
     resize: vertical;
+    max-height: 200px;
   }
 
   .message-modifier {

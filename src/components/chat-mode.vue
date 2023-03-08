@@ -1,34 +1,41 @@
 <template>
-  <div class="chat-mode">
-    <h3 style="margin-top: 0; margin-bottom: 10px">
-      Custom Mode
-    </h3>
-    <div class="title" style="margin-top: 0">
-      <label for="chat_mode">Instructions ({{ activeChatMode.instructionTokens ? activeChatMode.instructionTokens : 0 }}
-        tokens):</label>
-    </div>
-    <div>
-      <textarea id="chat_mode" v-model="activeChatMode.instructions"></textarea>
-    </div>
-    <div class="title">
-      <label for="prefix">Message Modifier:</label>
-    </div>
-    <div class="message-modifier">
-      <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code> <input
-      type="text" placeholder="Suffix" v-model="activeChatMode.suffix">
-    </div>
-    <div style="margin-top: 10px">
-      <v-check-box @check-change="handleCheckChange" :checked="activeChatMode.noHistory">No History</v-check-box>
-    </div>
-    <div class="title">
-      <label>Shortcuts:</label>
-    </div>
-    <div class="switches">
-      <button class="plain" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{ item.title }}
+  <div class="chat-mode" ref="chat_mode_box">
+    <h3 style="margin-top: 0; margin-bottom: 10px; cursor:pointer;" >
+      <button @click="customModeExpand = !customModeExpand">
+        <i class="iconfont icon-arrow-right" :style="{
+        display: 'inline-block',
+        transition: 'transform .3s ease',
+        transform: customModeExpand ? 'rotate(90deg)' : 'rotate(0deg)'
+      }"></i> Custom Mode
       </button>
-      <button @click="addCustomShortcuts"><i class="iconfont icon-add" style="top: 2px; left: 2px"></i></button>
-      <br v-if="customShortCuts.length">
-      <span v-for="(item, index) in customShortCuts" style="position: relative">
+    </h3>
+    <div>
+      <div class="title" style="margin-top: 0">
+        <label for="chat_mode">Instructions ({{ activeChatMode.instructionTokens ? activeChatMode.instructionTokens : 0 }}
+          tokens):</label>
+      </div>
+      <div>
+        <textarea id="chat_mode" v-model="activeChatMode.instructions"></textarea>
+      </div>
+      <div class="title">
+        <label for="prefix">Message Modifier:</label>
+      </div>
+      <div class="message-modifier">
+        <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code> <input
+        type="text" placeholder="Suffix" v-model="activeChatMode.suffix">
+      </div>
+      <div style="margin-top: 10px">
+        <v-check-box @check-change="handleCheckChange" :checked="activeChatMode.noHistory">No History</v-check-box>
+      </div>
+      <div class="title">
+        <label>Shortcuts:</label>
+      </div>
+      <div class="switches">
+        <button class="plain" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{ item.title }}
+        </button>
+        <button @click="addCustomShortcuts"><i class="iconfont icon-add" style="top: 2px; left: 2px"></i></button>
+        <br v-if="customShortCuts.length">
+        <span v-for="(item, index) in customShortCuts" style="position: relative">
         <button style="padding-right: 30px" class="plain" @click="handleCustomModeChange(index)"
                 :disabled="customShortcutsDeleteFocus === index">
         {{ item.title }}
@@ -40,23 +47,24 @@
              style="top: 0;"></i>
         </button>
       </span>
-      <br>
-    </div>
-    <div class="info">
-      <p>
-        <b>Note:</b> Custom Mode only works for <code>gpt-3.5-turbo</code>
-      </p>
-      <p>
-        - You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
-        GPT-3.
-      </p>
-      <p>
-        - <code>No History</code> option works great for non-conversation tasks like translation, code generation and
-        writing improvement etc.
-      </p>
-      <p>
-        - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the plus button.
-      </p>
+        <br>
+      </div>
+      <div class="info">
+        <p>
+          <b>Note:</b> Custom Mode only works for <code>gpt-3.5-turbo</code>
+        </p>
+        <p>
+          - You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
+          GPT-3.
+        </p>
+        <p>
+          - <code>No History</code> option works great for non-conversation tasks like translation, code generation and
+          writing improvement etc.
+        </p>
+        <p>
+          - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the plus button.
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -77,8 +85,16 @@ export default {
     }
 
     this.readLocalCustomShortCuts()
+    window.addEventListener('resize', this.calcHeight)
+
+    if(localStorage.getItem('customModeExpand') && localStorage.getItem('customModeExpand') === 'true'){
+      this.customModeExpand = true
+    }
   },
   methods: {
+    calcHeight(){
+      this.$refs.chat_mode_box.style.maxHeight = this.customModeExpand ? '810px' : '45px'
+    },
     addCustomShortcuts() {
       this.customShortcutsDeleteFocus = null
       let title = prompt('Please enter a title for this custom shortcut: ')
@@ -103,7 +119,7 @@ export default {
       this.updateLocalCustomShortCuts()
     },
     handleModeChange(index) {
-      this.activeChatMode = this.chatModeData[index]
+      this.activeChatMode = JSON.parse(JSON.stringify(this.chatModeData[index]))
     },
     handleCustomModeChange(index) {
       this.activeChatMode = this.customShortCuts[index]
@@ -117,11 +133,13 @@ export default {
       }
     },
     updateLocalCustomShortCuts() {
+      this.calcHeight()
       localStorage.setItem('customShortCuts', JSON.stringify(this.customShortCuts))
     }
   },
   data() {
     return {
+      customModeExpand: false,
       customShortcutsDeleteFocus: null,
       noHistoryFocus: false,
       activeChatMode: {},
@@ -141,7 +159,7 @@ You can understand and communicate fluently in the user's language of choice suc
           noHistory: false
         },
         {
-          title: 'Translator ANY/CN',
+          title: 'Translator',
           instructions: `You're a translator now, your only job is to translate the user input into Chinese, If user input is Chinese, translate it into English.`,
           prefix: '"',
           suffix: '"',
@@ -149,15 +167,26 @@ You can understand and communicate fluently in the user's language of choice suc
         },
         {
           title: 'Writing Helper',
-          instructions: `You're a Writing Helper, your only job is to improve the user input.`,
+          instructions: `You're a writing helper, your only job is to improve the user input.`,
           prefix: 'Please improve this:"',
           suffix: '"',
           noHistory: true
+        },
+        {
+          title: 'Python Helper',
+          instructions: `The user is about to ask you some questions about Python and Flask, you should use "code blocks" syntax from markdown including language name to encapsulate any part in responses that's code. You should also use bold syntax from markdown on the relevant parts of the responses to improve readability. And make sure to provide detailed explanations.`,
+          prefix: '',
+          suffix: '',
+          noHistory: false
         }
       ]
     }
   },
   watch: {
+    customModeExpand(val){
+      this.calcHeight()
+      localStorage.setItem('customModeExpand', val)
+    },
     activeChatMode: {
       deep: true,
       handler: function (val) {
@@ -167,6 +196,7 @@ You can understand and communicate fluently in the user's language of choice suc
         }
         localStorage.setItem('chatMode', JSON.stringify(val))
         this.$emit('data-change', val)
+        this.calcHeight()
       }
     },
     customShortCuts() {
