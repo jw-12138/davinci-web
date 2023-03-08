@@ -47,12 +47,15 @@
         <b>Note:</b> Custom Mode only works for <code>gpt-3.5-turbo</code>
       </p>
       <p>
-        You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
+        - You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
         GPT-3.
       </p>
       <p>
-        DaVinci will ignore any message history when <code>No History</code> is enabled, it works great for non-conversation tasks like translation, code generation and
+        - <code>No History</code> option works great for non-conversation tasks like translation, code generation and
         writing improvement etc.
+      </p>
+      <p>
+        - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the plus button.
       </p>
     </div>
   </div>
@@ -139,15 +142,15 @@ You can understand and communicate fluently in the user's language of choice suc
         },
         {
           title: 'Translator ANY/CN',
-          instructions: `You're a translator now, your only job is to translate the user input  into Chinese, If user input is Chinese, translate it into English.`,
+          instructions: `You're a translator now, your only job is to translate the user input into Chinese, If user input is Chinese, translate it into English.`,
           prefix: '"',
           suffix: '"',
           noHistory: true
         },
         {
           title: 'Writing Helper',
-          instructions: '',
-          prefix: 'Please improve this writing:"',
+          instructions: `You're a Writing Helper, your only job is to improve the user input.`,
+          prefix: 'Please improve this:"',
           suffix: '"',
           noHistory: true
         }

@@ -31,6 +31,7 @@ body {
 .slide-up-enter-active {
   animation: slideUp_3 0.15s;
 }
+
 .slide-up-leave-active {
   animation: slideDown_3 0.15s;
 }
@@ -332,6 +333,17 @@ textarea {
     }
   }
 
+  label[class='for-select'] {
+    position: absolute;
+    opacity: 0;
+    left: 0;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    cursor: pointer;
+    z-index: 1;
+  }
+
   select {
     position: absolute;
     opacity: 0;
@@ -340,6 +352,8 @@ textarea {
     top: 0;
     height: 100%;
     cursor: pointer;
+    z-index: 2;
+    -webkit-appearance: menulist-button
   }
 }
 
@@ -431,7 +445,7 @@ ul {
   position: absolute;
   bottom: 0;
   width: 200px;
-  left: -46px;
+  left: -48px;
   pointer-events: none;
   opacity: 0;
 
@@ -733,7 +747,6 @@ table {
       left: 0;
       width: 100%;
       top: 0;
-      height: 100%;
       cursor: pointer;
     }
   }

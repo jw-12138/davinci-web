@@ -18,7 +18,8 @@
     </div>
     <login v-show="!isLogin && !checkingLogin" @logged="loggedIn"></login>
     <div>
-      <chat-mode @data-change="handleChatModeChange" v-show="messages.length === 0 && apiMethodIndex === 1 && isLogin && !checkingLogin"></chat-mode>
+      <chat-mode @data-change="handleChatModeChange"
+                 v-show="messages.length === 0 && apiMethodIndex === 1 && isLogin && !checkingLogin"></chat-mode>
       <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px">
         <p> 😎 Capabilities: </p>
         <ul>
@@ -173,7 +174,9 @@
             focus: modelSelectFocus
           }">
                   <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
-                  <select v-model="apiMethodIndex" @focus="modelSelectFocus = true" @blur="modelSelectFocus = false">
+                  <label for="model_select" class="for-select"></label>
+                  <select id="model_select" v-model="apiMethodIndex" @focus="modelSelectFocus = true"
+                          @blur="modelSelectFocus = false">
                     <optgroup v-for="(item, index) in apiMethod" :label="item.model">
                       <option :value="index">{{ item.name }}</option>
                     </optgroup>
@@ -289,6 +292,10 @@ export default {
     window.addEventListener('click', function () {
       _.showPageOptions = false
     })
+
+    setInterval(function () {
+      _.systemCheck()
+    }, 5)
   },
   data() {
     return {
@@ -376,7 +383,8 @@ export default {
       let offset = Math.floor((nowTime - _.systemStartTime) / 1000)
 
       if (offset > 3600) {
-        _.checkForLogin()
+        _.checkForLogin(true)
+        _.systemStartTime = Date.now()
       }
     },
     getLoginInfo(id) {
@@ -517,9 +525,11 @@ export default {
       }
 
       this.messages = history
-      this.composeHistory()
-      this.scrollDown()
-      this.initClipboard()
+      if (this.messages.length) {
+        this.scrollDown()
+        this.initClipboard()
+        this.composeHistory()
+      }
     },
     scrollDown(force) {
       let _ = this
@@ -546,18 +556,18 @@ export default {
       this.isLogin = true
       this.$refs.input.focus()
     },
-    checkForLogin() {
+    checkForLogin(renewToken) {
       let _ = this
 
       _.checkingLogin = true
 
-      if (localStorage.getItem('fromID') && localStorage.getItem('fromID').startsWith('key_sk')) {
+      if (localStorage.getItem('fromID') && localStorage.getItem('fromID').startsWith('key_sk') && !renewToken) {
         _.isLogin = true
         _.checkingLogin = false
         return false
       }
 
-      if (!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`)) {
+      if (!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`) && !renewToken) {
         _.checkingLogin = false
         return false
       }
@@ -580,7 +590,9 @@ export default {
         _.checkingLogin = false
       }).catch(err => {
         console.log(err)
-        _.isLogin = false
+        if(!renewToken){
+          _.isLogin = false
+        }
         _.checkingLogin = false
       })
     },
@@ -667,7 +679,6 @@ export default {
     },
     composeMessage() {
       let _ = this
-      _.systemCheck()
       if (trim(this.userInput) === '') {
         return false
       }
@@ -709,6 +720,10 @@ export default {
 
       if (this.streaming) {
         return false
+      }
+
+      if(_.apiMethodIndex === 1 && _.chatMode.noHistory){
+        this.messages = []
       }
 
       this.messages.push({
