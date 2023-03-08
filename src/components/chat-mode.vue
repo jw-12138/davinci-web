@@ -11,7 +11,7 @@
       <textarea id="chat_mode" v-model="activeChatMode.instructions"></textarea>
     </div>
     <div class="title">
-      <label for="prefix">Message Modifier</label>
+      <label for="prefix">Message Modifier:</label>
     </div>
     <div class="message-modifier">
       <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code> <input
@@ -21,7 +21,7 @@
       <v-check-box @check-change="handleCheckChange" :checked="activeChatMode.noHistory">No History</v-check-box>
     </div>
     <div class="title">
-      <label>Shortcuts</label>
+      <label>Shortcuts:</label>
     </div>
     <div class="switches">
       <button class="plain" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{ item.title }}
@@ -125,7 +125,7 @@ export default {
       customShortCuts: [],
       chatModeData: [
         {
-          title: 'Chat Bot',
+          title: 'ChatGPT',
           instructions: `Your name is DaVinci, and you are a large language model trained by OpenAI. Your job is to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
 If the input is a question, try your best to answer it. Otherwise, provide as much information as you can.
 You should use "code blocks" syntax from markdown including language name to encapsulate any part in responses that's longer-format content such as poem, code, lyrics.
@@ -138,9 +138,9 @@ You can understand and communicate fluently in the user's language of choice suc
           noHistory: false
         },
         {
-          title: 'Translator',
-          instructions: `You're a translator now. You can translate any language into Chinese, If user input is Chinese, translate it into English.`,
-          prefix: 'Please translate this:"',
+          title: 'Translator ANY/CN',
+          instructions: `You're a translator now, your only job is to translate the user input  into Chinese, If user input is Chinese, translate it into English.`,
+          prefix: '"',
           suffix: '"',
           noHistory: true
         },

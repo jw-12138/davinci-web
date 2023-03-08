@@ -47,28 +47,27 @@ export default {
 
 <style scoped lang="scss">
 .checkbox {
-  background: rgba(#000, .1);
   display: inline-block;
-  border-radius: 6px;
-  padding: 4px 8px;
-  border: 2px solid transparent;
-  cursor: pointer;
-  user-select: none;
-
-  outline-offset: 2px;
-
-  &.focus {
-    outline: 2px #3b82f6 solid;
-  }
 
   &:hover {
-    background: rgba(#000, .2);
+    label{
+      background: rgba(#000, .2);
+    }
+
+  }
+
+  &.focus {
+    label{
+      outline: 2px #3b82f6 solid;
+    }
   }
 
   &.checked {
-    border: 2px solid #1f2937;
-    background: #1f2937;
-    color: #fff;
+    label{
+      border: 2px solid #1f2937;
+      background: #1f2937;
+      color: #fff;
+    }
   }
 
   input[type="checkbox"] {
@@ -79,11 +78,17 @@ export default {
   }
 
   label {
+    outline-offset: 2px;
+    background: rgba(#000, .07);
+    display: inline-block;
+    border-radius: 6px;
+    padding: 4px 8px 6px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    user-select: none;
     margin-bottom: 0;
-    display: inline;
     position: relative;
     top: -2px;
-    cursor: pointer;
 
     i {
       margin-right: 3px;

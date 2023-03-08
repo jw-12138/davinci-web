@@ -18,10 +18,11 @@
     </div>
     <login v-show="!isLogin && !checkingLogin" @logged="loggedIn"></login>
     <div>
-      <chat-mode @data-change="handleChatModeChange" v-show="apiMethodIndex === 1 && isLogin && !checkingLogin"></chat-mode>
+      <chat-mode @data-change="handleChatModeChange" v-show="messages.length === 0 && apiMethodIndex === 1 && isLogin && !checkingLogin"></chat-mode>
       <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px">
         <p> 😎 Capabilities: </p>
         <ul>
+          <li> Allow user to set custom instructions and message modifiers</li>
           <li> Remembers what user said earlier in the conversation</li>
           <li> Allows user to provide follow-up corrections</li>
         </ul>
