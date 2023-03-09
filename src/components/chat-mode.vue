@@ -19,7 +19,7 @@
           <textarea id="chat_mode" v-model="activeChatMode.instructions"></textarea>
         </div>
         <div class="title">
-          <label for="prefix">Message Modifier:</label>
+          <label for="prefix">Message Modifiers:</label>
         </div>
         <div class="message-modifier">
           <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code> <input

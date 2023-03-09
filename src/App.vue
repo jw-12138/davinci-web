@@ -11,7 +11,7 @@
     <div v-show="!isLogin && !checkingLogin">
       <div style="line-height: 1.9">
         <p>
-          👏 Introducing AI DaVinci by OpenAI, your virtual assistant for tasks,
+          👏 Introducing DaVinci, your virtual assistant for tasks,
           questions and conversation. Open Sourced on <a href="https://github.com/jw-12138/davinci-web" target="_blank">GitHub</a>.
         </p>
       </div>
