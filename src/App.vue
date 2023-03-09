@@ -80,7 +80,13 @@
         </p>
         <ul>
           <li>
-            Open Sourced on <a href="https://github.com/jw-12138/davinci-web" target="_blank">GitHub</a>
+            <a href="https://github.com/jw-12138/davinci-web" target="_blank">Open Source</a>
+          </li>
+          <li>
+            <a href="https://github.com/jw-12138/davinci-web/issues" target="_blank">Feedback</a>
+          </li>
+          <li>
+            © 2023 | <a href="https://jw1.dev" target="_blank">jw1.dev</a> | Code with ❤️
           </li>
         </ul>
       </div>
@@ -222,11 +228,6 @@
           </button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="page-options-wrap hide">
-    <div class="box-wrapper">
     </div>
   </div>
 </template>
