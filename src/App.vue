@@ -272,7 +272,6 @@ md.renderer.rules.fence = function (...args) {
 }
 
 let baseAPI = getApiBase()
-let busBaseApi = 'https://sso.jw1.dev/api'
 
 export default {
   components: {ChatMode, Login},
@@ -391,7 +390,7 @@ export default {
     getLoginInfo(id) {
       this.checkingLogin = true
       axios({
-        url: busBaseApi + '/login-info/get',
+        url: 'https://api.jw1.dev/cognito/get_login_info',
         method: 'post',
         data: {
           id
