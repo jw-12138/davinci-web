@@ -437,7 +437,7 @@ export default {
       this.scrollDown()
 
       axios({
-        url: 'https://v.api.jw1.dev/api/revoke',
+        url: 'https://api.jw1.dev/cognito/revoke',
         method: 'post',
         data: {
           token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`) || localStorage.getItem('fromID'),
@@ -575,7 +575,7 @@ export default {
 
       axios({
         method: 'post',
-        url: 'https://v.api.jw1.dev/api/renew',
+        url: 'https://api.jw1.dev/cognito/renew',
         data: {
           refreshToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`),
           userPool: USER_POOL_ID,
