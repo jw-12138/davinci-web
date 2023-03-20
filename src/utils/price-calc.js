@@ -61,7 +61,11 @@ export function calcTokenCost(messages, model, instructionTokenCount) {
     }
   })
 
-  return (promptTokenCount / models[m].oneDollarTokenForPrompt) + (completionTokenCount / models[m].oneDollarTokenForCompletion)
+  let promptCost = promptTokenCount / models[m].oneDollarTokenForPrompt
+  let completionCost = completionTokenCount / models[m].oneDollarTokenForCompletion
+  let totalCost = (promptCost + completionCost).toFixed(6)
+
+  return totalCost
 }
 
 export function calcToken(text) {

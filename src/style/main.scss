@@ -183,6 +183,7 @@ body {
         padding: 0;
         border: none;
         font-size: inherit;
+        background: transparent;
       }
     }
 
@@ -671,6 +672,9 @@ table {
 
       pre {
         background-color: rgba(#000, 0.5);
+        code {
+          background: transparent;
+        }
       }
 
       &.dark {
