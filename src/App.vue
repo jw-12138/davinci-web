@@ -396,7 +396,7 @@ export default {
       })
 
       function checkScroll() {
-        let target = document.querySelector('.global-scroll-wrap')
+        let target = document.querySelector('body')
         let scrollTop = target.scrollTop
         let scrollHeight = target.scrollHeight
         let height = target.clientHeight
@@ -613,7 +613,7 @@ export default {
         return false
       }
 
-      let frame = document.querySelector('.global-scroll-wrap')
+      let frame = document.querySelector('body')
 
       setTimeout(function () {
         frame.scroll({
