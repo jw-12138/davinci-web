@@ -1,0 +1,53 @@
+.v-dialog-modal {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5000;
+  background: rgba(#fff, .5);
+  top: 0;
+  left: 0;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow: auto;
+
+  .v-dialog-wrap {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 10px;
+    overflow: visible;
+
+    .v-dialog-box {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #eee;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      min-height: 100px;
+      overflow: visible;
+
+      .title {
+        font-size: 14px;
+        font-weight: bolder;
+        padding: 5px 0;
+      }
+    }
+  }
+}
+
+// dark mode
+@media (prefers-color-scheme: dark) {
+  .v-dialog-modal {
+    background: rgba(#000, .5);
+
+    .v-dialog-wrap {
+
+      .v-dialog-box {
+        background: #2c2c2c;
+        border: 1px solid #2c2c2c;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+}

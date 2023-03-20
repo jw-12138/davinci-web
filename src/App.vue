@@ -19,7 +19,7 @@
     <login v-show="!isLogin && !checkingLogin" @logged="loggedIn"></login>
     <div>
       <chat-mode @data-change="handleChatModeChange"
-                 v-show="messages.length === 0 && apiMethodIndex === 1 && isLogin && !checkingLogin"></chat-mode>
+                 v-show="messages.length === 0 && apiMethodIndex !== 0 && isLogin && !checkingLogin"></chat-mode>
       <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px">
         <p> 😎 Capabilities: </p>
         <ul>
@@ -93,22 +93,29 @@
       <div class="message-list" v-show="messages.length && isLogin && !checkingLogin">
         <div
           class="item"
+          style="margin-top: 20px"
           v-for="(item, index) in display_messages"
           :class="{
             dark: item.sender === 'Human',
             sys: item.sender === 'System'
           }"
         >
+          <div v-show="item.sender === 'Human'" style="font-size: 12px;position: absolute; top: -25px; color: #999;">
+            Human
+          </div>
           <div v-if="item.sender === 'Human'" class="human">
-            <span :style="{
-              display: editIndex === item.index ? 'none' : 'inline'
+            <div :style="{
+              display: editIndex === item.index ? 'none' : 'block'
             }">
-            {{ item.text }}</span>
+              <pre>{{ item.text }}</pre>
+            </div>
             <div class="edit-tools" v-if="editIndex === item.index">
-              <input enterkeyhint="done" v-model="editMessage" :id="'editingArea_' + item.index"
-                     @keydown="preventDefault"
-                     @focus="inputOnFocus = true"
-                     @blur="inputOnFocus = false">
+              <textarea
+                v-model="editMessage"
+                :id="'editingArea_' + item.index"
+                @focus="inputOnFocus = true"
+                @blur="inputOnFocus = false">
+              </textarea>
             </div>
             <div class="tools">
               <button title="Cancel" @click="editIndex = undefined; editMessage = undefined" :style="{
@@ -125,6 +132,8 @@
                 <i class="iconfont">&#xe67b;</i>
               </button>
             </div>
+          </div>
+          <div v-show="item.sender === 'AI'" style="font-size: 12px; position: absolute; top: -25px; color: #999">AI
           </div>
           <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"></div>
           <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px"
@@ -151,24 +160,25 @@
             in: showPageOptions
           }" @click.stop>
               <div class="page-options">
-                <div class="item" v-show="messages.length > 1">
-                  <button @click="clearHistory" title="Reset current conversation">
+                <div class="item">
+                  <button @click="clearHistory" title="Reset current conversation" :disabled="messages.length === 0">
                     <i class="iconfont" style="top: 2px">&#xe66a;</i>
                     <span>Reset</span>
                   </button>
                 </div>
-                <div class="item" v-show="messages.length > 1" title="Regenerate the last message">
-                  <button @click="reGen(null)" :disabled="streaming">
+                <div class="item" title="Regenerate the last message">
+                  <button @click="reGen(null)" :disabled="streaming || messages.length < 1">
                     <i class="iconfont" style="top: 2px">&#xe67b;</i>
                     <span>Regenerate</span>
                   </button>
                 </div>
-                <div class="item" v-show="messages.length > 1">
-                  <button :disabled="sharing || streaming" @click="share" title="Publish this conversation">
+                <div class="item">
+                  <button :disabled="sharing || streaming || messages.length < 2" @click="share"
+                          title="Publish this conversation">
                     <i class="iconfont" style="top: 2px; left: 2px">&#xe67d;</i> <span>Publish</span>
                   </button>
                 </div>
-                <hr v-show="messages.length > 1">
+                <hr>
                 <div class="item">
                   <button @click="logout" title="Sign out" :disabled="loggingOut">
                     <i class="iconfont" style="top: 2px; left: 2px">&#xe680;</i> <span>Sign Out</span>
@@ -183,7 +193,7 @@
                   <label for="model_select" class="for-select"></label>
                   <select id="model_select" v-model="apiMethodIndex" @focus="modelSelectFocus = true"
                           @blur="modelSelectFocus = false">
-                    <optgroup v-for="(item, index) in apiMethod" :label="item.model">
+                    <optgroup v-for="(item, index) in apiMethod" :label="item.model" :disabled="item.disabled">
                       <option :value="index">{{ item.name }}</option>
                     </optgroup>
                   </select>
@@ -205,26 +215,24 @@
       </div>
       <div v-show="isLogin" class="page-input">
         <div class="wrap">
-          <input
-            enterkeyhint="send"
-            :disabled="editIndex"
-            v-model="userInput"
-            @focus="inputOnFocus = true; showPageOptions = false"
-            @blur="inputOnFocus = false"
-            ref="input"
-            placeholder="ask something"
-            @compositionstart="userIsComposting = true"
-            @compositionend="userIsComposting = false"
-          >
+          <textarea class="input"
+                    v-model="userInput"
+                    :contenteditable="!editIndex"
+                    @focus="inputOnFocus = true; showPageOptions = false"
+                    @blur="inputOnFocus = false"
+                    ref="input"
+                    placeholder="Type your message here, press CTRL/CMD + Enter to send."
+                    @compositionstart="userIsComposting = true"
+                    @compositionend="userIsComposting = false">
+          </textarea>
           <button
-            enterkeyhint="send"
             @click="composeMessage"
             :disabled="streaming"
             :style="{
               opacity: streaming ? 0.3 : 1
             }"
           >
-            <i class="iconfont" style="position: relative; top: 1px;">&#xe67a;</i> Send
+            <i class="iconfont" style="position: relative; top: 1px;">&#xe67a;</i>
           </button>
         </div>
       </div>
@@ -293,12 +301,18 @@ export default {
       _.showPageOptions = false
     })
 
+    this.handleUserInteract()
+
+    window.addEventListener('paste', this.handleUserPaste)
+
     setInterval(function () {
       _.systemCheck()
     }, 5)
   },
   data() {
     return {
+      userScrolled: false,
+      userInteracted: false,
       editInstructionWindow: '',
       modelSelectFocus: false,
       apiMethodIndex: 1,
@@ -311,7 +325,19 @@ export default {
         {
           name: 'ChatGPT',
           model: 'gpt-3.5-turbo',
-          url: '/chat'
+          url: '/chat/chat-gpt'
+        },
+        {
+          name: 'GPT-4 8k',
+          model: 'gpt-4',
+          url: '/chat/gpt-4',
+          disabled: true
+        },
+        {
+          name: 'GPT-4 32k',
+          model: 'gpt-4-32k',
+          url: '/chat/gpt-4',
+          disabled: true
         }
       ],
       checkingLogin: false,
@@ -341,6 +367,52 @@ export default {
     }
   },
   methods: {
+    handleUserInteract() {
+      let touchDown = false
+      let _ = this
+
+      window.addEventListener('wheel', () => {
+        _.userInteracted = true
+      })
+
+      window.addEventListener('mousemove', (event) => {
+        if (event.buttons === 1) {
+          _.userInteracted = true
+        }
+      })
+
+      window.addEventListener('touchstart', () => {
+        touchDown = true
+      })
+
+      window.addEventListener('touchmove', () => {
+        if (touchDown) {
+          _.userInteracted = true
+        }
+      })
+
+      window.addEventListener('touchend', () => {
+        touchDown = false
+      })
+
+      function checkScroll() {
+        let target = document.querySelector('.global-scroll-wrap')
+        let scrollTop = target.scrollTop
+        let scrollHeight = target.scrollHeight
+        let height = target.clientHeight
+
+        if (scrollTop + height > scrollHeight - 3) {
+          _.userInteracted = false
+        }
+
+        requestAnimationFrame(checkScroll)
+      }
+
+      requestAnimationFrame(checkScroll)
+    },
+    handleUserPaste(e) {
+
+    },
     handleChatModeChange(chatMode) {
       let defaultChatMode = {
         instructionTokens: 0,
@@ -537,7 +609,11 @@ export default {
         return false
       }
 
-      let frame = document.querySelector('html')
+      if (_.userInteracted) {
+        return false
+      }
+
+      let frame = document.querySelector('.global-scroll-wrap')
 
       setTimeout(function () {
         frame.scroll({
@@ -590,7 +666,7 @@ export default {
         _.checkingLogin = false
       }).catch(err => {
         console.log(err)
-        if(!renewToken){
+        if (!renewToken) {
           _.isLogin = false
         }
         _.checkingLogin = false
@@ -602,7 +678,7 @@ export default {
         if (e.key === 'Escape') {
           _.showPageOptions = false
         }
-        if (e.key === 'Enter' && !_.userIsComposting && _.inputOnFocus) {
+        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
           if (_.editIndex !== undefined) {
             _.reGen(_.editIndex)
           } else {
@@ -644,6 +720,10 @@ export default {
         position = _.messages.length - 2
       }
 
+      if (_.messages.length === 1) {
+        position = 0
+      }
+
       let length = _.messages.length
 
       _.userInput = _.editMessage || _.messages[position].text
@@ -679,6 +759,7 @@ export default {
     },
     composeMessage() {
       let _ = this
+      _.userInteracted = false
       if (trim(this.userInput) === '') {
         return false
       }
@@ -688,6 +769,7 @@ export default {
       if (trim(this.userInput) === '/reset') {
         setTimeout(() => {
           _.userInput = ''
+          _.$refs.input.innerText = ''
         }, 30)
         _.clearHistory()
         return false
@@ -697,6 +779,7 @@ export default {
         _.logout()
         setTimeout(() => {
           _.userInput = ''
+          _.$refs.input.innerText = ''
         }, 30)
         return false
       }
@@ -705,6 +788,7 @@ export default {
         _.reGen(null)
         setTimeout(() => {
           _.userInput = ''
+          _.$refs.input.innerText = ''
         }, 30)
         _.showPageOptions = false
         return false
@@ -714,6 +798,7 @@ export default {
         _.share()
         setTimeout(() => {
           _.userInput = ''
+          _.$refs.input.innerText = ''
         }, 30)
         return false
       }
@@ -722,7 +807,7 @@ export default {
         return false
       }
 
-      if(_.apiMethodIndex === 1 && _.chatMode.noHistory){
+      if (_.apiMethodIndex === 1 && _.chatMode.noHistory) {
         this.messages = []
       }
 
@@ -749,6 +834,7 @@ export default {
       let userInput = _.userInput
       setTimeout(() => {
         _.userInput = ''
+        _.$refs.input.innerText = ''
       }, 30)
 
       this.updateDisplayMessages()
@@ -771,6 +857,8 @@ export default {
         axiosBody.message = userInput
         _.chatMode.instructionTokens = 208
       }
+
+      _.$refs.input.focus()
 
       fetch(baseAPI + _.apiMethod[_.apiMethodIndex].url, {
         method: 'POST',
@@ -866,6 +954,9 @@ export default {
     }
   },
   watch: {
+    userInput: function (val) {
+      this.$refs.input.innerText = val
+    },
     streaming: function (val) {
       if (!val) {
         this.initClipboard()

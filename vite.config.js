@@ -4,6 +4,9 @@ import {resolve} from 'path'
 
 export default defineConfig({
   plugins: [vue()],
+  css: {
+    devSourcemap: true
+  },
   build: {
     sourcemap: true,
     rollupOptions: {

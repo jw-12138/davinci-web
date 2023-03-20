@@ -21,7 +21,7 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
       font-weight: inherit;
       height: auto;
 
-      i{
+      i {
         position: relative;
         top: 1px;
       }
@@ -32,6 +32,17 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
     font-size: 12px;
     margin-bottom: 5px;
     display: inline-block;
+  }
+
+  input {
+    font-size: 13px;
+    height: 32px;
+    background: rgba(#000, .07);
+    display: block;
+    border-radius: 6px;
+    width: 100%;
+    border: none;
+    text-indent: 10px;
   }
 
   textarea {
@@ -137,6 +148,11 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
 
     textarea {
       background: rgba(#fff, 0.07);
+      color: #fff;
+    }
+
+    input {
+      background: rgba(#fff, .07);
       color: #fff;
     }
 

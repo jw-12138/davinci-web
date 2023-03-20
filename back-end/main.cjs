@@ -2,12 +2,12 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const {nanoid} = require('nanoid')
-const {ask, chat} = require('./api.cjs')
+const {ask, chat} = require('./openai-api.cjs')
 const verify_login = require('./verify-login.cjs')
 const port = 7009
 const path = require('path')
 const {unmarshall} = require('@aws-sdk/util-dynamodb')
-const {write_conversations, get_conversations} = require('./aws_conversations.cjs')
+const {write_conversations, get_conversations} = require('./write-conversations.cjs')
 
 app.use(cors())
 app.use(express.static(path.join(__dirname, '../dist')))
@@ -194,7 +194,7 @@ AI: `,
   })
 })
 
-app.post('/api/chat', function (req, res) {
+app.post('/api/chat/:model', function (req, res) {
   res.set('Content-Type', 'application/octet-stream')
   res.set('Transfer-Encoding', 'chunked')
 
@@ -204,6 +204,13 @@ app.post('/api/chat', function (req, res) {
   let token = req.body.token || ''
   let userPool = req.body.userPool || ''
   let userInstruction = req.body.instructions || ''
+
+  let model = req.params.model || ''
+
+  if(!model) {
+    res.status(404).end()
+    return false
+  }
 
   history.forEach(el => {
     composedHistory.push({
@@ -225,7 +232,7 @@ app.post('/api/chat', function (req, res) {
     loginType = 'key'
   }
 
-  if(userInstruction){
+  if (userInstruction) {
     composedHistory = prependArray({
       role: 'system',
       content: userInstruction
@@ -235,7 +242,7 @@ app.post('/api/chat', function (req, res) {
   verify_login(token, userPool).then(r => {
     if (r.data.Username) {
       chat(
-        'chat-gpt',
+        model,
         {
           messages: [
             ...composedHistory,
@@ -283,56 +290,6 @@ app.post('/api/chat', function (req, res) {
     res.status(err.response.status)
     res.end()
   })
-})
-
-app.post('/api/siri/ask', function (req, res) {
-  let userText = req.body.userText
-  let token = req.body.token
-
-  res.setHeader('Content-Type', 'text/plain')
-
-  if (!token || !userText) {
-    res.status(400)
-    return false
-  }
-
-  chat(
-    'chat-gpt',
-    {
-      messages: [
-        {
-          role: 'system',
-          content: instruction
-        },
-        {
-          role: 'user',
-          content: userText
-        }
-      ],
-      temperature: 0.6,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0.6,
-      key: token
-    },
-    function (text, cost, err) {
-      if (text) {
-        res.end(text)
-      }
-
-      if (err) {
-        console.log(err)
-        if (err.response && err.response.status === 429) {
-          res.status(429)
-        } else {
-          res.status(500)
-        }
-        res.end()
-        return false
-      }
-    }
-  )
-
 })
 
 app.listen(port, () => {

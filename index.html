@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>DaVinci GPT-3</title>
-    <link rel="icon" href="https://emojicdn.elk.sh/%F0%9F%A4%96" type="image/png" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8TS543XDVD"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>DaVinci GPT-3</title>
+  <link rel="icon" href="https://emojicdn.elk.sh/%F0%9F%A4%96" type="image/png"/>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8TS543XDVD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || []
 
-      gtag('config', 'G-8TS543XDVD');
-    </script>
-    <script>
-      let global
-      if (global === undefined) {
-        global = window;
-      }
-      let USER_POOL_ID = 'ap-northeast-2_mFkRRvlLv'
-      let USER_POOL_CLIENT_ID = '4h2ob6g9i5gm80kabjmcu49e0s'
-    </script>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+    function gtag() {
+      dataLayer.push(arguments)
+    }
+
+    gtag('js', new Date())
+
+    gtag('config', 'G-8TS543XDVD')
+  </script>
+  <script>
+    let global
+    if (global === undefined) {
+      global = window
+    }
+    let USER_POOL_ID = 'ap-northeast-2_mFkRRvlLv'
+    let USER_POOL_CLIENT_ID = '4h2ob6g9i5gm80kabjmcu49e0s'
+  </script>
+</head>
+<body>
+<div class="global-scroll-wrap">
+  <div id="app"></div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
 </html>

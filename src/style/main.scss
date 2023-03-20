@@ -1,6 +1,7 @@
 @import "hljs.scss";
 @import "./iconfont/iconfont.css";
 @import "./chat-mode.scss";
+@import "v-dialog";
 
 $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell", "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
@@ -18,7 +19,15 @@ html {
 body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.global-scroll-wrap {
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #app {
@@ -26,7 +35,7 @@ body {
   max-width: 640px;
   margin: 0 auto;
   font-size: 16px;
-  padding: 1px 10px 60px;
+  padding: 1px 10px 80px;
 }
 
 .slide-up-enter-active {
@@ -65,7 +74,7 @@ body {
   min-height: calc(100vh - 190px);
 
   .item {
-    width: calc(100% - 70px);
+    width: 100%;
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     border-radius: 8px;
     padding: 6px 8px;
@@ -89,12 +98,12 @@ body {
     }
 
     .edit-tools {
-      textarea, input {
+      textarea {
         width: 100%;
-        height: 40px;
+        min-height: 60px;
         border: 2px solid #1f2937;
-        border-radius: 30px;
-        padding: 10px 15px 0;
+        border-radius: 8px;
+        padding: 10px;
         font-size: 14px;
         font-family: $font-sans;
         resize: none;
@@ -108,13 +117,22 @@ body {
     .human {
       padding-right: 60px;
       position: relative;
+
+      pre {
+        font-family: $font-sans;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        overflow-x: hidden;
+        background: transparent;
+      }
     }
 
     code {
       border-radius: 4px;
-      border: 1px solid #999;
       padding: 2px;
       font-size: 12px;
+      border: none;
+      background: rgba(#000, .1);
     }
 
     .code-wrapper {
@@ -203,9 +221,9 @@ body {
 
 .page-input {
   position: fixed;
-  background: #fff;
+  background: linear-gradient(to bottom, transparent, #fff);
   bottom: 0;
-  height: 60px;
+  height: 80px;
   width: 100%;
   left: 0;
   z-index: 3000;
@@ -215,30 +233,58 @@ body {
     width: 100%;
     max-width: 740px;
     margin: 0 auto;
-    padding: 10px 20px 20px;
+    padding: 10px 10px 10px;
+    position: relative;
   }
 
-  input {
+  .input {
     width: 100%;
-    height: 40px;
+    height: 60px;
     border: 2px solid #1f2937;
-    border-radius: 30px;
-    padding: 0 15px 0;
-    font-size: 14px;
+    border-radius: 8px;
+    padding: 7px 40px 10px 10px;
+    font-size: 13px;
     font-family: $font-sans;
+    outline-offset: 2px;
+    overflow: auto;
+    line-height: 1.5;
     resize: none;
+    background: #fff;
+
+    &:focus {
+      outline: 2px #3b82f6 solid;
+    }
+  }
+
+  .placeholder {
+    line-height: 1.5;
+    width: calc(100% - 82px);
+    color: #999;
+    pointer-events: none;
+    position: absolute;
+    left: 22px;
+    top: 22px;
+    font-size: 12px;
   }
 
   button {
+    position: absolute;
+    right: 12px;
+    top: 12px;
     font-family: $font-sans;
-    width: 100px;
-    margin-left: 10px;
+    width: auto;
     height: 40px;
-    background: #1f2937;
-    color: #fff;
+    padding: 0 10px;
+    background: transparent;
+    color: #333;
     border: none;
-    border-radius: 30px;
+    border-radius: 8px;
     flex-shrink: 0;
+    margin: 0;
+
+    i.iconfont {
+      margin: 0;
+    }
   }
 }
 
@@ -506,9 +552,10 @@ ul {
 
 code {
   border-radius: 4px;
-  border: 1px solid #999;
   padding: 2px;
   font-size: 13px;
+  border: none;
+  background: rgba(#000, .1);
 }
 
 table {
@@ -544,36 +591,15 @@ table {
   display: inline-block;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
 @media (prefers-color-scheme: dark) {
   body {
     background: #121212;
     color: #fff;
   }
 
-  ::-webkit-scrollbar-thumb {
-    background: #666;
-    border-radius: 6px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #999;
+  code {
+    background: rgba(#fff, .3);
+    color: #fff;
   }
 
   .page-options-box {
@@ -640,7 +666,7 @@ table {
       }
 
       code {
-        border-color: #ccc;
+        background: rgba(#000, .4);
       }
 
       pre {
@@ -659,17 +685,17 @@ table {
   }
 
   .page-input {
-    background: #121212;
+    background: linear-gradient(to bottom, transparent, #121212);
 
-    input {
+    .input {
       border: 2px solid #404040;
       background: #404040;
       color: #fff;
     }
 
     button {
-      background: #fff;
-      color: #404040;
+      background: transparent;
+      color: #fff;
     }
   }
 

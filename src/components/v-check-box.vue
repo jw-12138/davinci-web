@@ -4,7 +4,7 @@
         focus: focus
       }">
     <input type="checkbox" v-model="inCompChecked" :id="componentID" @focus="focus = true" @blur="focus = false"
-           @change="">
+           @change="$emit('update:checked', $event.target.checked)">
     <label :for="componentID">
       <i class="iconfont icon-minus" style="top: 2px; position: relative" v-if="!inCompChecked"></i>
       <i class="iconfont icon-select-bold" style="top: 2px; position: relative" v-else></i>
@@ -19,6 +19,10 @@ export default {
     checked: {
       type: Boolean
     }
+  },
+  model: {
+    prop: 'checked',
+    event: 'check-change'
   },
   data() {
     return {

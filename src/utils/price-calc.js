@@ -4,14 +4,28 @@ let tokenizer = new GPT3Tokenizer({type: 'gpt3'})
 
 let models = {
   'davinci': {
-    oneDollorToken: 1 / 0.02 * 1000,
+    oneDollarTokenForPrompt: 1 / 0.02 * 1000,
+    oneDollarTokenForCompletion: 1 / 0.02 * 1000,
     name: 'text-davinci-003',
     info: 'Complex intent, cause and effect, summarization for audience'
   },
   'chat-gpt': {
-    oneDollorToken: 1 / 0.002 * 1000,
+    oneDollarTokenForPrompt: 1 / 0.002 * 1000,
+    oneDollarTokenForCompletion: 1 / 0.002 * 1000,
     name: 'gpt-3.5-turbo',
     info: 'The standard ChatGPT model'
+  },
+  'gpt-4': {
+    oneDollarTokenForPrompt: 1 / 0.03 * 1000,
+    oneDollarTokenForCompletion: 1 / 0.06 * 1000,
+    name: 'gpt-4',
+    info: 'The GPT-4 8k model'
+  },
+  'gpt-4-32k': {
+    oneDollarTokenForPrompt: 1 / 0.06 * 1000,
+    oneDollarTokenForCompletion: 1 / 0.12 * 1000,
+    name: 'gpt-4-32k',
+    info: 'The GPT-4 32k model'
   }
 }
 
@@ -29,20 +43,25 @@ let modelName = function (index) {
 }
 
 export function calcTokenCost(messages, model, instructionTokenCount) {
-  let tokenCount = 0
+  let promptTokenCount = 0
+  let completionTokenCount = 0
   if (instructionTokenCount === undefined) {
     instructionTokenCount = 0
   }
   let m = modelName(model)
 
-  tokenCount += instructionTokenCount
+  promptTokenCount += instructionTokenCount
 
   messages.forEach(message => {
     let tokens = calcToken(message.text)
-    tokenCount += tokens
+    if (message.sender === 'AI') {
+      completionTokenCount += tokens
+    } else {
+      promptTokenCount += tokens
+    }
   })
 
-  return tokenCount / models[m].oneDollorToken
+  return (promptTokenCount / models[m].oneDollarTokenForPrompt) + (completionTokenCount / models[m].oneDollarTokenForCompletion)
 }
 
 export function calcToken(text) {

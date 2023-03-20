@@ -1,6 +1,6 @@
 <template>
   <div class="chat-mode" ref="chat_mode_box">
-    <h3 style="margin-top: 0; margin-bottom: 10px; cursor:pointer;" >
+    <h3 style="margin-top: 0; margin-bottom: 10px; cursor:pointer;">
       <button @click="customModeExpand = !customModeExpand">
         <i class="iconfont icon-arrow-right" :style="{
         display: 'inline-block',
@@ -9,10 +9,53 @@
       }"></i> Custom Mode
       </button>
     </h3>
+    <v-dialog title="Add Custom Instructions" v-model:show="showAddCustomShortcutsPanel">
+      <form action="javascript:" @submit="addCustomShortcuts">
+        <div class="chat-mode" style="padding: 0; border: none; background: transparent; box-shadow: none">
+          <div class="title" style="margin-top: 0">
+            <label for="new_chat_name">Name</label>
+          </div>
+          <div>
+            <input type="text" id="new_chat_name" placeholder="The name of your custom instructions" required
+                   v-model="newChatMode.title">
+          </div>
+          <div class="title" style="margin-top: 0">
+            <label for="new_chat_mode">Instructions({{ newChatMode.instructionTokens ? newChatMode.instructionTokens : 0 }}
+            tokens):</label>
+          </div>
+          <div>
+            <textarea id="new_chat_mode" v-model="newChatMode.instructions" @input="handleNewChatModeInstructionInput"></textarea>
+          </div>
+          <div class="title">
+            <label for="new_prefix">Message Modifiers:</label>
+          </div>
+          <div class="message-modifier">
+            <input placeholder="Prefix" id="new_prefix" type="text" v-model="newChatMode.prefix"> <code>message</code>
+            <input
+              type="text" v-model="newChatMode.suffix" placeholder="Suffix">
+          </div>
+          <div class="title">
+            <label>History Mode:</label>
+          </div>
+          <div>
+            <v-check-box v-model:checked="newChatMode.noHistory">No History</v-check-box>
+          </div>
+        </div>
+
+
+        <div style="text-align: center; ">
+          <button style="height: 32px" class="plain" type="button" @click="showAddCustomShortcutsPanel = false">Cancel
+          </button>
+          <button style="height: 32px; margin-left: 10px" type="submit">Save</button>
+        </div>
+      </form>
+
+    </v-dialog>
     <Transition duration="300">
       <div v-show="customModeExpand">
         <div class="title" style="margin-top: 0">
-          <label for="chat_mode">Instructions ({{ activeChatMode.instructionTokens ? activeChatMode.instructionTokens : 0 }}
+          <label for="chat_mode">Instructions
+            ({{ activeChatMode.instructionTokens ? activeChatMode.instructionTokens : 0 }}
             tokens):</label>
         </div>
         <div>
@@ -22,11 +65,12 @@
           <label for="prefix">Message Modifiers:</label>
         </div>
         <div class="message-modifier">
-          <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code> <input
-          type="text" placeholder="Suffix" v-model="activeChatMode.suffix">
+          <input placeholder="Prefix" id="prefix" type="text" v-model="activeChatMode.prefix"> <code>message</code>
+          <input
+            type="text" placeholder="Suffix" v-model="activeChatMode.suffix">
         </div>
         <div style="margin-top: 10px">
-          <v-check-box @check-change="handleCheckChange" :checked="activeChatMode.noHistory">No History</v-check-box>
+          <v-check-box v-model:checked="activeChatMode.noHistory">No History</v-check-box>
         </div>
         <div class="title">
           <label>Shortcuts:</label>
@@ -34,36 +78,40 @@
         <div class="switches">
           <button class="plain" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{ item.title }}
           </button>
-          <button @click="addCustomShortcuts"><i class="iconfont icon-add" style="top: 2px; left: 2px"></i></button>
+          <button @click="showAddCustomShortcutsPanel = true"><i class="iconfont icon-add"
+                                                                 style="top: 2px; left: 2px"></i></button>
           <br v-if="customShortCuts.length">
           <span v-for="(item, index) in customShortCuts" style="position: relative">
-        <button style="padding-right: 30px" class="plain" @click="handleCustomModeChange(index)"
-                :disabled="customShortcutsDeleteFocus === index">
-        {{ item.title }}
-        </button>
-        <button class="no_style" style="position: absolute; right: 15px; top: -2px" @click="deleteCustomShortcuts(index)">
-          <i class="iconfont icon-ashbin"
-             @mouseenter="customShortcutsDeleteFocus = index"
-             @mouseleave="customShortcutsDeleteFocus = null"
-             style="top: 0;"></i>
-        </button>
-      </span>
+            <button style="padding-right: 30px" class="plain" @click="handleCustomModeChange(index)"
+                    :disabled="customShortcutsDeleteFocus === index">
+            {{ item.title }}
+            </button>
+            <button class="no_style" style="position: absolute; right: 15px; top: -2px"
+                    @click="deleteCustomShortcuts(index)">
+              <i class="iconfont icon-ashbin"
+                 @mouseenter="customShortcutsDeleteFocus = index"
+                 @mouseleave="customShortcutsDeleteFocus = null"
+                 style="top: 0;"></i>
+            </button>
+          </span>
           <br>
         </div>
         <div class="info">
           <p>
             <b>Note:</b> Custom Mode only works for <code>gpt-3.5-turbo</code>
           </p>
+          <br>
           <p>
             - You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
             GPT-3.
           </p>
           <p>
-            - <code>No History</code> option works great for non-conversation tasks like translation, code generation and
+            - <code>No History</code> option works great for non-conversation tasks like translation, code generation
+            and
             writing improvement, etc.
           </p>
           <p>
-            - To add a new custom shortcut, edit the <code>Instructions</code>, <code>Message Modifiers</code> and <code>No History</code> first, then hit the button with the plus sign.
+            - To add a new custom shortcut, simply hit the button with the plus sign.
           </p>
         </div>
       </div>
@@ -74,10 +122,11 @@
 <script>
 import VCheckBox from './v-check-box.vue'
 import {calcToken} from '../utils/price-calc.js'
+import VDialog from './v-dialog.vue'
 
 export default {
   name: 'chat-mode',
-  components: {VCheckBox},
+  components: {VDialog, VCheckBox},
   mounted() {
     if (localStorage.getItem('chatMode')) {
       this.activeChatMode = JSON.parse(localStorage.getItem('chatMode'))
@@ -89,28 +138,31 @@ export default {
     this.readLocalCustomShortCuts()
     window.addEventListener('resize', this.calcHeight)
 
-    if(localStorage.getItem('customModeExpand') && localStorage.getItem('customModeExpand') === 'true'){
+    if (localStorage.getItem('customModeExpand') && localStorage.getItem('customModeExpand') === 'true') {
       this.customModeExpand = true
     }
   },
   methods: {
-    calcHeight(){
+    handleNewChatModeInstructionInput(){
+      this.newChatMode.instructionTokens = calcToken(this.newChatMode.instructions)
+    },
+    calcHeight() {
       this.$refs.chat_mode_box.style.maxHeight = this.customModeExpand ? '810px' : '45px'
     },
     addCustomShortcuts() {
       this.customShortcutsDeleteFocus = null
-      let title = prompt('Please enter a title for this custom shortcut: ')
-      if (!title) {
-        return
+      let temp = JSON.parse(JSON.stringify(this.newChatMode))
+      this.newChatMode = {
+        title: '',
+        instructions: '',
+        prefix: '',
+        suffix: '',
+        noHistory: false
       }
-      this.customShortCuts.push({
-        title: title,
-        instructions: this.activeChatMode.instructions,
-        prefix: this.activeChatMode.prefix,
-        suffix: this.activeChatMode.suffix,
-        noHistory: this.activeChatMode.noHistory
-      })
+      this.activeChatMode = temp
+      this.customShortCuts.push(temp)
       this.updateLocalCustomShortCuts()
+      this.showAddCustomShortcutsPanel = false
     },
     deleteCustomShortcuts(index) {
       let doDelete = confirm('Are you sure to delete this custom shortcut?')
@@ -127,6 +179,7 @@ export default {
       this.activeChatMode = this.customShortCuts[index]
     },
     handleCheckChange(val) {
+      console.log(val)
       this.activeChatMode.noHistory = val
     },
     readLocalCustomShortCuts() {
@@ -141,11 +194,19 @@ export default {
   },
   data() {
     return {
+      showAddCustomShortcutsPanel: false,
       customModeExpand: false,
       customShortcutsDeleteFocus: null,
       noHistoryFocus: false,
       activeChatMode: {},
       customShortCuts: [],
+      newChatMode: {
+        title: '',
+        instructions: '',
+        prefix: '',
+        suffix: '',
+        noHistory: false
+      },
       chatModeData: [
         {
           title: 'ChatGPT',
@@ -185,7 +246,7 @@ You can understand and communicate fluently in the user's language of choice suc
     }
   },
   watch: {
-    customModeExpand(val){
+    customModeExpand(val) {
       this.calcHeight()
       localStorage.setItem('customModeExpand', val)
     },
