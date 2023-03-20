@@ -20,14 +20,8 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  overflow: hidden;
-}
-
-.global-scroll-wrap {
-  width: 100vw;
-  height: 100vh;
+  height: -webkit-fill-available;
   overflow: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 #app {
