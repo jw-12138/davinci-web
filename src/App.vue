@@ -858,8 +858,6 @@ export default {
         _.chatMode.instructionTokens = 208
       }
 
-      _.$refs.input.focus()
-
       fetch(baseAPI + _.apiMethod[_.apiMethodIndex].url, {
         method: 'POST',
         body: JSON.stringify(axiosBody),
@@ -910,6 +908,7 @@ export default {
                 _.saveHistory()
                 _.updateDisplayMessages()
                 _.streamTimeout = false
+                _.$refs.input.focus()
                 if (_.streamTimeoutCount) {
                   clearTimeout(_.streamTimeoutCount)
                 }
@@ -948,9 +947,6 @@ export default {
             _.systemInfo = err.message
           }
         })
-      setTimeout(function () {
-        _.$refs.input.focus()
-      }, 20)
     }
   },
   watch: {
