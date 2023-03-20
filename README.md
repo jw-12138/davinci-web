@@ -1,5 +1,7 @@
 # DaVinci GPT-3
 
+[Change Log](CHANGELOG.md)
+
 <img alt="image" height="600" src="https://user-images.githubusercontent.com/29943110/223663154-29c39163-a0b8-4d74-baf0-4c4b076e3321.png">
 
 A ChatGPT alternative, using OpenAI's API.
