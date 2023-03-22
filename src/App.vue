@@ -395,13 +395,11 @@ export default {
         touchDown = false
       })
 
-      function checkScroll() {
+      let checkScroll = function() {
         let target = document.querySelector('html')
         let scrollTop = target.scrollTop
         let scrollHeight = target.scrollHeight
         let height = target.clientHeight
-
-        console.log(scrollTop + height, scrollHeight - 3)
 
         if (scrollTop + height > scrollHeight - 3) {
           _.userInteracted = false
