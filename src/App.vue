@@ -530,6 +530,7 @@ export default {
       }
     },
     share() {
+      let _ = this
       if (this.messages.length < 1) {
         alert('Please ask something first.')
         return false
@@ -551,6 +552,11 @@ export default {
         userPool: USER_POOL_ID,
         clientId: USER_POOL_CLIENT_ID
       }).then(res => {
+        if(res.data.success === false){
+          _.systemInfo = '<div style="text-align: center">Error occurred while sharing, please refresh this page and try again.</div>'
+          this.scrollDown()
+          return false
+        }
         this.sharing = false
         this.shareLink = window.location.origin + '/s.html?id=' + res.data.id
         localStorage.setItem('shareLink', this.shareLink)
