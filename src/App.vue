@@ -326,7 +326,7 @@ export default {
           name: 'ChatGPT',
           model: 'gpt-3.5-turbo',
           url: '/chat/chat-gpt'
-        },
+        }
         // {
         //   name: 'GPT-4 8k',
         //   model: 'gpt-4',
@@ -395,7 +395,7 @@ export default {
         touchDown = false
       })
 
-      let checkScroll = function() {
+      let checkScroll = function () {
         let target = document.querySelector('html')
         let scrollTop = target.scrollTop
         let scrollHeight = target.scrollHeight
@@ -552,15 +552,20 @@ export default {
         userPool: USER_POOL_ID,
         clientId: USER_POOL_CLIENT_ID
       }).then(res => {
-        if(res.data.success === false){
+        if (res.data.success === false) {
           _.systemInfo = '<div style="text-align: center">Error occurred while sharing, please refresh this page and try again.</div>'
-          this.scrollDown()
+          _.scrollDown()
           return false
         }
         this.sharing = false
         this.shareLink = window.location.origin + '/s.html?id=' + res.data.id
         localStorage.setItem('shareLink', this.shareLink)
         this.scrollDown()
+      }).catch(e => {
+        console.log(e)
+        _.systemInfo = '<div style="text-align: center">Error occurred while sharing, please refresh this page and try again.</div>'
+        _.scrollDown()
+        return false
       })
     },
     clearHistory() {
