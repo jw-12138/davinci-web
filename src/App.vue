@@ -72,6 +72,7 @@
           <div v-if="item.sender === 'Human'" class="human">
             <div :style="{
               opacity: editIndex === item.index ? '0' : '1',
+              pointerEvents: editIndex === item.index ? 'none' : 'auto',
               height: editIndex === item.index ? '30px': 'auto'
             }">
               <pre style="padding: 0">{{ item.text }}</pre>
