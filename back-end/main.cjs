@@ -78,7 +78,8 @@ app.post('/api/share', (req, res) => {
           id
         })
       }).catch(err => {
-        res.json({
+        console.log(err)
+        res.status(500).json({
           success: false,
           message: 'Failed to write to database'
         })
