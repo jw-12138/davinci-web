@@ -194,7 +194,7 @@
                     @focus="inputOnFocus = true; showPageOptions = false; editIndex = undefined"
                     @blur="inputOnFocus = false"
                     ref="input"
-                    placeholder="Type your message here, press CTRL/CMD + Enter to send."
+                    placeholder="Type your message or command here, press CTRL/CMD + Enter to send."
                     @compositionstart="userIsComposting = true"
                     @compositionend="userIsComposting = false">
           </textarea>
