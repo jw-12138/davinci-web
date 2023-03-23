@@ -20,7 +20,7 @@
     <div>
       <chat-mode @data-change="handleChatModeChange"
                  v-show="messages.length === 0 && apiMethodIndex !== 0 && isLogin && !checkingLogin"></chat-mode>
-      <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px">
+      <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px; font-size: 14px">
         <p> 😎 Capabilities: </p>
         <ul>
           <li> Allow user to set custom instructions and message modifiers</li>
@@ -100,19 +100,27 @@
             sys: item.sender === 'System'
           }"
         >
-          <div v-show="item.sender === 'Human'" style="font-size: 12px;position: absolute; top: -25px; color: #999;">
+          <div v-show="item.sender === 'Human'"
+               style="font-size: 12px;position: absolute; top: -25px; right: 10px; color: #999;">
             Human
           </div>
           <div v-if="item.sender === 'Human'" class="human">
             <div :style="{
-              display: editIndex === item.index ? 'none' : 'block'
+              opacity: editIndex === item.index ? '0' : '1',
+              height: editIndex === item.index ? '30px': 'auto'
             }">
-              <pre>{{ item.text }}</pre>
+              <pre style="padding: 0">{{ item.text }}</pre>
             </div>
             <div class="edit-tools" v-if="editIndex === item.index">
               <textarea
                 v-model="editMessage"
                 :id="'editingArea_' + item.index"
+                :style="{
+                  minHeight: '60px',
+                  maxHeight: '120px'
+                }"
+
+                @input="calcEditingAreaHeight('editingArea_' + item.index)"
                 @focus="inputOnFocus = true"
                 @blur="inputOnFocus = false">
               </textarea>
@@ -133,7 +141,8 @@
               </button>
             </div>
           </div>
-          <div v-show="item.sender === 'AI'" style="font-size: 12px; position: absolute; top: -25px; color: #999">AI
+          <div v-show="item.sender === 'AI'"
+               style="font-size: 12px; position: absolute; top: -25px; left: 10px; color: #999">AI
           </div>
           <div v-if="item.sender === 'AI' && item.displayText" v-html="item.displayText"></div>
           <pre style="background: transparent; padding: 0; white-space: pre-wrap; font-size: 14px"
@@ -217,8 +226,7 @@
         <div class="wrap">
           <textarea class="input"
                     v-model="userInput"
-                    :contenteditable="!editIndex"
-                    @focus="inputOnFocus = true; showPageOptions = false"
+                    @focus="inputOnFocus = true; showPageOptions = false; editIndex = undefined"
                     @blur="inputOnFocus = false"
                     ref="input"
                     placeholder="Type your message here, press CTRL/CMD + Enter to send."
@@ -248,7 +256,7 @@ import hljs from 'highlight.js/lib/common'
 import xss from 'xss'
 import Markdownit from 'markdown-it'
 import ClipboardJS from 'clipboard'
-import {calcTokenCost, calcToken} from './utils/price-calc.js'
+import {calcToken, calcTokenCost} from './utils/price-calc.js'
 import ChatMode from './components/chat-mode.vue'
 
 let md = new Markdownit({
@@ -367,6 +375,10 @@ export default {
     }
   },
   methods: {
+    calcEditingAreaHeight(id) {
+      let el = document.getElementById(id)
+      el.rows = el.value.split('\n').length
+    },
     handleUserInteract() {
       let touchDown = false
       let _ = this

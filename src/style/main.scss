@@ -82,7 +82,7 @@ body {
     .tools {
       position: absolute;
       right: 5px;
-      top: 0;
+      top: 7px;
 
       button {
         padding: 0;
@@ -92,15 +92,18 @@ body {
     }
 
     .edit-tools {
+      margin-top: -26px;
       textarea {
         width: 100%;
         min-height: 60px;
-        border: 2px solid #1f2937;
+        border: 2px solid transparent;
+        background: #666;
         border-radius: 8px;
         padding: 10px;
         font-size: 14px;
         font-family: $font-sans;
         resize: none;
+        color: #fff;
       }
 
       input {
@@ -109,8 +112,13 @@ body {
     }
 
     .human {
-      padding-right: 60px;
       position: relative;
+      display: inline-block;
+      background: #2c2c2c;
+      border-radius: 8px;
+      padding: 6px 8px;
+      padding-right: 60px;
+      border: 1px solid #eee;
 
       pre {
         font-family: $font-sans;
@@ -197,10 +205,15 @@ body {
     }
 
     &.dark {
-      background: #1f2937;
+      background: transparent;
       box-shadow: none;
       color: #fff;
       align-self: flex-end;
+      flex: 0 0 auto;
+      display: flex;
+      padding: 0;
+      border: none;
+      justify-content: flex-end;
     }
 
     &.sys {
@@ -216,7 +229,7 @@ body {
 
 .page-input {
   position: fixed;
-  background: linear-gradient(to bottom, transparent, #fff);
+  background: linear-gradient(to bottom, transparent, #fff 70%);
   bottom: 0;
   height: 80px;
   width: 100%;
@@ -235,16 +248,17 @@ body {
   .input {
     width: 100%;
     height: 60px;
-    border: 2px solid #1f2937;
+    border: 2px solid transparent;
+    background: #eee;
     border-radius: 8px;
-    padding: 7px 40px 10px 10px;
+    padding: 7px 10px 10px 10px;
     font-size: 13px;
     font-family: $font-sans;
     outline-offset: 2px;
     overflow: auto;
     line-height: 1.5;
     resize: none;
-    background: #fff;
+    margin-right: 46px;
 
     &:focus {
       outline: 2px #3b82f6 solid;
@@ -265,10 +279,10 @@ body {
   button {
     position: absolute;
     right: 12px;
-    top: 12px;
+    top: 10px;
     font-family: $font-sans;
     width: auto;
-    height: 40px;
+    height: 60px;
     padding: 0 10px;
     background: transparent;
     color: #333;
@@ -323,7 +337,7 @@ body {
     input {
       width: 100%;
       height: 40px;
-      border: 2px solid #1f2937;
+      border: 2px solid #2c2c2c;
       border-radius: 30px;
       text-indent: 15px;
       font-size: 16px;
@@ -349,8 +363,8 @@ textarea {
   padding: 0 15px;
   outline-offset: 2px;
   background: #fff;
-  color: #1f2937;
-  border: 2px solid #1f2937;
+  color: #2c2c2c;
+  border: 2px solid #2c2c2c;
   display: inline-block;
 
   &.focus {
@@ -404,7 +418,7 @@ button {
   line-height: 20px;
   height: 40px;
   font-size: 14px;
-  background: #1f2937;
+  background: #2c2c2c;
   color: #fff;
   border: none;
   border-radius: 30px;
@@ -423,8 +437,8 @@ button {
 
   &.plain {
     background: #fff;
-    color: #1f2937;
-    border: 2px solid #1f2937;
+    color: #2c2c2c;
+    border: 2px solid #2c2c2c;
   }
 
   &.link {
@@ -642,6 +656,13 @@ table {
       color: #fff;
       border-color: transparent;
 
+      .edit-tools {
+        textarea {
+          background: #ccc;
+          color: #444;
+        }
+      }
+
       .code-wrapper {
         border: 1px solid #8a8a8a;
         border-radius: 6px;
@@ -666,14 +687,24 @@ table {
 
       pre {
         background-color: rgba(#000, 0.5);
+
         code {
           background: transparent;
         }
       }
 
       &.dark {
-        background: #404040;
-        color: #fff;
+        color: #444;
+        border: none;
+
+        .human {
+          background: #eee;
+          border: none;
+        }
+
+        button {
+          color: #444;
+        }
       }
 
       &.sys {
@@ -683,7 +714,7 @@ table {
   }
 
   .page-input {
-    background: linear-gradient(to bottom, transparent, #121212);
+    background: linear-gradient(to bottom, transparent, #121212 70%);
 
     .input {
       border: 2px solid #404040;
