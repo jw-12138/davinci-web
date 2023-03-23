@@ -16,7 +16,7 @@ html {
   min-width: 320px;
 }
 
-.intro{
+.intro {
   background: #fff;
   border-radius: 12px;
   border: 1px solid #eee;
@@ -27,7 +27,7 @@ html {
   margin-top: 40px;
 }
 
-footer{
+footer {
   font-size: 12px;
   text-align: center;
   line-height: 1.8;
@@ -628,6 +628,17 @@ table {
   body {
     background: #121212;
     color: #fff;
+  }
+
+  .intro {
+    background: #333;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+    font-size: 14px;
+    margin-top: 40px;
   }
 
   code {
