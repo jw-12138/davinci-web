@@ -2,7 +2,10 @@
 
 [Change Log](CHANGELOG.md)
 
-<img width="auto" alt="Screenshot" src="https://user-images.githubusercontent.com/29943110/227091563-79b86aa7-d13d-4e94-ac91-1528e2de5c30.png">
+<img alt="image" src="https://user-images.githubusercontent.com/29943110/227098048-e710e50a-86fd-416b-87e3-220ea4513d4f.png">
+
+<img alt="image" src="https://user-images.githubusercontent.com/29943110/227098180-ea452a98-097f-42fb-a319-cae67afaf0b6.png">
+
 
 A ChatGPT alternative, using OpenAI's API.
 
