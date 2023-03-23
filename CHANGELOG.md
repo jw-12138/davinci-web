@@ -1,3 +1,7 @@
+### Mar 23, 2023
+- Improvements
+  - Move unnecessary intro text to the sign-in page, clear up the main page
+
 ### Mar 20, 2023
 
 - Improvements
