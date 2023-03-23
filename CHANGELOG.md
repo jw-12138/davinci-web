@@ -1,6 +1,9 @@
 ### Mar 23, 2023
+
 - Improvements
   - Move unnecessary intro text to the sign-in page, clear up the main page
+- Bug Fixes
+  - Model `text-davinci-003` only returns 16 tokens of the generated text
 
 ### Mar 20, 2023
 
@@ -17,19 +20,16 @@
 - Improvements
   - Add new model API (`gpt-3.5-turbo`) to the App
 
-
 ### Feb 23, 2023
 
 - Improvements
   - Real-time markdown rendering and syntax highlighting
   - Can copy code blocks that AI generates
 
-
 ### Feb 17, 2023
 
 - Improvements
   - Add SSO to the sign in page
-
 
 ### Feb 8, 2023
 

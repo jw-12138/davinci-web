@@ -157,6 +157,7 @@ Here is a conversation between a human and you:
 ${composedHistory}
 Human: ${message}
 AI: `,
+          max_tokens: 1024,
           temperature: 0.5,
           top_p: 1,
           frequency_penalty: 0,
