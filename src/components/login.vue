@@ -3,7 +3,9 @@
     <div class="tips">
       <div v-show="loginType === 'key'">
         <p>
-          You can create or revoke your API key at <a target="_blank" href="https://platform.openai.com/account/api-keys">platform.openai.com</a>, You should be well known about the
+          You can create or revoke your API key at <a target="_blank"
+                                                      href="https://platform.openai.com/account/api-keys">platform.openai.com</a>,
+          You should be well known about the
           following terms:
         </p>
         <ul style="margin-bottom: 20px">
@@ -27,28 +29,47 @@
           </li>
         </ul>
       </div>
-
     </div>
-    <div v-show="loginType === 'password'">
-      <button class="sso" @click="goToSSO">
-        <span>Sign in</span>
-      </button>
-    </div>
-    <div class="password" v-show="loginType === 'key'">
+    <div class="password" v-show="loginType === 'key'" style="max-width: 400px; width: 100%; margin: 0 auto">
       <input type="password" v-model="password" autofocus @keydown="listenForEnter" @focus="passwordFocus = true"
              @blur="passwordFocus = false" placeholder="API key" enterkeyhint="go">
       <button @click="login" :disabled="trying"><i v-show="trying" class="iconfont spin">&#xe676;</i> Submit</button>
     </div>
     <div style="font-size: 14px;">
-      <br>
-      <p v-show="loginType === 'password'">
-        Or if you have OpenAI API key, you can
-        <button class="plain" @click="loginType = 'key'">Sign In with API Key</button>
+      <p style="text-align: center">
+        <button class="sso" @click="goToSSO" v-show="loginType === 'password'">
+          Sign in
+        </button>
+        <span style="margin: 0 10px" v-show="loginType === 'password'">Or</span>
+        <button v-show="loginType === 'password'" class="plain" @click="loginType = 'key'">Sign In with API Key</button>
       </p>
-      <p v-show="loginType === 'key'">
+      <p v-show="loginType === 'key'" style="text-align: center">
         <button class="plain" @click="loginType = 'password'">Back to Sign in</button>
       </p>
     </div>
+
+    <div class="intro">
+      <p style="text-align: center; margin-top: 0; font-size: 1.2em"> 😎 Capabilities </p>
+      <ul style="padding: 0; list-style: none">
+        <li>- Allow user to set custom instructions and message modifiers</li>
+        <li>- Remembers what user said earlier in the conversation</li>
+        <li>- Allows user to provide follow-up corrections</li>
+      </ul>
+      <p style="text-align: center; font-size: 1.2em"> 😟 Limitations: </p>
+      <ul style="padding: 0; list-style: none">
+        <li>- May occasionally generate incorrect information</li>
+        <li>
+          - May occasionally produce harmful instructions or biased content
+        </li>
+        <li>- Limited knowledge of world and events after 2021</li>
+      </ul>
+    </div>
+    <footer>
+      <a href="https://github.com/jw-12138/davinci-web" target="_blank">Open Source</a> | <a
+      href="https://github.com/jw-12138/davinci-web/issues" target="_blank">Feedback</a>
+      <br>
+      © 2023 | <a href="https://jw1.dev" target="_blank">jw1.dev</a> | Code with ❤️
+    </footer>
   </div>
 </template>
 

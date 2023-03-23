@@ -6,39 +6,19 @@
     }"
   >
     <div class="page-title">
-      <h1>🤖 DaVinci GPT-3</h1>
+      <h1><img src="https://emojicdn.elk.sh/%F0%9F%A4%96" alt="" style="height: 2.5rem"></h1>
+      <p style="text-align: center; font-weight: bolder; margin-top: -10px; margin-bottom: 30px; font-size: 24px">DaVinci GPT-3</p>
     </div>
-    <div v-show="!isLogin && !checkingLogin">
-      <div style="line-height: 1.9">
-        <p>
-          👏 Introducing DaVinci, your virtual assistant for tasks,
-          questions and conversation. Open Sourced on <a href="https://github.com/jw-12138/davinci-web" target="_blank">GitHub</a>.
-        </p>
-      </div>
-    </div>
+
     <login v-show="!isLogin && !checkingLogin" @logged="loggedIn"></login>
     <div>
       <chat-mode @data-change="handleChatModeChange"
                  v-show="messages.length === 0 && apiMethodIndex !== 0 && isLogin && !checkingLogin"></chat-mode>
       <div v-show="messages.length < 1 && isLogin && !checkingLogin" style="margin-bottom: 20px; font-size: 14px">
-        <p> 😎 Capabilities: </p>
-        <ul>
-          <li> Allow user to set custom instructions and message modifiers</li>
-          <li> Remembers what user said earlier in the conversation</li>
-          <li> Allows user to provide follow-up corrections</li>
-        </ul>
-        <p> 😟 Limitations: </p>
-        <ul>
-          <li> May occasionally generate incorrect information</li>
-          <li>
-            May occasionally produce harmful instructions or biased content
-          </li>
-          <li> Limited knowledge of world and events after 2021</li>
-        </ul>
-        <p>
-          🙌 You can also type commands to trigger certain functions.
+        <p style="text-align: center">
+          🙌 Try these commands
         </p>
-        <div>
+        <div style="display: flex; justify-content: center">
           <table>
             <tr>
               <td>
@@ -74,21 +54,6 @@
             </tr>
           </table>
         </div>
-
-        <p>
-          👻 About this project:
-        </p>
-        <ul>
-          <li>
-            <a href="https://github.com/jw-12138/davinci-web" target="_blank">Open Source</a>
-          </li>
-          <li>
-            <a href="https://github.com/jw-12138/davinci-web/issues" target="_blank">Feedback</a>
-          </li>
-          <li>
-            © 2023 | <a href="https://jw1.dev" target="_blank">jw1.dev</a> | Code with ❤️
-          </li>
-        </ul>
       </div>
       <div class="message-list" v-show="messages.length && isLogin && !checkingLogin">
         <div
@@ -706,6 +671,7 @@ export default {
 
         if (e.key === 'Escape') {
           _.showPageOptions = false
+          _.editIndex = undefined
         }
       })
     },

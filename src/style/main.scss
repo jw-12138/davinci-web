@@ -16,6 +16,29 @@ html {
   min-width: 320px;
 }
 
+.intro{
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 20px;
+  margin-bottom: 30px;
+  font-size: 14px;
+  margin-top: 40px;
+}
+
+footer{
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.8;
+  padding: 40px 0 0;
+}
+
+h1 {
+  font-size: 2.5em;
+  text-align: center;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -65,7 +88,7 @@ body {
 .message-list {
   display: flex;
   flex-direction: column-reverse;
-  min-height: calc(100vh - 190px);
+  min-height: calc(100vh - 288px);
 
   .item {
     width: 100%;
@@ -93,6 +116,7 @@ body {
 
     .edit-tools {
       margin-top: -26px;
+
       textarea {
         width: 100%;
         min-height: 60px;
@@ -239,7 +263,7 @@ body {
   .wrap {
     display: flex;
     width: 100%;
-    max-width: 740px;
+    max-width: 640px;
     margin: 0 auto;
     padding: 10px 10px 10px;
     position: relative;
