@@ -206,6 +206,7 @@ body {
       background-color: rgba($color: #000000, $alpha: 0.06);
 
       code {
+        font-family: 'JetBrains Mono', monospace;
         padding: 0;
         border: none;
         font-size: inherit;
@@ -589,6 +590,7 @@ code {
   font-size: 13px;
   border: none;
   background: rgba(#000, .1);
+  font-family: 'JetBrains Mono', monospace;
 }
 
 table {
