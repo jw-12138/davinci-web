@@ -1,3 +1,7 @@
+### Mar 24, 2023
+- Improvements
+  - Add In-page tokens, which can tell users how many tokens they have used
+
 ### Mar 23, 2023
 
 - Improvements
