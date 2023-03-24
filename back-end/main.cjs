@@ -6,8 +6,9 @@ const {ask, chat} = require('./openai-api.cjs')
 const verify_login = require('./verify-login.cjs')
 const port = 7009
 const path = require('path')
-const {unmarshall} = require('@aws-sdk/util-dynamodb')
 const {write_conversations, get_conversations} = require('./write-conversations.cjs')
+const {log_user_activities} = require('./log-user-activity.cjs')
+const jwt = require('jsonwebtoken')
 
 app.use(cors())
 app.use(express.static(path.join(__dirname, '../dist')))
@@ -17,6 +18,15 @@ function prependArray(value, array) {
   let newArray = array.slice()
   newArray.unshift(value)
   return newArray
+}
+
+function logUserActivity(data) {
+  console.log(data)
+  log_user_activities(data).then(res => {
+    console.log('Log user activity successfully')
+  }).catch(err => {
+    console.log(err)
+  })
 }
 
 const instruction = `Your name is DaVinci, and you are a large language model trained by OpenAI. Your job is to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
@@ -32,11 +42,10 @@ app.post('/api/share/get', (req, res) => {
   get_conversations({
     id
   }).then(r => {
-    if (r.Item) {
-      let item = unmarshall(r.Item)
+    if (r.history) {
       res.json({
         success: true,
-        messages: item.history
+        messages: r.history
       })
     } else {
       res.json({
@@ -171,6 +180,17 @@ AI: `,
           }
           if (cost) {
             res.end()
+            if (loginType === 'password') {
+              let userData = jwt.decode(token)
+              let logData = {
+                ...userData, // cognito token
+                site: 'chat.jw1.dev',
+                type: 'chat/' + model,
+                cost,
+                created: Date.now()
+              }
+              logUserActivity(logData)
+            }
             return false
           }
           if (err) {
@@ -209,7 +229,7 @@ app.post('/api/chat/:model', function (req, res) {
 
   let model = req.params.model || ''
 
-  if(!model) {
+  if (!model) {
     res.status(404).end()
     return false
   }
@@ -268,6 +288,18 @@ app.post('/api/chat/:model', function (req, res) {
 
           if (cost) {
             res.end()
+            console.log(loginType)
+            if (loginType === 'password') {
+              let userData = jwt.decode(token)
+              let logData = {
+                ...userData, // cognito token
+                site: 'chat.jw1.dev',
+                type: 'chat/' + model,
+                cost,
+                created: Date.now()
+              }
+              logUserActivity(logData)
+            }
             return false
           }
 

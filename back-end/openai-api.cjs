@@ -23,22 +23,9 @@ function ask(m, options, cb) {
     'davinci': {
       oneDollarToken: 1 / 0.02 * 1000,
       name: 'text-davinci-003',
+      oneDollarTokenForPrompt: 1 / 0.02 * 1000,
+      oneDollarTokenForCompletion: 1 / 0.02 * 1000,
       info: 'Complex intent, cause and effect, summarization for audience'
-    },
-    'curie': {
-      oneDollarToken: 1 / 0.002 * 1000,
-      name: 'text-curie-001',
-      info: 'Language translation, complex classification, text sentiment, summarization'
-    },
-    'babbage': {
-      oneDollarToken: 1 / 0.0005 * 1000,
-      name: 'text-babbage-001',
-      info: 'Capable of straightforward tasks, very fast, and lower cost.'
-    },
-    'ada': {
-      oneDollarToken: 1 / 0.0004 * 1000,
-      name: 'text-ada-001',
-      info: 'Capable of very simple tasks, usually the fastest model in the GPT-3 series, and lowest cost.'
     }
   }
 
@@ -54,17 +41,28 @@ function ask(m, options, cb) {
   }
 
   openai.createCompletion(promptOption, axiosOptions).then(res => {
-    let tokenCount = 0
+    let completionTokenCount = 0
 
     if (!isStream) {
       let str = res.data.choices[0].text
       str = str.replace(/^\s+|\s+$/g, '')
 
-      cb && cb(str, 0)
+      let completionTokens = tokenizer.encode(str).bpe.length
+      let promptTokens = tokenizer.encode(options.prompt).bpe.length
+
+      let completionCost = completionTokens / model.oneDollarTokenForCompletion
+      let promptCost = promptTokens / model.oneDollarTokenForPrompt
+      let cost = completionCost + promptCost
+
+      cb && cb(str, cost)
     } else {
       res.data.on('end', function () {
         setTimeout(function () {
-          cb && cb(null, 1)
+          let promptTokens = tokenizer.encode(options.prompt).bpe.length
+          let promptCost = promptTokens / model.oneDollarTokenForPrompt
+          let completionCost = completionTokenCount / model.oneDollarTokenForCompletion
+          let cost = completionCost + promptCost
+          cb && cb(null, cost)
         }, 50)
       })
       res.data.on('data', chunk => {
@@ -75,7 +73,7 @@ function ask(m, options, cb) {
           let s_arr = el.split('data: ')
           let d = s_arr[1]
           if (d.startsWith('{')) {
-            tokenCount++
+            completionTokenCount++
             let d_obj = JSON.parse(d)
             cb && cb(d_obj.choices[0].text, null)
           }
@@ -103,15 +101,21 @@ function chat(m, options, cb) {
   let models = {
     'chat-gpt': {
       name: 'gpt-3.5-turbo',
-      info: 'The standard ChatGPT model'
+      info: 'The standard ChatGPT model',
+      oneDollarTokenForPrompt: 1 / 0.002 * 1000,
+      oneDollarTokenForCompletion: 1 / 0.002 * 1000
     },
     'gpt-4': {
       name: 'gpt-4',
-      info: 'The GPT-4 model'
+      info: 'The GPT-4 model',
+      oneDollarTokenForPrompt: 1 / 0.03 * 1000,
+      oneDollarTokenForCompletion: 1 / 0.06 * 1000
     },
     'gpt-4-32k': {
       name: 'gpt-4-32k',
-      info: 'The GPT-4 model'
+      info: 'The GPT-4 model',
+      oneDollarTokenForPrompt: 1 / 0.06 * 1000,
+      oneDollarTokenForCompletion: 1 / 0.12 * 1000
     }
   }
 
@@ -126,10 +130,20 @@ function chat(m, options, cb) {
   }
 
   if (isStream) {
-    let tokenCount = 0
+    let completionTokenCount = 0
     openai.createChatCompletion(options, axiosOptions).then(chatCompletion => {
       chatCompletion.data.on('end', function () {
-        cb && cb(null, 1)
+        let promptMessages = ''
+        options.messages.forEach(message => {
+          promptMessages += message.content + ' '
+        })
+        let promptTokens = tokenizer.encode(promptMessages).bpe.length
+
+        let promptCost = promptTokens / model.oneDollarTokenForPrompt
+        let completionCost = completionTokenCount / model.oneDollarTokenForCompletion
+
+        let cost = completionCost + promptCost
+        cb && cb(null, cost)
       })
 
       chatCompletion.data.on('data', chunk => {
@@ -141,7 +155,7 @@ function chat(m, options, cb) {
           let d = s_arr[1]
           if (d.startsWith('{')) {
             let d_obj = JSON.parse(d)
-            tokenCount++
+            completionTokenCount++
             cb && cb(d_obj.choices[0].delta.content, null)
           }
         })
@@ -152,7 +166,19 @@ function chat(m, options, cb) {
     })
   } else {
     openai.createChatCompletion(options).then(chatCompletion => {
-      cb && cb(chatCompletion.data.choices[0].message.content, 1, null)
+      let promptMessages = ''
+      options.messages.forEach(message => {
+        promptMessages += message.content + ' '
+      })
+      let completion = chatCompletion.data.choices[0].message.content
+      let promptTokens = tokenizer.encode(promptMessages).bpe.length
+      let completionTokens = tokenizer.encode(completion).bpe.length
+
+      let promptCost = promptTokens / model.oneDollarTokenForPrompt
+      let completionCost = completionTokens / model.oneDollarTokenForCompletion
+
+      let cost = completionCost + promptCost
+      cb && cb(completion, cost, null)
     }).catch(err => {
       console.log(err.toJSON())
       cb && cb(null, null, err)

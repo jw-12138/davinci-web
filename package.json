@@ -10,8 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.264.0",
-    "@aws-sdk/util-dynamodb": "^3.264.0",
     "axios": "^1.2.5",
     "clipboard": "^2.0.11",
     "cors": "^2.8.5",
@@ -22,6 +20,7 @@
     "jsonwebtoken": "^9.0.0",
     "markdown-it": "^13.0.1",
     "marked": "^4.2.12",
+    "mongodb": "^5.1.0",
     "nanoid": "3",
     "node-fetch": "2",
     "openai": "^3.1.0",
