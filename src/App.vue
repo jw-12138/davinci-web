@@ -7,7 +7,8 @@
   >
     <div class="page-title">
       <h1><img src="https://emojicdn.elk.sh/%F0%9F%A4%96" alt="" style="height: 2.5rem"></h1>
-      <p style="text-align: center; font-weight: bolder; margin-top: -10px; margin-bottom: 30px; font-size: 24px">DaVinci GPT-3</p>
+      <p style="text-align: center; font-weight: bolder; margin-top: -10px; margin-bottom: 30px; font-size: 24px">
+        DaVinci GPT-3</p>
     </div>
 
     <login v-show="!isLogin && !checkingLogin" @logged="loggedIn"></login>
@@ -124,12 +125,14 @@
       <div v-show="checkingLogin" style="padding: 20px 0 30px; text-align: center; font-size: 12px">
         <div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Checking your sign in info...</div>
       </div>
+      <div class="in-page-token-count" v-show="messages.length > 0 && !systemInfo && isLogin">
+        In-page Tokens: {{ inPageTokens }}
+      </div>
       <div style="padding: 20px 0 30px; text-align: center; font-size: 12px" v-show="systemInfo" v-html="systemInfo">
 
       </div>
       <div style="text-align: center" v-show="isLogin && !checkingLogin" aria-label="Settings">
         <div style="display: inline-block; position: relative">
-
           <Transition name="slide-up">
             <div class="page-options-box" v-show="showPageOptions" :class="{
             in: showPageOptions
@@ -285,6 +288,7 @@ export default {
   },
   data() {
     return {
+      inPageTokens: 0,
       userScrolled: false,
       userInteracted: false,
       editInstructionWindow: '',
@@ -341,6 +345,21 @@ export default {
     }
   },
   methods: {
+    calcInPageTokens() {
+      let _ = this
+      _.inPageTokens = 0
+      let instructionTokenCount = _.chatMode.instructionTokens || 0
+      _.inPageTokens += instructionTokenCount
+      _.messages.forEach((message) => {
+        if (message.sender === 'Human') {
+          let messageWithPrefixAndSuffix = (_.chatMode.prefix || '') + message.text + (_.chatMode.suffix || '')
+          let tokenCountForMessage = calcToken(messageWithPrefixAndSuffix)
+          _.inPageTokens += tokenCountForMessage
+        } else {
+          _.inPageTokens += calcToken(message.text)
+        }
+      })
+    },
     calcEditingAreaHeight(id) {
       let el = document.getElementById(id)
       el.rows = el.value.split('\n').length
@@ -401,6 +420,7 @@ export default {
         noHistory: false
       }
       this.chatMode = {...defaultChatMode, ...chatMode}
+      this.calcInPageTokens()
     },
     initClipboard() {
       let cp = new ClipboardJS('.copy-code-btn', {
@@ -581,6 +601,7 @@ export default {
       }
 
       this.messages = history
+      _.calcInPageTokens()
       if (this.messages.length) {
         this.scrollDown()
         this.initClipboard()
@@ -757,6 +778,7 @@ export default {
           _.$refs.input.innerText = ''
         }, 30)
         _.clearHistory()
+        _.calcInPageTokens()
         return false
       }
 
@@ -823,6 +845,7 @@ export default {
       }, 30)
 
       this.updateDisplayMessages()
+      this.calcInPageTokens()
 
       let tempHistory = JSON.parse(JSON.stringify(_.messages))
       tempHistory.splice(-1, 1)
@@ -892,6 +915,7 @@ export default {
                 _.scrollDown(true)
                 _.saveHistory()
                 _.updateDisplayMessages()
+                _.calcInPageTokens()
                 _.streamTimeout = false
                 _.$refs.input.focus()
                 if (_.streamTimeoutCount) {
