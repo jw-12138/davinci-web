@@ -122,6 +122,7 @@ function chat(m, options, cb) {
       options.messages.forEach(message => {
         promptTokens += calcToken(message.content)
       })
+      console.log(completion)
       let completionTokens = calcToken(completion)
       cb && cb(null, {
         promptTokens,
@@ -138,7 +139,7 @@ function chat(m, options, cb) {
         let d = s_arr[1]
         if (d.startsWith('{')) {
           let d_obj = JSON.parse(d)
-          completion += d_obj.choices[0].delta.content
+          completion += d_obj.choices[0].delta.content || ''
           cb && cb(d_obj.choices[0].delta.content, null)
         }
       })
