@@ -1,6 +1,6 @@
-const GPT3Tokenizer = require('gpt3-tokenizer')
+const GPT3Tokenizer = require('gpt3-tokenizer').default
 
-let tokenizer = new GPT3Tokenizer({type: 'gpt3'}).default
+let tokenizer = new GPT3Tokenizer({ type: 'gpt3' })
 
 let models = {
   'davinci': {

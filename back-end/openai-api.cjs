@@ -40,8 +40,6 @@ function ask(m, options, cb) {
   }
 
   openai.createCompletion(promptOption, axiosOptions).then(res => {
-
-
     if (!isStream) {
       let str = res.data.choices[0].text
       str = str.replace(/^\s+|\s+$/g, '')

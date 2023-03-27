@@ -8,6 +8,10 @@ const port = 7009
 const path = require('path')
 const {write_conversations, get_conversations} = require('./write-conversations.cjs')
 const {log_user_activities} = require('./log-user-activity.cjs')
+const {
+  calcTokenCost,
+  calcToken
+} = require('./price-calc.cjs')
 const jwt = require('jsonwebtoken')
 
 app.use(cors())
@@ -161,9 +165,10 @@ AI: `,
             if (loginType === 'password') {
               let userData = jwt.decode(token)
               let logData = {
-                ...userData, // cognito token
+                username: userData.username,
+                'cognito:groups': userData['cognito:groups'] || [],
                 site: 'chat.jw1.dev',
-                type: 'chat/' + model,
+                type: 'chat/davinci',
                 cost,
                 created: Date.now()
               }
@@ -270,7 +275,8 @@ app.post('/api/chat/:model', function (req, res) {
             if (loginType === 'password') {
               let userData = jwt.decode(token)
               let logData = {
-                ...userData, // cognito token
+                username: userData.username,
+                'cognito:groups': userData['cognito:groups'] || [],
                 site: 'chat.jw1.dev',
                 type: 'chat/' + model,
                 cost,
