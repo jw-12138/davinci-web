@@ -854,7 +854,7 @@ export default {
         token: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.accessToken`) || localStorage.getItem('fromID'),
         userPool: USER_POOL_ID,
         clientID: USER_POOL_CLIENT_ID,
-        message: _.chatMode.prefix + userInput + _.chatMode.suffix,
+        message: (_.chatMode.prefix || '') + userInput + (_.chatMode.suffix || ''),
         history: _.chatMode.noHistory ? [] : tempHistory,
         instructions: _.chatMode.instructions
       }
