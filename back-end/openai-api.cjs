@@ -118,11 +118,10 @@ function chat(m, options, cb) {
     responseType: 'stream'
   }).then(chatCompletion => {
     chatCompletion.data.on('end', function () {
-      let promptMessages = ''
+      let promptTokens = 0
       options.messages.forEach(message => {
-        promptMessages += message.content + '\n'
+        promptTokens += calcToken(message.content)
       })
-      let promptTokens = calcToken(promptMessages)
       let completionTokens = calcToken(completion)
       cb && cb(null, {
         promptTokens,
