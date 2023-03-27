@@ -237,6 +237,8 @@ app.post('/api/chat/:model', function (req, res) {
     loginType = 'key'
   }
 
+  console.log('Login Type: ' + loginType)
+
   if (userInstruction) {
     composedHistory = prependArray({
       role: 'system',
