@@ -1,8 +1,10 @@
 require('dotenv').config()
 
 const {Configuration, OpenAIApi} = require('openai')
-const GPT3Tokenizer = require('gpt3-tokenizer').default
-const tokenizer = new GPT3Tokenizer({type: 'gpt3'})
+const {
+  calcTokenCost,
+  calcToken
+} = require('./price-calc.cjs')
 
 /**
  *
@@ -21,10 +23,7 @@ function ask(m, options, cb) {
   let openai = new OpenAIApi(configuration)
   let models = {
     'davinci': {
-      oneDollarToken: 1 / 0.02 * 1000,
       name: 'text-davinci-003',
-      oneDollarTokenForPrompt: 1 / 0.02 * 1000,
-      oneDollarTokenForCompletion: 1 / 0.02 * 1000,
       info: 'Complex intent, cause and effect, summarization for audience'
     }
   }
@@ -41,30 +40,31 @@ function ask(m, options, cb) {
   }
 
   openai.createCompletion(promptOption, axiosOptions).then(res => {
-    let completionTokenCount = 0
+
 
     if (!isStream) {
       let str = res.data.choices[0].text
       str = str.replace(/^\s+|\s+$/g, '')
 
-      let completionTokens = tokenizer.encode(str).bpe.length
-      let promptTokens = tokenizer.encode(options.prompt).bpe.length
+      let completionTokens = calcToken(str)
+      let promptTokens = calcToken(options.prompt)
 
-      let completionCost = completionTokens / model.oneDollarTokenForCompletion
-      let promptCost = promptTokens / model.oneDollarTokenForPrompt
+      let completionCost = calcTokenCost(m, completionTokens, 'completion')
+      let promptCost = calcTokenCost(m, promptTokens, 'prompt')
       let cost = completionCost + promptCost
 
       cb && cb(str, cost)
     } else {
+      let completion = ''
       res.data.on('end', function () {
-        setTimeout(function () {
-          let promptTokens = tokenizer.encode(options.prompt).bpe.length
-          let promptCost = promptTokens / model.oneDollarTokenForPrompt
-          let completionCost = completionTokenCount / model.oneDollarTokenForCompletion
-          let cost = completionCost + promptCost
-          cb && cb(null, cost)
-        }, 50)
+        let promptTokens = calcToken(options.prompt)
+        let promptCost = calcTokenCost(m, promptTokens, 'prompt')
+        let completionTokens = calcToken(completion)
+        let completionCost = calcTokenCost(m, completionTokens, 'completion')
+        let cost = completionCost + promptCost
+        cb && cb(null, cost)
       })
+
       res.data.on('data', chunk => {
         let eventData = chunk.toString()
         let s = eventData.split('\n\n')
@@ -73,8 +73,8 @@ function ask(m, options, cb) {
           let s_arr = el.split('data: ')
           let d = s_arr[1]
           if (d.startsWith('{')) {
-            completionTokenCount++
             let d_obj = JSON.parse(d)
+            completion += d_obj.choices[0].text
             cb && cb(d_obj.choices[0].text, null)
           }
         })
@@ -101,89 +101,57 @@ function chat(m, options, cb) {
   let models = {
     'chat-gpt': {
       name: 'gpt-3.5-turbo',
-      info: 'The standard ChatGPT model',
-      oneDollarTokenForPrompt: 1 / 0.002 * 1000,
-      oneDollarTokenForCompletion: 1 / 0.002 * 1000
+      info: 'The standard ChatGPT model'
     },
     'gpt-4': {
       name: 'gpt-4',
-      info: 'The GPT-4 model',
-      oneDollarTokenForPrompt: 1 / 0.03 * 1000,
-      oneDollarTokenForCompletion: 1 / 0.06 * 1000
+      info: 'The GPT-4 model'
     },
     'gpt-4-32k': {
       name: 'gpt-4-32k',
-      info: 'The GPT-4 model',
-      oneDollarTokenForPrompt: 1 / 0.06 * 1000,
-      oneDollarTokenForCompletion: 1 / 0.12 * 1000
+      info: 'The GPT-4 model'
     }
   }
 
   let model = models[m]
   options.model = model.name
-  let axiosOptions = {}
-  let isStream = options.stream
-  if (isStream) {
-    axiosOptions = {
-      responseType: 'stream'
-    }
-  }
 
-  if (isStream) {
-    let completionTokenCount = 0
-    openai.createChatCompletion(options, axiosOptions).then(chatCompletion => {
-      chatCompletion.data.on('end', function () {
-        let promptMessages = ''
-        options.messages.forEach(message => {
-          promptMessages += message.content + ' '
-        })
-        let promptTokens = tokenizer.encode(promptMessages).bpe.length
-
-        let promptCost = promptTokens / model.oneDollarTokenForPrompt
-        let completionCost = completionTokenCount / model.oneDollarTokenForCompletion
-
-        let cost = completionCost + promptCost
-        cb && cb(null, cost)
-      })
-
-      chatCompletion.data.on('data', chunk => {
-        let eventData = chunk.toString()
-        let s = eventData.split('\n\n')
-        s.pop()
-        s.forEach(el => {
-          let s_arr = el.split('data: ')
-          let d = s_arr[1]
-          if (d.startsWith('{')) {
-            let d_obj = JSON.parse(d)
-            completionTokenCount++
-            cb && cb(d_obj.choices[0].delta.content, null)
-          }
-        })
-      })
-    }).catch(err => {
-      console.log(err.toJSON())
-      cb && cb(null, null, err)
-    })
-  } else {
-    openai.createChatCompletion(options).then(chatCompletion => {
+  let completion = ''
+  openai.createChatCompletion(options, {
+    responseType: 'stream'
+  }).then(chatCompletion => {
+    chatCompletion.data.on('end', function () {
       let promptMessages = ''
       options.messages.forEach(message => {
         promptMessages += message.content + ' '
       })
-      let completion = chatCompletion.data.choices[0].message.content
-      let promptTokens = tokenizer.encode(promptMessages).bpe.length
-      let completionTokens = tokenizer.encode(completion).bpe.length
-
-      let promptCost = promptTokens / model.oneDollarTokenForPrompt
-      let completionCost = completionTokens / model.oneDollarTokenForCompletion
+      let promptTokens = calcToken(promptMessages)
+      let promptCost = calcTokenCost(m, promptTokens, 'prompt')
+      let completionTokens = calcToken(completion)
+      let completionCost = calcTokenCost(m, completionTokens, 'completion')
 
       let cost = completionCost + promptCost
-      cb && cb(completion, cost, null)
-    }).catch(err => {
-      console.log(err.toJSON())
-      cb && cb(null, null, err)
+      cb && cb(null, cost)
     })
-  }
+
+    chatCompletion.data.on('data', chunk => {
+      let eventData = chunk.toString()
+      let s = eventData.split('\n\n')
+      s.pop()
+      s.forEach(el => {
+        let s_arr = el.split('data: ')
+        let d = s_arr[1]
+        if (d.startsWith('{')) {
+          let d_obj = JSON.parse(d)
+          completion += d_obj.choices[0].delta.content
+          cb && cb(d_obj.choices[0].delta.content, null)
+        }
+      })
+    })
+  }).catch(err => {
+    console.log(err.toJSON())
+    cb && cb(null, null, err)
+  })
 }
 
 module.exports = {

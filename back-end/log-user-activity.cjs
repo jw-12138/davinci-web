@@ -3,7 +3,6 @@ const {connectDB} = require('./mongo.cjs')
 let db
 const db_user_activities = (async function () {
   db = await connectDB()
-  console.log('Connected to MongoDB')
   return db.collection('user_activities')
 })()
 

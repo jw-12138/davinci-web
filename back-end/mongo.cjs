@@ -11,6 +11,7 @@ let connectDB = async function() {
 
   console.log('Connecting to MongoDB...')
   await MDB_CLIENT.connect()
+  console.log('Connected')
 
   return MDB_CLIENT.db('davinci-web')
 }

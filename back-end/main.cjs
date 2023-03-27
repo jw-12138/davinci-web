@@ -106,28 +106,6 @@ app.post('/api/share', (req, res) => {
   })
 })
 
-// deprecated
-app.post('/api/checkLogin', function (req, res) {
-  let token = req.body.token
-  let loginValid = false
-  let userPool = req.body.userPool
-
-  verify_login(token, userPool).then(r => {
-    if (r.data.Username) {
-      loginValid = true
-    }
-
-    res.json({
-      success: loginValid
-    })
-  }).catch(err => {
-    console.log(err)
-    res.json({
-      success: false
-    })
-  })
-})
-
 app.post('/api/ask', function (req, res) {
   res.set('Content-Type', 'application/octet-stream')
   res.set('Transfer-Encoding', 'chunked')
