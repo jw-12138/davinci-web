@@ -120,7 +120,7 @@ function chat(m, options, cb) {
     chatCompletion.data.on('end', function () {
       let promptMessages = ''
       options.messages.forEach(message => {
-        promptMessages += message.content + ' '
+        promptMessages += message.content + '\n'
       })
       let promptTokens = calcToken(promptMessages)
       let completionTokens = calcToken(completion)

@@ -271,7 +271,6 @@ app.post('/api/chat/:model', function (req, res) {
 
           if (cost) {
             res.end()
-            console.log(loginType)
             if (loginType === 'password') {
               let userData = jwt.decode(token)
               let logData = {
