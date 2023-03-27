@@ -169,7 +169,7 @@ AI: `,
                 'cognito:groups': userData['cognito:groups'] || [],
                 site: 'chat.jw1.dev',
                 type: 'chat/davinci',
-                cost,
+                ...cost,
                 created: Date.now()
               }
               logUserActivity(logData)
@@ -279,7 +279,7 @@ app.post('/api/chat/:model', function (req, res) {
                 'cognito:groups': userData['cognito:groups'] || [],
                 site: 'chat.jw1.dev',
                 type: 'chat/' + model,
-                cost,
+                ...cost,
                 created: Date.now()
               }
               logUserActivity(logData)

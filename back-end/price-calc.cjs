@@ -1,5 +1,4 @@
 const GPT3Tokenizer = require('gpt3-tokenizer').default
-
 let tokenizer = new GPT3Tokenizer({ type: 'gpt3' })
 
 let models = {
@@ -29,27 +28,14 @@ let models = {
   }
 }
 
-let modelName = function (index) {
-  let name = ''
-  switch (index) {
-    case 0:
-      name = 'davinci'
-      break
-    case 1:
-      name = 'chat-gpt'
-      break
-  }
-  return name
-}
-
 function calcTokenCost(model, tokenLength, tokenType) {
   let modelInfo = models[model]
   let cost = 0
   if (modelInfo) {
     if (tokenType === 'prompt') {
-      cost = tokenLength * modelInfo.oneDollarTokenForPrompt
+      cost = tokenLength / modelInfo.oneDollarTokenForPrompt
     } else {
-      cost = tokenLength * modelInfo.oneDollarTokenForCompletion
+      cost = tokenLength / modelInfo.oneDollarTokenForCompletion
     }
   }
   return cost

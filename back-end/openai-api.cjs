@@ -47,20 +47,19 @@ function ask(m, options, cb) {
       let completionTokens = calcToken(str)
       let promptTokens = calcToken(options.prompt)
 
-      let completionCost = calcTokenCost(m, completionTokens, 'completion')
-      let promptCost = calcTokenCost(m, promptTokens, 'prompt')
-      let cost = completionCost + promptCost
-
-      cb && cb(str, cost)
+      cb && cb(str, {
+        promptTokens,
+        completionTokens
+      })
     } else {
       let completion = ''
       res.data.on('end', function () {
         let promptTokens = calcToken(options.prompt)
-        let promptCost = calcTokenCost(m, promptTokens, 'prompt')
         let completionTokens = calcToken(completion)
-        let completionCost = calcTokenCost(m, completionTokens, 'completion')
-        let cost = completionCost + promptCost
-        cb && cb(null, cost)
+        cb && cb(null, {
+          promptTokens,
+          completionTokens
+        })
       })
 
       res.data.on('data', chunk => {
@@ -124,12 +123,11 @@ function chat(m, options, cb) {
         promptMessages += message.content + ' '
       })
       let promptTokens = calcToken(promptMessages)
-      let promptCost = calcTokenCost(m, promptTokens, 'prompt')
       let completionTokens = calcToken(completion)
-      let completionCost = calcTokenCost(m, completionTokens, 'completion')
-
-      let cost = completionCost + promptCost
-      cb && cb(null, cost)
+      cb && cb(null, {
+        promptTokens,
+        completionTokens
+      })
     })
 
     chatCompletion.data.on('data', chunk => {
