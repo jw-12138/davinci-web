@@ -2,7 +2,7 @@
   <div v-show="!pageLoading" style="display: none">
     <div class="page-title">
       <h1><img src="https://emojicdn.elk.sh/%F0%9F%A4%96" alt="" style="height: 2.5rem"></h1>
-      <p style="text-align: center; font-weight: bolder; margin-top: -10px; margin-bottom: 30px; font-size: 24px">DaVinci GPT-3</p>
+      <p style="text-align: center; font-weight: bolder; margin-top: -10px; margin-bottom: 30px; font-size: 24px">DaVinci GPT</p>
     </div>
 
     <div v-show="notFound">
