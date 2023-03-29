@@ -123,7 +123,7 @@
         </div>
       </div>
       <div v-show="checkingLogin" style="padding: 20px 0 30px; text-align: center; font-size: 12px">
-        <div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Checking your sign in info...</div>
+        <div style="text-align: center" aria-busy="true">Checking your sign in info...</div>
       </div>
       <div class="in-page-token-count" v-show="messages.length > 0 && !systemInfo && isLogin">
         In-page Tokens: {{ inPageTokens }}
@@ -501,7 +501,7 @@ export default {
 
       this.showPageOptions = false
 
-      this.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Signing you out ...</div>'
+      this.systemInfo = '<div style="text-align: center" aria-busy="true">Signing you out ...</div>'
       this.scrollDown()
 
       axios({
