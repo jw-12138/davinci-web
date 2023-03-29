@@ -16,6 +16,10 @@ body {
   overflow: auto;
 }
 
+footer{
+  @apply pt-12 text-xs leading-loose text-center;
+}
+
 #app {
   width: 100%;
   max-width: 640px;
@@ -47,9 +51,9 @@ a {
 
 .page-options-box {
   position: absolute;
-  bottom: 0;
+  bottom: 30px;
   width: 200px;
-  left: -48px;
+  left: -43px;
   pointer-events: none;
   opacity: 0;
 
@@ -143,7 +147,7 @@ a {
 @keyframes slideUp_3 {
   0% {
     opacity: 0;
-    bottom: 0
+    bottom: 30px
   }
   100% {
     opacity: 1;
@@ -158,7 +162,7 @@ a {
   }
   100% {
     opacity: 0;
-    bottom: 0
+    bottom: 30px
   }
 }
 
@@ -240,7 +244,7 @@ select {
 .message-list {
   display: flex;
   flex-direction: column-reverse;
-  min-height: calc(100vh - 290px);
+  min-height: calc(100vh - 282px);
 
   .item {
     width: 100%;
@@ -432,7 +436,7 @@ select {
 .in-page-token-count {
   font-size: 10px;
   text-align: center;
-  margin: 1rem;
+  margin: 0.5rem 0 1rem;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -163,7 +163,7 @@
                   </button>
                 </div>
               </div>
-              <div style="text-align: center; margin-top: 10px" class="px-4">
+              <div style="text-align: center; margin-top: 10px" class="px-2">
                 <div class="select-box" :class="{
                   focus: modelSelectFocus
                 }">
@@ -188,7 +188,7 @@
 
       <div v-show="shareLink && isLogin && !checkingLogin"
            style="padding: 10px 0; font-size: 12px; text-align: center;">
-        <a :href="shareLink" target="_blank">{{ shareLink }}</a>
+        <a :href="shareLink">{{ shareLink }}</a>
       </div>
       <div v-show="isLogin" class="page-input">
         <div class="wrap">
