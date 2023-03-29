@@ -37,6 +37,10 @@
     --muted-color: hsl(0deg 0% 55%);
     --muted-border-color: #616161;
   }
+
+  [type=checkbox]:checked, [type=checkbox]:checked:active, [type=checkbox]:checked:focus, [type=radio]:checked, [type=radio]:checked:active, [type=radio]:checked:focus{
+    background-color: transparent;
+  }
 }
 
 @media (min-width: 992px) {

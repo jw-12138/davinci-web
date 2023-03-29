@@ -24,7 +24,7 @@ body {
   padding: 1px 10px 80px;
 }
 
-code{
+code {
   border-radius: .25rem;
   background: rgba(0, 0, 0, .08);
   color: #333;
@@ -254,6 +254,18 @@ select {
     line-height: 1.85;
     position: relative;
 
+    ul, ol {
+      display: block;
+      list-style: disc outside none;
+      margin: 1em 0;
+      padding: 0 0 0 40px;
+      font-size: 14px;
+    }
+
+    ol {
+      list-style-type: decimal;
+    }
+
     .tools {
       position: absolute;
       right: 5px;
@@ -336,6 +348,7 @@ select {
         justify-content: space-between;
         align-items: center;
         align-content: center;
+        margin-right: .5rem;
       }
 
       .language-name {
@@ -423,6 +436,10 @@ select {
 }
 
 @media (prefers-color-scheme: dark) {
+  code {
+    background: rgba(255, 255, 255, .08);
+    color: #eee;
+  }
   .message-list {
     .item {
       box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -434,6 +451,7 @@ select {
         textarea {
           background: #ccc;
           color: #444;
+
           &:focus {
             --box-shadow: rgba(0, 0, 0, 0) 0 0 0 0, rgba(0, 0, 0, .2) 0 0 0 3px;
           }

@@ -97,7 +97,7 @@
               <i class="iconfont icon-ashbin"
                  @mouseenter="customShortcutsDeleteFocus = index"
                  @mouseleave="customShortcutsDeleteFocus = null"
-                 style="top: 0;"></i>
+                 style="top: -2px;"></i>
             </button>
           </span>
           <br>
