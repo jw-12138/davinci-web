@@ -1,8 +1,8 @@
 <template>
   <div class="chat-mode" ref="chat_mode_box">
     <h3 style="margin-top: 0; margin-bottom: 10px; cursor:pointer;">
-      <button @click="customModeExpand = !customModeExpand">
-        <i class="iconfont icon-arrow-right" :style="{
+      <button @click="customModeExpand = !customModeExpand" class="w-auto inline text-xl">
+        <i class="iconfont icon-arrow-right relative -top-[1px]" :style="{
         display: 'inline-block',
         transition: 'transform .3s ease',
         transform: customModeExpand ? 'rotate(90deg)' : 'rotate(0deg)'
@@ -10,7 +10,7 @@
       </button>
     </h3>
     <v-dialog title="Add Custom Instructions" v-model:show="showAddCustomShortcutsPanel">
-      <form action="javascript:" @submit="addCustomShortcuts">
+      <form action="javascript:" @submit="addCustomShortcuts" class="mb-2">
         <div class="chat-mode" style="padding: 0; border: none; background: transparent; box-shadow: none">
           <div class="title" style="margin-top: 0">
             <label for="new_chat_name">Name</label>
@@ -20,11 +20,14 @@
                    v-model="newChatMode.title">
           </div>
           <div class="title" style="margin-top: 0">
-            <label for="new_chat_mode">Instructions({{ newChatMode.instructionTokens ? newChatMode.instructionTokens : 0 }}
-            tokens):</label>
+            <label for="new_chat_mode">Instructions({{
+                newChatMode.instructionTokens ? newChatMode.instructionTokens : 0
+              }}
+              tokens):</label>
           </div>
           <div>
-            <textarea id="new_chat_mode" v-model="newChatMode.instructions" @input="handleNewChatModeInstructionInput"></textarea>
+            <textarea class="mb-0" id="new_chat_mode" v-model="newChatMode.instructions"
+                      @input="handleNewChatModeInstructionInput"></textarea>
           </div>
           <div class="title">
             <label for="new_prefix">Message Modifiers:</label>
@@ -44,9 +47,11 @@
 
 
         <div style="text-align: center; ">
-          <button style="height: 32px" class="plain" type="button" @click="showAddCustomShortcutsPanel = false">Cancel
-          </button>
-          <button style="height: 32px; margin-left: 10px" type="submit">Save</button>
+          <div class="grid max-w-[18rem] w-auto mx-auto">
+            <button class="mb-3" type="submit">Save</button>
+            <button class="outline mb-3" type="button" @click="showAddCustomShortcutsPanel = false">Cancel
+            </button>
+          </div>
         </div>
       </form>
 
@@ -76,13 +81,14 @@
           <label>Shortcuts:</label>
         </div>
         <div class="switches">
-          <button class="plain" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{ item.title }}
+          <button class="outline" v-for="(item, index) in chatModeData" @click="handleModeChange(index)">{{
+              item.title
+            }}
           </button>
-          <button @click="showAddCustomShortcutsPanel = true"><i class="iconfont icon-add"
-                                                                 style="top: 2px; left: 2px"></i></button>
+          <button @click="showAddCustomShortcutsPanel = true"><i class="iconfont icon-add" style="top: 1px;"></i></button>
           <br v-if="customShortCuts.length">
           <span v-for="(item, index) in customShortCuts" style="position: relative">
-            <button style="padding-right: 30px" class="plain" @click="handleCustomModeChange(index)"
+            <button style="padding-right: 30px" class="outline" @click="handleCustomModeChange(index)"
                     :disabled="customShortcutsDeleteFocus === index">
             {{ item.title }}
             </button>
@@ -91,7 +97,7 @@
               <i class="iconfont icon-ashbin"
                  @mouseenter="customShortcutsDeleteFocus = index"
                  @mouseleave="customShortcutsDeleteFocus = null"
-                 style="top: 0;"></i>
+                 style="top: -2px;"></i>
             </button>
           </span>
           <br>
@@ -143,11 +149,11 @@ export default {
     }
   },
   methods: {
-    handleNewChatModeInstructionInput(){
+    handleNewChatModeInstructionInput() {
       this.newChatMode.instructionTokens = calcToken(this.newChatMode.instructions)
     },
     calcHeight() {
-      this.$refs.chat_mode_box.style.maxHeight = this.customModeExpand ? '810px' : '45px'
+      this.$refs.chat_mode_box.style.maxHeight = this.customModeExpand ? '810px' : '62px'
     },
     addCustomShortcuts() {
       this.customShortcutsDeleteFocus = null

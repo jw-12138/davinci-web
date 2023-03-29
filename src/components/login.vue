@@ -30,40 +30,40 @@
         </ul>
       </div>
     </div>
-    <div class="password" v-show="loginType === 'key'" style="max-width: 400px; width: 100%; margin: 0 auto">
+    <div class="password" v-show="loginType === 'key'" style="max-width: 400px; width: 100%; margin: 0 auto; display: flex">
       <input type="password" v-model="password" autofocus @keydown="listenForEnter" @focus="passwordFocus = true"
              @blur="passwordFocus = false" placeholder="API key" enterkeyhint="go">
-      <button @click="login" :disabled="trying"><i v-show="trying" class="iconfont spin">&#xe676;</i> Submit</button>
+      <button @click="login" :disabled="trying" :aria-busy="trying" class="ml-2 w-[10rem]">Submit</button>
     </div>
     <div style="font-size: 14px;">
       <p style="text-align: center">
-        <button class="sso" @click="goToSSO" v-show="loginType === 'password'">
+        <button class="sso inline w-auto" @click="goToSSO" v-show="loginType === 'password'">
           Sign in
         </button>
         <span style="margin: 0 10px" v-show="loginType === 'password'">Or</span>
-        <button v-show="loginType === 'password'" class="plain" @click="loginType = 'key'">Sign In with API Key</button>
+        <button v-show="loginType === 'password'" class="outline inline w-auto" @click="loginType = 'key'">Sign In with API Key</button>
       </p>
       <p v-show="loginType === 'key'" style="text-align: center">
-        <button class="plain" @click="loginType = 'password'">Back to Sign in</button>
+        <button class="outline w-auto inline" @click="loginType = 'password'">Back to Sign in</button>
       </p>
     </div>
 
-    <div class="intro">
+    <article class="intro px-12" v-show="loginType === 'password'">
       <p style="text-align: center; margin-top: 0; font-size: 1.2em"> 😎 Capabilities </p>
       <ul style="padding: 0; list-style: none">
-        <li>- Allow user to set custom instructions and message modifiers</li>
-        <li>- Remembers what user said earlier in the conversation</li>
-        <li>- Allows user to provide follow-up corrections</li>
+        <li>Allow user to set custom instructions and message modifiers</li>
+        <li>Remembers what user said earlier in the conversation</li>
+        <li>Allows user to provide follow-up corrections</li>
       </ul>
       <p style="text-align: center; font-size: 1.2em"> 😟 Limitations: </p>
       <ul style="padding: 0; list-style: none">
-        <li>- May occasionally generate incorrect information</li>
+        <li>May occasionally generate incorrect information</li>
         <li>
-          - May occasionally produce harmful instructions or biased content
+          May occasionally produce harmful instructions or biased content
         </li>
-        <li>- Limited knowledge of world and events after 2021</li>
+        <li>Limited knowledge of world and events after 2021</li>
       </ul>
-    </div>
+    </article>
     <footer>
       <a href="https://github.com/jw-12138/davinci-web" target="_blank">Open Source</a> | <a
       href="https://github.com/jw-12138/davinci-web/issues" target="_blank">Feedback</a>

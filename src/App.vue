@@ -6,7 +6,7 @@
     }"
   >
     <div class="page-title">
-      <h1><img src="https://emojicdn.elk.sh/%F0%9F%A4%96" alt="" style="height: 2.5rem"></h1>
+      <h1 class="text-center mb-4"><img src="https://emojicdn.elk.sh/%F0%9F%A4%96" alt="" style="height: 2.5rem"></h1>
       <p style="text-align: center; font-weight: bolder; margin-top: -10px; margin-bottom: 30px; font-size: 24px">
         DaVinci GPT</p>
     </div>
@@ -20,7 +20,7 @@
           🙌 Try these commands
         </p>
         <div style="display: flex; justify-content: center">
-          <table>
+          <table style="width: auto">
             <tr>
               <td>
                 <code>/reset</code>
@@ -163,11 +163,10 @@
                   </button>
                 </div>
               </div>
-              <div style="text-align: center; margin-top: 10px">
+              <div style="text-align: center; margin-top: 10px" class="px-2">
                 <div class="select-box" :class="{
-            focus: modelSelectFocus
-          }">
-                  <div class="value"><i class="iconfont icon-Bot"></i> {{ apiMethod[apiMethodIndex].name }}</div>
+                  focus: modelSelectFocus
+                }">
                   <label for="model_select" class="for-select"></label>
                   <select id="model_select" v-model="apiMethodIndex" @focus="modelSelectFocus = true"
                           @blur="modelSelectFocus = false">
@@ -179,17 +178,17 @@
               </div>
             </div>
           </Transition>
-          <button role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true"
+          <button class="mb-0" role="menuitem" @click.stop="showPageOptions = !showPageOptions" aria-haspopup="true"
                   style="position: relative; z-index: 300">
-            <i class="iconfont icon-setting" style="top: 2px" v-show="!showPageOptions"></i>
-            <i class="iconfont icon-close-bold" style="top: 2px" v-show="showPageOptions"></i>Settings
+            <i class="iconfont icon-setting" style="top: 0; margin-right: 5px" v-show="!showPageOptions"></i>
+            <i class="iconfont icon-close-bold" style="top: 0; margin-right: 5px" v-show="showPageOptions"></i>Settings
           </button>
         </div>
       </div>
 
       <div v-show="shareLink && isLogin && !checkingLogin"
            style="padding: 10px 0; font-size: 12px; text-align: center;">
-        <a :href="shareLink" target="_blank">{{ shareLink }}</a>
+        <a :href="shareLink">{{ shareLink }}</a>
       </div>
       <div v-show="isLogin" class="page-input">
         <div class="wrap">
@@ -827,7 +826,7 @@ export default {
 
       _.saveHistory()
 
-      _.systemInfo = '<div style="text-align: center"><i class="iconfont spin">&#xe676;</i> Processing...</div>'
+      _.systemInfo = '<div style="text-align: center" aria-busy="true">Processing...</div>'
 
       _.shareLink = ''
       localStorage.removeItem('shareLink')

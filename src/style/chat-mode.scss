@@ -17,14 +17,8 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
       margin: 0;
       background: transparent;
       border: none;
-      font-size: inherit;
       font-weight: inherit;
       height: auto;
-
-      i {
-        position: relative;
-        top: 1px;
-      }
     }
   }
 
@@ -34,15 +28,13 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
     display: inline-block;
   }
 
-  input {
+  input[type="text"] {
     font-size: 13px;
     height: 32px;
     background: rgba(#000, .07);
     display: block;
-    border-radius: 6px;
     width: 100%;
     border: none;
-    text-indent: 10px;
   }
 
   textarea {
@@ -62,7 +54,7 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
     display: flex;
     align-items: center;
 
-    input {
+    input[type="text"] {
       font-size: 13px;
       height: 32px;
       background: rgba(#000, .07);
@@ -70,7 +62,7 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
       border-radius: 6px;
       width: 50%;
       border: none;
-      text-indent: 10px;
+      margin-bottom: 0;
     }
 
     code {
@@ -85,9 +77,11 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
 
   .switches {
     button {
-      height: 32px;
       margin-right: 5px;
       margin-bottom: 5px;
+      padding: .25rem 1rem;
+      display: inline;
+      width: auto;
 
       &:disabled {
         opacity: 0.3;
@@ -147,18 +141,18 @@ $font-sans: system-ui, -apple-system, "Segoe UI", "Roboto", "Ubuntu", "Cantarell
     }
 
     textarea {
-      background: rgba(#fff, 0.07);
+      background: rgba(#fff, 0.14);
       color: #fff;
     }
 
-    input {
-      background: rgba(#fff, .07);
+    input[type="text"] {
+      background: rgba(#fff, .14);
       color: #fff;
     }
 
     .message-modifier {
-      input {
-        background: rgba(#fff, .07);
+      input[type="text"] {
+        background: rgba(#fff, .14);
         color: #fff;
       }
     }
