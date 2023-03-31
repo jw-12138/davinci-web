@@ -48,6 +48,10 @@
       </p>
     </div>
 
+    <p class="text-xs text-center">
+      🎉 DaVinci GPT 中文版本 <a href="https://zy.jw1.dev/" target="_blank">只言</a> 上线啦！快来体验吧！
+    </p>
+
     <article class="intro px-12" v-show="loginType === 'password'">
       <p style="text-align: center; margin-top: 0; font-size: 1.2em"> 😎 Capabilities </p>
       <ul style="padding: 0; list-style: none">
@@ -64,10 +68,6 @@
         <li>Limited knowledge of world and events after 2021</li>
       </ul>
     </article>
-
-    <p class="text-xs text-center">
-      DaVinci GPT 中文版本 <a href="https://zy.jw1.dev/" target="_blank">只言</a> 上线啦！快来体验吧！
-    </p>
 
     <footer>
       <a href="https://github.com/jw-12138/davinci-web" target="_blank">Open Source</a> | <a

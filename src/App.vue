@@ -56,7 +56,7 @@
           </table>
         </div>
         <p class="text-xs text-center">
-          DaVinci GPT 中文版本 <a href="https://zy.jw1.dev/" target="_blank">只言</a> 上线啦！快来体验吧！
+          🎉 DaVinci GPT 中文版本 <a href="https://zy.jw1.dev/" target="_blank">只言</a> 上线啦！快来体验吧！
         </p>
       </div>
       <div class="message-list" v-show="messages.length && isLogin && !checkingLogin">
