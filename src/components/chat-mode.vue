@@ -103,20 +103,20 @@
           <br>
         </div>
         <div class="info">
-          <p>
+          <p class="text-xs">
             <b>Note:</b> Custom Mode only works for <code>gpt-3.5-turbo</code>
           </p>
           <br>
-          <p>
+          <p class="text-xs">
             - You can use <code>Instructions</code> and <code>Message Modifiers</code> to create a custom tools based on
             GPT-3.
           </p>
-          <p>
+          <p class="text-xs">
             - <code>No History</code> option works great for non-conversation tasks like translation, code generation
             and
             writing improvement, etc.
           </p>
-          <p>
+          <p class="text-xs">
             - To add a new custom shortcut, simply hit the button with the plus sign.
           </p>
         </div>
