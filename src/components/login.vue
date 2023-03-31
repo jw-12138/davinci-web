@@ -64,6 +64,11 @@
         <li>Limited knowledge of world and events after 2021</li>
       </ul>
     </article>
+
+    <p class="text-xs text-center">
+      DaVinci GPT 中文版本 <a href="https://zy.jw1.dev/" target="_blank">只言</a> 上线啦！快来体验吧！
+    </p>
+
     <footer>
       <a href="https://github.com/jw-12138/davinci-web" target="_blank">Open Source</a> | <a
       href="https://github.com/jw-12138/davinci-web/issues" target="_blank">Feedback</a>
