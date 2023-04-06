@@ -7,7 +7,7 @@
 <img alt="image" src="https://user-images.githubusercontent.com/29943110/227098180-ea452a98-097f-42fb-a319-cae67afaf0b6.png">
 
 
-A ChatGPT alternative, using OpenAI's API.
+A ChatGPT alternative.
 
 😎 Capabilities:
 
