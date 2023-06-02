@@ -37,14 +37,10 @@
     </div>
     <div style="font-size: 14px;">
       <p style="text-align: center">
-        <button class="sso inline w-auto" @click="goToSSO" v-show="loginType === 'password'">
-          Sign in
-        </button>
-        <span style="margin: 0 10px" v-show="loginType === 'password'">Or</span>
         <button v-show="loginType === 'password'" class="outline inline w-auto" @click="loginType = 'key'">Sign In with API Key</button>
       </p>
       <p v-show="loginType === 'key'" style="text-align: center">
-        <button class="outline w-auto inline" @click="loginType = 'password'">Back to Sign in</button>
+        <button class="outline w-auto inline" @click="loginType = 'password'">Back to Home</button>
       </p>
     </div>
 

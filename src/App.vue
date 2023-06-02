@@ -265,11 +265,7 @@ export default {
   mounted() {
     let _ = this
     let search = new URLSearchParams(location.search)
-    if (search.get('id')) {
-      this.getLoginInfo(search.get('id'))
-    } else {
-      this.checkForLogin()
-    }
+    this.checkForLogin()
     this.listenForKeys()
     this.readHistory()
     this.updateDisplayMessages()
@@ -650,34 +646,7 @@ export default {
         return false
       }
 
-      if (!localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`) && !renewToken) {
-        _.checkingLogin = false
-        return false
-      }
-
-      axios({
-        method: 'post',
-        url: 'https://api.jw1.dev/cognito/renew',
-        data: {
-          refreshToken: localStorage.getItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.refreshToken`),
-          userPool: USER_POOL_ID,
-          clientId: USER_POOL_CLIENT_ID
-        }
-      }).then(res => {
-        if (!res.data.AuthenticationResult) {
-          throw new Error('oops')
-        }
-        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.accessToken`, res.data.AuthenticationResult.AccessToken)
-        localStorage.setItem(`CognitoIdentityServiceProvider.${USER_POOL_CLIENT_ID}.${localStorage.getItem('username_from_sso')}.idToken`, res.data.AuthenticationResult.IdToken)
-        _.isLogin = true
-        _.checkingLogin = false
-      }).catch(err => {
-        console.log(err)
-        if (!renewToken) {
-          _.isLogin = false
-        }
-        _.checkingLogin = false
-      })
+      _.checkingLogin = false
     },
     listenForKeys() {
       let _ = this
